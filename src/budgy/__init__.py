@@ -21,15 +21,17 @@ def load_ofx_file(ofxfile:Path):
     records = []
     for statement in ofx.statements:
         is_checking = isinstance(statement, ofxtools.models.bank.stmt.STMTRS)
+        account = statement.bankacctfrom.acctid if is_checking else statement.ccacctfrom.acctid
         for txn in statement.transactions:
             checknum = txn.checknum if is_checking else ''
             if checknum is None:
                 checknum = ""
             record = {
+                'fitid': int(txn.fitid),
+                'account': account,
                 'type': txn.trntype,
                 'posted': str(txn.dtposted),
                 'amount': float(txn.trnamt),
-                'fitid': int(txn.fitid),
                 'name': txn.name,
                 'memo': txn.memo,
                 'checknum': checknum

@@ -3,11 +3,7 @@ from pathlib import Path
 import sqlite3
 import logging
 
-import ofxtools
-from ofxtools.Parser import OFXTree
-
 class BudgyDatabase(object):
-    MAX_COMMIT = 10000 # maximum number of records in single commit
     TABLE_NAME = 'transactions'
 
     def __init__(self, path):
@@ -16,24 +12,28 @@ class BudgyDatabase(object):
         self._open_database()
 
     def table_exists(self, table_name):
-        cursor = self.connection.cursor()
         sql = f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}';"
         result = self.execute(sql)
         rows = result.fetchall()
         return len(rows) > 0
 
     def _create_table_if_missing(self, table_name):
-        sql = f'CREATE TABLE IF NOT EXISTS {table_name} (' \
-              f'fitid INT PRIMARY KEY, ' \
-              f'type TEXT, ' \
-              f'posted TEXT, ' \
-              f'amount FLOAT, ' \
-              f'name TEXT, ' \
-              f'memo TEXT, ' \
-              f'checknum TEXT ' \
-              f');'
-        result = self.execute(sql)
-        logging.debug(f'Create Table Result: {result}')
+        if not self.table_exists(table_name):
+            sql = f'CREATE TABLE IF NOT EXISTS {table_name} (' \
+                  f'fitid INT, ' \
+                  f'account TEXT, ' \
+                  f'type TEXT, ' \
+                  f'posted TEXT, ' \
+                  f'amount FLOAT, ' \
+                  f'name TEXT, ' \
+                  f'memo TEXT, ' \
+                  f'checknum TEXT ' \
+                  f');'
+            result = self.execute(sql)
+            logging.debug(f'Create Table Result: {result}')
+            sql = f'CREATE UNIQUE INDEX acct_fitid ON {table_name} (fitid, account);'
+            result = self.execute(sql)
+            logging.debug(f'Create Unique Index: {result}')
 
     def execute(self, sql):
         cursor = self.connection.cursor()
@@ -45,8 +45,8 @@ class BudgyDatabase(object):
         self.connection = sqlite3.connect(self.db_path)
         self._create_table_if_missing(self.TABLE_NAME)
 
-    def get_record_by_fitid(self, fitid):
-        sql = f'SELECT * from {self.TABLE_NAME} WHERE fitid = {fitid};'
+    def get_record_by_fitid(self, fitid, account):
+        sql = f'SELECT * from {self.TABLE_NAME} WHERE fitid = {fitid} AND account = "{account}";'
         result = self.execute(sql)
         rows = result.fetchall()
         output = []
@@ -56,27 +56,28 @@ class BudgyDatabase(object):
         return output
 
     def record_from_row(self, row):
-        checknum = "" if row[6] is None else row[6]
+        checknum = "" if row[7] is None else row[7]
         return {
             'fitid': row[0],
-            'type': row[1],
-            'posted': row[2], # datetime.datetime.strptime(row[2], '%Y-%m-%d %H:%M:%S%z') ,
-            'amount': row[3],
-            'name': row[4],
-            'memo': row[5],
+            'account': row[1],
+            'type': row[2],
+            'posted': row[3], # datetime.datetime.strptime(row[2], '%Y-%m-%d %H:%M:%S%z') ,
+            'amount': row[4],
+            'name': row[5],
+            'memo': row[6],
             'checknum': checknum
         }
 
     def insert_record(self, record):
         checknum = "" if record['checknum'] is None else record['checknum']
-        sql = f'INSERT INTO {self.TABLE_NAME} (fitid, type, posted, amount, name, memo, checknum) ' \
-              f'VALUEs ({record["fitid"]}, "{record["type"]}", "{record["posted"]}", {record["amount"]}, ' \
-              f'"{record["name"]}", "{record["memo"]}", "{checknum}" );'
+        sql = f'INSERT INTO {self.TABLE_NAME} (fitid, account, type, posted, amount, name, memo, checknum) ' \
+              f'VALUEs ({record["fitid"]}, "{record["account"]}", "{record["type"]}", "{record["posted"]}", ' \
+              f'{record["amount"]}, "{record["name"]}", "{record["memo"]}", "{checknum}" );'
         result = self.execute(sql)
         self.connection.commit()
 
     def merge_record(self, record):
-        result = self.get_record_by_fitid(record['fitid'])
+        result = self.get_record_by_fitid(record['fitid'], record['account'])
         if result is not None:
             n = len(result)
             # if n > 1:

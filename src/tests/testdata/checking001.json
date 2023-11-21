@@ -4,6 +4,7 @@
         "posted": "2023-09-01 00:00:00+00:00",
         "amount": "-4269.30",
         "fitid": "1536783472",
+        "account": "MyCheckingAccount",
         "name": "CHASE ACH JPMORGAN CHASE ID90081",
         "memo": "ACH, Withdrawal, Processed",
         "checknum": null
@@ -13,6 +14,7 @@
         "posted": "2023-09-01 00:00:00+00:00",
         "amount": "-205.00",
         "fitid": "1536783473",
+        "account": "MyCheckingAccount",
         "name": "Check # 1566",
         "memo": "Check, Draft, Withdrawal, Processed",
         "checknum": "1566"
@@ -22,6 +24,7 @@
         "posted": "2023-09-05 00:00:00+00:00",
         "amount": "-300.00",
         "fitid": "1540729451",
+        "account": "MyCheckingAccount",
         "name": "Withdrawal PROVIDENT CU,15425 LO",
         "memo": "ATM, Withdrawal, Processed",
         "checknum": ""
@@ -31,6 +34,7 @@
         "posted": "2023-09-05 00:00:00+00:00",
         "amount": "-10071.52",
         "fitid": "1540729454",
+        "account": "MyCheckingAccount",
         "name": "Tfr to ***3074 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
         "checknum": ""
@@ -40,6 +44,7 @@
         "posted": "2023-09-05 00:00:00+00:00",
         "amount": "-2000.00",
         "fitid": "1540729457",
+        "account": "MyCheckingAccount",
         "name": "Tfr to ***6996 college living ex",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
         "checknum": ""
@@ -49,6 +54,7 @@
         "posted": "2023-09-05 00:00:00+00:00",
         "amount": "-10.00",
         "fitid": "1540729460",
+        "account": "MyCheckingAccount",
         "name": "Tfr to ***6996 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
         "checknum": ""
@@ -58,6 +64,7 @@
         "posted": "2023-09-05 00:00:00+00:00",
         "amount": "-10.00",
         "fitid": "1540729463",
+        "account": "MyCheckingAccount",
         "name": "Tfr to ***6997 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
         "checknum": ""
@@ -67,6 +74,7 @@
         "posted": "2023-09-05 00:00:00+00:00",
         "amount": "143.00",
         "fitid": "1540729466",
+        "account": "MyCheckingAccount",
         "name": "TRANSFER PAYPAL IDPAYPALSD11",
         "memo": "ACH, Deposit, Processed",
         "checknum": ""
@@ -76,6 +84,7 @@
         "posted": "2023-09-05 00:00:00+00:00",
         "amount": "-21.00",
         "fitid": "1540729469",
+        "account": "MyCheckingAccount",
         "name": "INST XFER PAYPAL IDPAYPALSI77 In",
         "memo": "ACH, Withdrawal, Processed",
         "checknum": ""
@@ -85,6 +94,7 @@
         "posted": "2023-09-05 00:00:00+00:00",
         "amount": "-1.00",
         "fitid": "1540729472",
+        "account": "MyCheckingAccount",
         "name": "INST XFER PAYPAL IDPAYPALSI77 In",
         "memo": "ACH, Withdrawal, Processed",
         "checknum": ""
@@ -94,6 +104,7 @@
         "posted": "2023-09-05 00:00:00+00:00",
         "amount": "4000.00",
         "fitid": "1540729474",
+        "account": "MyCheckingAccount",
         "name": "SB Check/Cash Deposit - Providen",
         "memo": "Deposit, Processed",
         "checknum": ""
@@ -103,6 +114,7 @@
         "posted": "2023-09-06 00:00:00+00:00",
         "amount": "1255.42",
         "fitid": "1541409306",
+        "account": "MyCheckingAccount",
         "name": "PAYROLL MIDORI NISHIMURA ID90024",
         "memo": "ACH, Deposit, Processed",
         "checknum": ""
@@ -112,6 +124,7 @@
         "posted": "2023-09-06 00:00:00+00:00",
         "amount": "-200.00",
         "fitid": "1541409307",
+        "account": "MyCheckingAccount",
         "name": "INVESTMENT VANGUARD BUY IDVMC PU",
         "memo": "ACH, Withdrawal, Processed",
         "checknum": ""
@@ -121,6 +134,7 @@
         "posted": "2023-09-07 00:00:00+00:00",
         "amount": "121.19",
         "fitid": "1542038931",
+        "account": "MyCheckingAccount",
         "name": "DEPOSIT CA DIR ACH ID3680440016",
         "memo": "ACH, Deposit, Processed",
         "checknum": ""
@@ -130,6 +144,7 @@
         "posted": "2023-09-07 00:00:00+00:00",
         "amount": "476.00",
         "fitid": "1542038932",
+        "account": "MyCheckingAccount",
         "name": "DEPOSIT CA DIR ACH ID3680440016",
         "memo": "ACH, Deposit, Processed",
         "checknum": ""
@@ -139,6 +154,7 @@
         "posted": "2023-09-07 00:00:00+00:00",
         "amount": "-121.19",
         "fitid": "1542038933",
+        "account": "MyCheckingAccount",
         "name": "UC Merced Univ CA Merced ID12700",
         "memo": "ACH, Withdrawal, Processed",
         "checknum": ""
@@ -148,6 +164,7 @@
         "posted": "2023-09-11 00:00:00+00:00",
         "amount": "-10.00",
         "fitid": "1544629745",
+        "account": "MyCheckingAccount",
         "name": "Tfr to ***6996 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
         "checknum": ""
@@ -157,6 +174,7 @@
         "posted": "2023-09-11 00:00:00+00:00",
         "amount": "-10.00",
         "fitid": "1544629747",
+        "account": "MyCheckingAccount",
         "name": "Tfr to ***6997 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
         "checknum": ""
@@ -166,6 +184,7 @@
         "posted": "2023-09-11 00:00:00+00:00",
         "amount": "-12.00",
         "fitid": "1544629749",
+        "account": "MyCheckingAccount",
         "name": "INST XFER PAYPAL IDPAYPALSI77 In",
         "memo": "ACH, Withdrawal, Processed",
         "checknum": ""
@@ -175,6 +194,7 @@
         "posted": "2023-09-13 00:00:00+00:00",
         "amount": "21.00",
         "fitid": "1546303378",
+        "account": "MyCheckingAccount",
         "name": "TRANSFER PAYPAL IDPAYPALSD11",
         "memo": "ACH, Deposit, Processed",
         "checknum": ""
@@ -184,6 +204,7 @@
         "posted": "2023-09-14 00:00:00+00:00",
         "amount": "3575.79",
         "fitid": "1546303379",
+        "account": "MyCheckingAccount",
         "name": "DIRECT DEP SHAPE SECURITY I ID91",
         "memo": "ACH, Deposit, Processed",
         "checknum": ""
@@ -193,6 +214,7 @@
         "posted": "2023-09-15 00:00:00+00:00",
         "amount": "-100.00",
         "fitid": "1547025391",
+        "account": "MyCheckingAccount",
         "name": "CONTRIB CA DIR ACH ID2680440016",
         "memo": "ACH, Withdrawal, Processed",
         "checknum": ""
@@ -202,6 +224,7 @@
         "posted": "2023-09-15 00:00:00+00:00",
         "amount": "-100.00",
         "fitid": "1547025393",
+        "account": "MyCheckingAccount",
         "name": "CONTRIB CA DIR ACH ID2680440016",
         "memo": "ACH, Withdrawal, Processed",
         "checknum": ""
@@ -211,6 +234,7 @@
         "posted": "2023-09-18 00:00:00+00:00",
         "amount": "-10.00",
         "fitid": "1549845273",
+        "account": "MyCheckingAccount",
         "name": "Tfr to ***6997 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
         "checknum": ""
@@ -220,6 +244,7 @@
         "posted": "2023-09-18 00:00:00+00:00",
         "amount": "-10.00",
         "fitid": "1549845274",
+        "account": "MyCheckingAccount",
         "name": "Tfr to ***6996 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
         "checknum": ""
@@ -229,6 +254,7 @@
         "posted": "2023-09-20 00:00:00+00:00",
         "amount": "-17.30",
         "fitid": "1551221321",
+        "account": "MyCheckingAccount",
         "name": "INST XFER PAYPAL IDPAYPALSI77 In",
         "memo": "ACH, Withdrawal, Processed",
         "checknum": ""
@@ -238,6 +264,7 @@
         "posted": "2023-09-25 00:00:00+00:00",
         "amount": "-10.00",
         "fitid": "1555257323",
+        "account": "MyCheckingAccount",
         "name": "Tfr to ***6997 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
         "checknum": ""
@@ -246,6 +273,7 @@
         "type": "DEBIT",
         "posted": "2023-09-25 00:00:00+00:00",
         "amount": "-10.00",
+        "account": "MyCheckingAccount",
         "fitid": "1555257324",
         "name": "Tfr to ***6996 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
@@ -256,6 +284,7 @@
         "posted": "2023-09-25 00:00:00+00:00",
         "amount": "-205.00",
         "fitid": "1555257325",
+        "account": "MyCheckingAccount",
         "name": "Check # 1568",
         "memo": "Check, Draft, Withdrawal, Processed",
         "checknum": "1568"
@@ -265,6 +294,7 @@
         "posted": "2023-09-28 00:00:00+00:00",
         "amount": "3579.14",
         "fitid": "1557162116",
+        "account": "MyCheckingAccount",
         "name": "DIRECT DEP SHAPE SECURITY I ID91",
         "memo": "ACH, Deposit, Processed",
         "checknum": ""
@@ -274,6 +304,7 @@
         "posted": "2023-09-30 00:00:00+00:00",
         "amount": "19.03",
         "fitid": "1559255610",
+        "account": "MyCheckingAccount",
         "name": "Dividend Credit",
         "memo": "Dividend, Interest, Deposit, Processed",
         "checknum": ""
