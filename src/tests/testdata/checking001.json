@@ -1,0 +1,281 @@
+[
+    {
+        "type": "DEBIT",
+        "posted": "2023-09-01 00:00:00+00:00",
+        "amount": "-4269.30",
+        "fitid": "1536783472",
+        "name": "CHASE ACH JPMORGAN CHASE ID90081",
+        "memo": "ACH, Withdrawal, Processed",
+        "checknum": null
+    },
+    {
+        "type": "CHECK",
+        "posted": "2023-09-01 00:00:00+00:00",
+        "amount": "-205.00",
+        "fitid": "1536783473",
+        "name": "Check # 1566",
+        "memo": "Check, Draft, Withdrawal, Processed",
+        "checknum": "1566"
+    },
+    {
+        "type": "ATM",
+        "posted": "2023-09-05 00:00:00+00:00",
+        "amount": "-300.00",
+        "fitid": "1540729451",
+        "name": "Withdrawal PROVIDENT CU,15425 LO",
+        "memo": "ATM, Withdrawal, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DEBIT",
+        "posted": "2023-09-05 00:00:00+00:00",
+        "amount": "-10071.52",
+        "fitid": "1540729454",
+        "name": "Tfr to ***3074 Internet Banking",
+        "memo": "InternetBanking, Telephone, Withdrawal, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DEBIT",
+        "posted": "2023-09-05 00:00:00+00:00",
+        "amount": "-2000.00",
+        "fitid": "1540729457",
+        "name": "Tfr to ***6996 college living ex",
+        "memo": "InternetBanking, Telephone, Withdrawal, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DEBIT",
+        "posted": "2023-09-05 00:00:00+00:00",
+        "amount": "-10.00",
+        "fitid": "1540729460",
+        "name": "Tfr to ***6996 Internet Banking",
+        "memo": "InternetBanking, Telephone, Withdrawal, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DEBIT",
+        "posted": "2023-09-05 00:00:00+00:00",
+        "amount": "-10.00",
+        "fitid": "1540729463",
+        "name": "Tfr to ***6997 Internet Banking",
+        "memo": "InternetBanking, Telephone, Withdrawal, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DIRECTDEP",
+        "posted": "2023-09-05 00:00:00+00:00",
+        "amount": "143.00",
+        "fitid": "1540729466",
+        "name": "TRANSFER PAYPAL IDPAYPALSD11",
+        "memo": "ACH, Deposit, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DEBIT",
+        "posted": "2023-09-05 00:00:00+00:00",
+        "amount": "-21.00",
+        "fitid": "1540729469",
+        "name": "INST XFER PAYPAL IDPAYPALSI77 In",
+        "memo": "ACH, Withdrawal, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DEBIT",
+        "posted": "2023-09-05 00:00:00+00:00",
+        "amount": "-1.00",
+        "fitid": "1540729472",
+        "name": "INST XFER PAYPAL IDPAYPALSI77 In",
+        "memo": "ACH, Withdrawal, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DEP",
+        "posted": "2023-09-05 00:00:00+00:00",
+        "amount": "4000.00",
+        "fitid": "1540729474",
+        "name": "SB Check/Cash Deposit - Providen",
+        "memo": "Deposit, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DIRECTDEP",
+        "posted": "2023-09-06 00:00:00+00:00",
+        "amount": "1255.42",
+        "fitid": "1541409306",
+        "name": "PAYROLL MIDORI NISHIMURA ID90024",
+        "memo": "ACH, Deposit, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DEBIT",
+        "posted": "2023-09-06 00:00:00+00:00",
+        "amount": "-200.00",
+        "fitid": "1541409307",
+        "name": "INVESTMENT VANGUARD BUY IDVMC PU",
+        "memo": "ACH, Withdrawal, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DIRECTDEP",
+        "posted": "2023-09-07 00:00:00+00:00",
+        "amount": "121.19",
+        "fitid": "1542038931",
+        "name": "DEPOSIT CA DIR ACH ID3680440016",
+        "memo": "ACH, Deposit, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DIRECTDEP",
+        "posted": "2023-09-07 00:00:00+00:00",
+        "amount": "476.00",
+        "fitid": "1542038932",
+        "name": "DEPOSIT CA DIR ACH ID3680440016",
+        "memo": "ACH, Deposit, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DEBIT",
+        "posted": "2023-09-07 00:00:00+00:00",
+        "amount": "-121.19",
+        "fitid": "1542038933",
+        "name": "UC Merced Univ CA Merced ID12700",
+        "memo": "ACH, Withdrawal, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DEBIT",
+        "posted": "2023-09-11 00:00:00+00:00",
+        "amount": "-10.00",
+        "fitid": "1544629745",
+        "name": "Tfr to ***6996 Internet Banking",
+        "memo": "InternetBanking, Telephone, Withdrawal, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DEBIT",
+        "posted": "2023-09-11 00:00:00+00:00",
+        "amount": "-10.00",
+        "fitid": "1544629747",
+        "name": "Tfr to ***6997 Internet Banking",
+        "memo": "InternetBanking, Telephone, Withdrawal, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DEBIT",
+        "posted": "2023-09-11 00:00:00+00:00",
+        "amount": "-12.00",
+        "fitid": "1544629749",
+        "name": "INST XFER PAYPAL IDPAYPALSI77 In",
+        "memo": "ACH, Withdrawal, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DIRECTDEP",
+        "posted": "2023-09-13 00:00:00+00:00",
+        "amount": "21.00",
+        "fitid": "1546303378",
+        "name": "TRANSFER PAYPAL IDPAYPALSD11",
+        "memo": "ACH, Deposit, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DIRECTDEP",
+        "posted": "2023-09-14 00:00:00+00:00",
+        "amount": "3575.79",
+        "fitid": "1546303379",
+        "name": "DIRECT DEP SHAPE SECURITY I ID91",
+        "memo": "ACH, Deposit, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DEBIT",
+        "posted": "2023-09-15 00:00:00+00:00",
+        "amount": "-100.00",
+        "fitid": "1547025391",
+        "name": "CONTRIB CA DIR ACH ID2680440016",
+        "memo": "ACH, Withdrawal, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DEBIT",
+        "posted": "2023-09-15 00:00:00+00:00",
+        "amount": "-100.00",
+        "fitid": "1547025393",
+        "name": "CONTRIB CA DIR ACH ID2680440016",
+        "memo": "ACH, Withdrawal, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DEBIT",
+        "posted": "2023-09-18 00:00:00+00:00",
+        "amount": "-10.00",
+        "fitid": "1549845273",
+        "name": "Tfr to ***6997 Internet Banking",
+        "memo": "InternetBanking, Telephone, Withdrawal, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DEBIT",
+        "posted": "2023-09-18 00:00:00+00:00",
+        "amount": "-10.00",
+        "fitid": "1549845274",
+        "name": "Tfr to ***6996 Internet Banking",
+        "memo": "InternetBanking, Telephone, Withdrawal, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DEBIT",
+        "posted": "2023-09-20 00:00:00+00:00",
+        "amount": "-17.30",
+        "fitid": "1551221321",
+        "name": "INST XFER PAYPAL IDPAYPALSI77 In",
+        "memo": "ACH, Withdrawal, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DEBIT",
+        "posted": "2023-09-25 00:00:00+00:00",
+        "amount": "-10.00",
+        "fitid": "1555257323",
+        "name": "Tfr to ***6997 Internet Banking",
+        "memo": "InternetBanking, Telephone, Withdrawal, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DEBIT",
+        "posted": "2023-09-25 00:00:00+00:00",
+        "amount": "-10.00",
+        "fitid": "1555257324",
+        "name": "Tfr to ***6996 Internet Banking",
+        "memo": "InternetBanking, Telephone, Withdrawal, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "CHECK",
+        "posted": "2023-09-25 00:00:00+00:00",
+        "amount": "-205.00",
+        "fitid": "1555257325",
+        "name": "Check # 1568",
+        "memo": "Check, Draft, Withdrawal, Processed",
+        "checknum": "1568"
+    },
+    {
+        "type": "DIRECTDEP",
+        "posted": "2023-09-28 00:00:00+00:00",
+        "amount": "3579.14",
+        "fitid": "1557162116",
+        "name": "DIRECT DEP SHAPE SECURITY I ID91",
+        "memo": "ACH, Deposit, Processed",
+        "checknum": ""
+    },
+    {
+        "type": "DIV",
+        "posted": "2023-09-30 00:00:00+00:00",
+        "amount": "19.03",
+        "fitid": "1559255610",
+        "name": "Dividend Credit",
+        "memo": "Dividend, Interest, Deposit, Processed",
+        "checknum": ""
+    }
+]
