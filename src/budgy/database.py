@@ -27,7 +27,8 @@ class BudgyDatabase(object):
                   f'amount FLOAT, ' \
                   f'name TEXT, ' \
                   f'memo TEXT, ' \
-                  f'checknum TEXT ' \
+                  f'checknum TEXT, ' \
+                  f'category TEXT' \
                   f');'
             result = self.execute(sql)
             logging.debug(f'Create Table Result: {result}')
@@ -65,14 +66,15 @@ class BudgyDatabase(object):
             'amount': row[4],
             'name': row[5],
             'memo': row[6],
-            'checknum': checknum
+            'checknum': checknum,
+            'category': row[8]
         }
 
     def insert_record(self, record):
         checknum = "" if record['checknum'] is None else record['checknum']
-        sql = f'INSERT INTO {self.TABLE_NAME} (fitid, account, type, posted, amount, name, memo, checknum) ' \
+        sql = f'INSERT INTO {self.TABLE_NAME} (fitid, account, type, posted, amount, name, memo, checknum, category) ' \
               f'VALUEs ({record["fitid"]}, "{record["account"]}", "{record["type"]}", "{record["posted"]}", ' \
-              f'{record["amount"]}, "{record["name"]}", "{record["memo"]}", "{checknum}" );'
+              f'{record["amount"]}, "{record["name"]}", "{record["memo"]}", "{checknum}", "{record["category"]}" );'
         result = self.execute(sql)
         self.connection.commit()
 

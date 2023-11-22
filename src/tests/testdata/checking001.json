@@ -7,7 +7,8 @@
         "account": "MyCheckingAccount",
         "name": "CHASE ACH JPMORGAN CHASE ID90081",
         "memo": "ACH, Withdrawal, Processed",
-        "checknum": null
+        "checknum": null,
+        "category": ""
     },
     {
         "type": "CHECK",
@@ -17,7 +18,8 @@
         "account": "MyCheckingAccount",
         "name": "Check # 1566",
         "memo": "Check, Draft, Withdrawal, Processed",
-        "checknum": "1566"
+        "checknum": "1566",
+        "category": ""
     },
     {
         "type": "ATM",
@@ -27,7 +29,8 @@
         "account": "MyCheckingAccount",
         "name": "Withdrawal PROVIDENT CU,15425 LO",
         "memo": "ATM, Withdrawal, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DEBIT",
@@ -37,7 +40,8 @@
         "account": "MyCheckingAccount",
         "name": "Tfr to ***3074 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DEBIT",
@@ -47,7 +51,8 @@
         "account": "MyCheckingAccount",
         "name": "Tfr to ***6996 college living ex",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DEBIT",
@@ -57,7 +62,8 @@
         "account": "MyCheckingAccount",
         "name": "Tfr to ***6996 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DEBIT",
@@ -67,7 +73,8 @@
         "account": "MyCheckingAccount",
         "name": "Tfr to ***6997 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DIRECTDEP",
@@ -77,7 +84,8 @@
         "account": "MyCheckingAccount",
         "name": "TRANSFER PAYPAL IDPAYPALSD11",
         "memo": "ACH, Deposit, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DEBIT",
@@ -87,7 +95,8 @@
         "account": "MyCheckingAccount",
         "name": "INST XFER PAYPAL IDPAYPALSI77 In",
         "memo": "ACH, Withdrawal, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DEBIT",
@@ -97,7 +106,8 @@
         "account": "MyCheckingAccount",
         "name": "INST XFER PAYPAL IDPAYPALSI77 In",
         "memo": "ACH, Withdrawal, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DEP",
@@ -107,7 +117,8 @@
         "account": "MyCheckingAccount",
         "name": "SB Check/Cash Deposit - Providen",
         "memo": "Deposit, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DIRECTDEP",
@@ -117,7 +128,8 @@
         "account": "MyCheckingAccount",
         "name": "PAYROLL MIDORI NISHIMURA ID90024",
         "memo": "ACH, Deposit, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DEBIT",
@@ -127,7 +139,8 @@
         "account": "MyCheckingAccount",
         "name": "INVESTMENT VANGUARD BUY IDVMC PU",
         "memo": "ACH, Withdrawal, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DIRECTDEP",
@@ -137,7 +150,8 @@
         "account": "MyCheckingAccount",
         "name": "DEPOSIT CA DIR ACH ID3680440016",
         "memo": "ACH, Deposit, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DIRECTDEP",
@@ -147,7 +161,8 @@
         "account": "MyCheckingAccount",
         "name": "DEPOSIT CA DIR ACH ID3680440016",
         "memo": "ACH, Deposit, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DEBIT",
@@ -157,7 +172,8 @@
         "account": "MyCheckingAccount",
         "name": "UC Merced Univ CA Merced ID12700",
         "memo": "ACH, Withdrawal, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DEBIT",
@@ -167,7 +183,8 @@
         "account": "MyCheckingAccount",
         "name": "Tfr to ***6996 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DEBIT",
@@ -177,7 +194,8 @@
         "account": "MyCheckingAccount",
         "name": "Tfr to ***6997 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DEBIT",
@@ -187,7 +205,8 @@
         "account": "MyCheckingAccount",
         "name": "INST XFER PAYPAL IDPAYPALSI77 In",
         "memo": "ACH, Withdrawal, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DIRECTDEP",
@@ -197,7 +216,8 @@
         "account": "MyCheckingAccount",
         "name": "TRANSFER PAYPAL IDPAYPALSD11",
         "memo": "ACH, Deposit, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DIRECTDEP",
@@ -207,7 +227,8 @@
         "account": "MyCheckingAccount",
         "name": "DIRECT DEP SHAPE SECURITY I ID91",
         "memo": "ACH, Deposit, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DEBIT",
@@ -217,7 +238,8 @@
         "account": "MyCheckingAccount",
         "name": "CONTRIB CA DIR ACH ID2680440016",
         "memo": "ACH, Withdrawal, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DEBIT",
@@ -227,7 +249,8 @@
         "account": "MyCheckingAccount",
         "name": "CONTRIB CA DIR ACH ID2680440016",
         "memo": "ACH, Withdrawal, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DEBIT",
@@ -237,7 +260,8 @@
         "account": "MyCheckingAccount",
         "name": "Tfr to ***6997 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DEBIT",
@@ -247,7 +271,8 @@
         "account": "MyCheckingAccount",
         "name": "Tfr to ***6996 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DEBIT",
@@ -257,7 +282,8 @@
         "account": "MyCheckingAccount",
         "name": "INST XFER PAYPAL IDPAYPALSI77 In",
         "memo": "ACH, Withdrawal, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DEBIT",
@@ -267,7 +293,8 @@
         "account": "MyCheckingAccount",
         "name": "Tfr to ***6997 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DEBIT",
@@ -277,7 +304,8 @@
         "fitid": "1555257324",
         "name": "Tfr to ***6996 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "CHECK",
@@ -287,7 +315,8 @@
         "account": "MyCheckingAccount",
         "name": "Check # 1568",
         "memo": "Check, Draft, Withdrawal, Processed",
-        "checknum": "1568"
+        "checknum": "1568",
+        "category": ""
     },
     {
         "type": "DIRECTDEP",
@@ -297,7 +326,8 @@
         "account": "MyCheckingAccount",
         "name": "DIRECT DEP SHAPE SECURITY I ID91",
         "memo": "ACH, Deposit, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     },
     {
         "type": "DIV",
@@ -307,6 +337,7 @@
         "account": "MyCheckingAccount",
         "name": "Dividend Credit",
         "memo": "Dividend, Interest, Deposit, Processed",
-        "checknum": ""
+        "checknum": "",
+        "category": ""
     }
 ]
