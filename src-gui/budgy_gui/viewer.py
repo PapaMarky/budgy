@@ -14,7 +14,7 @@ import budgy_gui
 
 from budgy_gui.data_panel import DataPanel
 from budgy_gui.configdata import BudgyConfig
-from budgy_gui.data_panel import SELECT_DATABASE, OPEN_DATABASE
+from budgy_gui.events import SELECT_DATABASE, OPEN_DATABASE
 
 class BudgyViewerApp(GuiApp):
 

@@ -4,14 +4,10 @@ import pygame
 import pygame_gui
 from pygame_gui.core import ObjectID
 from pygame_gui.elements import UIPanel, UILabel, UIButton, UITextEntryLine, UIProgressBar
-from pygame.event import custom_type
+
+from budgy_gui.events import OPEN_DATABASE, SELECT_DATABASE,  SELECT_SOURCE_FILE, LOAD_DATA_SOURCE
 
 from budgy.database import BudgyDatabase
-
-OPEN_DATABASE = custom_type()
-LOAD_DATA_SOURCE = custom_type()
-SELECT_DATABASE = custom_type()
-SELECT_SOURCE_FILE = custom_type()
 
 class DataPanel(UIPanel):
     PROGRESS_LABEL_WIDTH = 175
