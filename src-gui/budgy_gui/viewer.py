@@ -4,11 +4,13 @@ from pathlib import Path
 import pygame
 import pygame_gui
 from pygame_gui.windows import UIFileDialog, UIMessageWindow
+from pygame_gui_extras.app import GuiApp
+from pygame_gui.elements import UIPanel, UIButton
 
 from budgy import BudgyDatabase
 from budgy_gui import __version__ as package_version
-from pygame_gui_extras.app import GuiApp
-from pygame_gui.elements import UIPanel, UIButton
+
+import budgy_gui
 
 from budgy_gui.data_panel import DataPanel
 from budgy_gui.configdata import BudgyConfig
@@ -19,6 +21,12 @@ class BudgyViewerApp(GuiApp):
     def __init__(self, size=(1280, 960)):
         self._title = f'Budgy Data Viewer: v{package_version}'
         self._args = self._parse_args()
+        themes_file = budgy_gui.get_themes_file_path('theme.json')
+        print(f'themes file: {themes_file}')
+        if themes_file:
+            self.ui_manager.get_theme().load_theme(themes_file)
+        else:
+            print(f'WARNING: theme file not found')
         super().__init__(size, title=self._title)
         self._quit_button:UIButton = None
         self._margin = 2
