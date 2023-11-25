@@ -13,6 +13,7 @@ from budgy_gui import __version__ as package_version
 import budgy_gui
 
 from budgy_gui.data_panel import DataPanel
+from budgy_gui.top_panel import TopPanel
 from budgy_gui.configdata import BudgyConfig
 from budgy_gui.events import SELECT_DATABASE, OPEN_DATABASE
 
@@ -29,10 +30,7 @@ class BudgyViewerApp(GuiApp):
             print(f'WARNING: theme file not found')
         super().__init__(size, title=self._title)
         self._quit_button:UIButton = None
-        self._margin = 2
-        self._button_width = 100
-        self._button_height = 35
-        self._button_rect = pygame.Rect(0, 0, self._button_width, self._button_height)
+        self._button_rect = pygame.Rect(0, 0, budgy_gui.BUTTON_WIDTH, budgy_gui.BUTTON_HEIGHT)
         self._database:BudgyDatabase = None
         self._config = BudgyConfig()
 
@@ -41,33 +39,24 @@ class BudgyViewerApp(GuiApp):
         return self._config.config_dict['database']['path']
 
     def setup(self):
-        button_pane = UIPanel(
-            pygame.Rect(0, 0, self.size[0], self._button_height + (3 * self._margin)), 1,
+        self.top_panel = TopPanel(
+            self._config.config_dict,
+            pygame.Rect(0, 0, self.size[0], 2 * budgy_gui.BUTTON_HEIGHT + (3 * budgy_gui.MARGIN)),
+            1,
             anchors={
                 'top': 'top', 'left': 'left',
                 'bottom': 'top', 'right': 'right'
             },
-            margins={'top': self._margin, 'left': self._margin,
-                     'bottom': self._margin, 'right': self._margin},
+            margins={'top': budgy_gui.MARGIN, 'left': budgy_gui.MARGIN,
+                     'bottom': budgy_gui.MARGIN, 'right': budgy_gui.MARGIN},
             manager=self.ui_manager
         )
-        x = -self._button_width
-        y = 0
-        self._quit_button = UIButton(
-            pygame.Rect(x, y, self._button_width, self._button_height),
-            'Exit',
-            manager=self.ui_manager,
-            container=button_pane,
-            anchors={
-                'top': 'top', 'left': 'right',
-                'bottom': 'top', 'right': 'right'
-            }
-        )
 
+    def xxxx(self):
         self._data_panel = DataPanel(
             self._config.config_dict,
-            pygame.Rect(0, button_pane.get_relative_rect().bottom,
-                        self.size[0], self.size[1] - button_pane.get_relative_rect().height),
+            pygame.Rect(0, self.top_panel.get_relative_rect().bottom,
+                        self.size[0], self.size[1] - self.top_panel.get_relative_rect().height),
             1,
             anchors={
                 'top': 'top', 'left': 'left',

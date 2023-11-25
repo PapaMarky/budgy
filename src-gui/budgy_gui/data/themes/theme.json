@@ -5,8 +5,8 @@
       "bold": "0",
       "italic": "0",
       "name": "fira_mono",
-      "regular_resource": { "package": "applehealthtool.data.fonts", "resource": "FiraMono-Regular.ttf"},
-      "bold_resource": { "package": "applehealthtool.data.fonts", "resource": "FiraMono-Bold.ttf"}
+      "regular_resource": { "package": "budgy_gui.data.fonts", "resource": "FiraMono-Regular.ttf"},
+      "bold_resource": { "package": "budgy_gui.data.fonts", "resource": "FiraMono-Bold.ttf"}
     }
   },
   "text_entry_line": {
@@ -35,6 +35,9 @@
   },
   "#data-label": {
     "prototype": "@bold-16",
+    "colours": {
+      "dark_bg": "#ff0000"
+    },
     "misc": {
       "text_horiz_alignment": "left",
       "text_horiz_alignment_padding": "10",
@@ -51,12 +54,20 @@
   },
   "@label_left": {
     "misc": {
-      "text_horiz_alignment": "left"
+      "text_horiz_alignment": "left",
+      "text_vert_alignment": "center"
+    }
+  },
+  "@label_right": {
+    "misc": {
+      "text_horiz_alignment": "right",
+      "text_vert_alignment": "center"
     }
   },
   "@label_center": {
     "misc": {
-      "text_horiz_alignment": "center"
+      "text_horiz_alignment": "center",
+      "text_vert_alignment": "center"
     }
   }
 }

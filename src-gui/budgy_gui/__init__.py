@@ -5,6 +5,9 @@ import os
 from budgy_gui import configdata
 from budgy_gui import data_panel
 
+BUTTON_WIDTH = 100
+BUTTON_HEIGHT = 35
+MARGIN = 2
 
 install_path = os.path.dirname(__file__)
 _data_dir = os.path.join(install_path, 'data')
