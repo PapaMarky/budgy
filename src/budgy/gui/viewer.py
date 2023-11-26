@@ -8,21 +8,21 @@ from pygame_gui_extras.app import GuiApp
 from pygame_gui.elements import UIPanel, UIButton
 
 from budgy import BudgyDatabase
-from budgy_gui import __version__ as package_version
+from budgy.gui import __version__ as package_version
 
-import budgy_gui
+import budgy.gui
 
-from budgy_gui.data_panel import DataPanel
-from budgy_gui.top_panel import TopPanel
-from budgy_gui.configdata import BudgyConfig
-from budgy_gui.events import SELECT_DATABASE, OPEN_DATABASE
+from budgy.gui.data_panel import DataPanel
+from budgy.gui.top_panel import TopPanel
+from budgy.gui.configdata import BudgyConfig
+from budgy.gui.events import SELECT_DATABASE, OPEN_DATABASE
 
 class BudgyViewerApp(GuiApp):
 
     def __init__(self, size=(1280, 960)):
         self._title = f'Budgy Data Viewer: v{package_version}'
         self._args = self._parse_args()
-        themes_file = budgy_gui.get_themes_file_path('theme.json')
+        themes_file = budgy.gui.get_themes_file_path('theme.json')
         print(f'themes file: {themes_file}')
         if themes_file:
             self.ui_manager.get_theme().load_theme(themes_file)
@@ -30,7 +30,7 @@ class BudgyViewerApp(GuiApp):
             print(f'WARNING: theme file not found')
         super().__init__(size, title=self._title)
         self._quit_button:UIButton = None
-        self._button_rect = pygame.Rect(0, 0, budgy_gui.BUTTON_WIDTH, budgy_gui.BUTTON_HEIGHT)
+        self._button_rect = pygame.Rect(0, 0, budgy.gui.BUTTON_WIDTH, budgy.gui.BUTTON_HEIGHT)
         self._database:BudgyDatabase = None
         self._config = BudgyConfig()
 
@@ -41,14 +41,14 @@ class BudgyViewerApp(GuiApp):
     def setup(self):
         self.top_panel = TopPanel(
             self._config.config_dict,
-            pygame.Rect(0, 0, self.size[0], 2 * budgy_gui.BUTTON_HEIGHT + (3 * budgy_gui.MARGIN)),
+            pygame.Rect(0, 0, self.size[0], 2 * budgy.gui.BUTTON_HEIGHT + (3 * budgy.gui.MARGIN)),
             1,
             anchors={
                 'top': 'top', 'left': 'left',
                 'bottom': 'top', 'right': 'right'
             },
-            margins={'top': budgy_gui.MARGIN, 'left': budgy_gui.MARGIN,
-                     'bottom': budgy_gui.MARGIN, 'right': budgy_gui.MARGIN},
+            margins={'top': budgy.gui.MARGIN, 'left': budgy.gui.MARGIN,
+                     'bottom': budgy.gui.MARGIN, 'right': budgy.gui.MARGIN},
             manager=self.ui_manager
         )
 

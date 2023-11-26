@@ -6,9 +6,9 @@ logging.basicConfig(handlers=[logging.StreamHandler(), logging.FileHandler('budg
 
 from pathlib import Path
 
-import budgy
-from budgy.app import BudgyApp
-from budgy import BudgyDatabase
+from budgy.core.app import BudgyApp
+from budgy.core.database import BudgyDatabase
+from budgy.core import load_ofx_file
 
 class ImporterApp(BudgyApp):
     def __init__(self):
@@ -27,7 +27,7 @@ class ImporterApp(BudgyApp):
             logging.info(f'Database already contains {nrecords0} records')
         for datafile in self._args.datafiles:
             logging.info(f'Importing {datafile}...')
-            records = budgy.load_ofx_file(datafile)
+            records = load_ofx_file(datafile)
             self._db.merge_records(records)
         nrecords1 = self._db.count_records()
         logging.info(f'Database now contains {nrecords1} records')

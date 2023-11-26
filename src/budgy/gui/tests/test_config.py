@@ -1,6 +1,6 @@
 import unittest
 from pathlib import Path
-from budgy_gui.configdata import BudgyConfig
+from budgy.gui.configdata import BudgyConfig
 import pytest
 
 class MyTestCase(unittest.TestCase):

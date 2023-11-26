@@ -3,11 +3,11 @@ from unittest.mock import patch
 import logging
 import os
 import sys
-from budgy import importer
+from budgy.core import importer
 
 logger = logging.getLogger()
 
-class MyTestCase(unittest.TestCase):
+class ImporterTestCase(unittest.TestCase):
     DATADIR = os.path.join(os.path.dirname(__file__), 'testdata')
     DB_PATH = os.path.abspath('./test_importer.db')
 

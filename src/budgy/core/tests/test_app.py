@@ -4,7 +4,7 @@ import logging
 from unittest.mock import patch
 import sys, io
 
-from budgy.app import BudgyApp
+from budgy.core.app import BudgyApp
 logger = logging.getLogger()
 class MyTestCase(unittest.TestCase):
     def test_create(self):

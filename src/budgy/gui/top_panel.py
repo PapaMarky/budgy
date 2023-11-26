@@ -1,4 +1,4 @@
-import budgy_gui
+import budgy.gui
 import pygame
 from pygame_gui.elements import UIPanel, UILabel
 from pygame_gui.core import ObjectID
@@ -10,9 +10,9 @@ class TopPanel(UIPanel):
         self.budgy_config:dict = config_in
         super().__init__(*args, **kwargs)
         # Add: Records: NNNNNN
-        y = budgy_gui.MARGIN
+        y = budgy.gui.MARGIN
         label1 = UILabel(
-            pygame.Rect(0, y, self.TEXT_WIDTH, budgy_gui.BUTTON_HEIGHT),
+            pygame.Rect(0, y, self.TEXT_WIDTH, budgy.gui.BUTTON_HEIGHT),
             'Record Count:',
             self.ui_manager,
             anchors={
@@ -23,10 +23,10 @@ class TopPanel(UIPanel):
             object_id=ObjectID(class_id='@data-label',
                                object_id='@bold')
         )
-        y += budgy_gui.MARGIN + budgy_gui.BUTTON_HEIGHT
+        y += budgy.gui.MARGIN + budgy.gui.BUTTON_HEIGHT
         # Add: Data Range: YYYY-MM-DD to YYYY-MM-DD
         label2 = UILabel(
-            pygame.Rect(0, y, self.TEXT_WIDTH, budgy_gui.BUTTON_HEIGHT),
+            pygame.Rect(0, y, self.TEXT_WIDTH, budgy.gui.BUTTON_HEIGHT),
             'Data Range:',
             self.ui_manager,
             anchors={

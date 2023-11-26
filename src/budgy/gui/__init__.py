@@ -1,9 +1,7 @@
-__version__='0.0.1'
-
 import os
 
-from budgy_gui import configdata
-from budgy_gui import data_panel
+from budgy.gui import configdata
+from budgy.gui import data_panel
 
 BUTTON_WIDTH = 100
 BUTTON_HEIGHT = 35

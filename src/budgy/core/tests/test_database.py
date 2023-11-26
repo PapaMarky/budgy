@@ -2,7 +2,7 @@ import datetime
 import json
 import os.path
 import unittest
-from budgy import BudgyDatabase
+from budgy.core.database import BudgyDatabase
 class TestDatabase(unittest.TestCase):
     TEST_DB = './TESTBUDGY.db'
     DATADIR = os.path.join(os.path.dirname(__file__), 'testdata')

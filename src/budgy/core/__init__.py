@@ -1,5 +1,3 @@
-__version__='1.0.1'
-
 import logging
 from pathlib import Path
 
@@ -10,8 +8,6 @@ ofxtools_logger = logging.getLogger('ofxtools')
 ofxtools_logger.setLevel(logging.ERROR)
 ofxparser_logger = logging.getLogger('ofxtools.Parser')
 ofxparser_logger.setLevel(logging.ERROR)
-from budgy.database import BudgyDatabase
-from budgy import importer
 
 
 def load_ofx_file(ofxfile:Path):

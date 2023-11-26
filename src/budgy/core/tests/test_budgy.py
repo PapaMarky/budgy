@@ -4,23 +4,24 @@ import unittest
 import pytest
 
 import budgy
+from budgy.core import load_ofx_file
 
-class MyTestCase(unittest.TestCase):
+class BudgyTestCase(unittest.TestCase):
     DATADIR = os.path.join(os.path.dirname(__file__), 'testdata')
     TEST_ID = 'test_id'
     OFX_CHECKING = 'checking.qfx'
 
     def test_version(self):
-        version = budgy.__version__
+        version = budgy.version.__version__
         self.assertIsInstance(version, str)
 
     def test_import(self):
-        records = budgy.load_ofx_file(self.OFX_CHECKING)
+        records = load_ofx_file(self.OFX_CHECKING)
         self.assertIsNotNone(records)
         self.assertEqual(len(records), 31)
 
         with pytest.raises(FileNotFoundError):
-            records = budgy.load_ofx_file('badfile')
+            records = load_ofx_file('badfile')
 
     @classmethod
     def setUpClass(cls) -> None:

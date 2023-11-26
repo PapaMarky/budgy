@@ -5,8 +5,8 @@
       "bold": "0",
       "italic": "0",
       "name": "fira_mono",
-      "regular_resource": { "package": "budgy_gui.data.fonts", "resource": "FiraMono-Regular.ttf"},
-      "bold_resource": { "package": "budgy_gui.data.fonts", "resource": "FiraMono-Bold.ttf"}
+      "regular_resource": { "package": "budgy.gui.data.fonts", "resource": "FiraMono-Regular.ttf"},
+      "bold_resource": { "package": "budgy.gui.data.fonts", "resource": "FiraMono-Bold.ttf"}
     }
   },
   "text_entry_line": {
