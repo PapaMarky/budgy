@@ -6,7 +6,7 @@ import sys, io
 
 from budgy.core.app import BudgyApp
 logger = logging.getLogger()
-class MyTestCase(unittest.TestCase):
+class AppTestCase(unittest.TestCase):
     def test_create(self):
         testargs = ['prog']
         with patch.object(sys, 'argv', testargs):

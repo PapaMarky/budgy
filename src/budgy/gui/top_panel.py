@@ -11,17 +11,31 @@ class TopPanel(UIPanel):
         super().__init__(*args, **kwargs)
         # Add: Records: NNNNNN
         y = budgy.gui.MARGIN
+        x = budgy.gui.MARGIN
         label1 = UILabel(
             pygame.Rect(0, y, self.TEXT_WIDTH, budgy.gui.BUTTON_HEIGHT),
             'Record Count:',
             self.ui_manager,
             anchors={
                 'top': 'top', 'left': 'left',
-                'bottom': 'bottom', 'right': 'right'
+                'bottom': 'top', 'right': 'left'
             },
             container=self,
             object_id=ObjectID(class_id='#data-label',
                                object_id='@bold-16')
+        )
+        w = self.relative_rect.width - label1.relative_rect.width
+        x = self.TEXT_WIDTH + budgy.gui.MARGIN
+        self.nrecords_field = UILabel(
+            pygame.Rect(x, y, w, budgy.gui.BUTTON_HEIGHT),
+            'No Database',
+            self.ui_manager,
+            anchors={
+                'top': 'top', 'left': 'left',
+                'bottom': 'top', 'right': 'right'
+            },
+            container=self,
+            object_id=ObjectID(class_id='#data-text')
         )
         y += budgy.gui.MARGIN + budgy.gui.BUTTON_HEIGHT
         # Add: Data Range: YYYY-MM-DD to YYYY-MM-DD
@@ -31,18 +45,30 @@ class TopPanel(UIPanel):
             self.ui_manager,
             anchors={
                 'top': 'top', 'left': 'left',
-                'bottom': 'top', 'right': 'right'
+                'bottom': 'top', 'right': 'left'
             },
             container=self,
             object_id=ObjectID(class_id='#data-label',
                                object_id='@bold-16')
         )
+        self.date_range_field = UILabel(
+            pygame.Rect(x, y, w, budgy.gui.BUTTON_HEIGHT),
+            'YYYY-MM-DD to YYYY-MM-DD',
+            self.ui_manager,
+            anchors={
+                'top': 'top', 'left': 'left',
+                'bottom': 'top', 'right': 'right'
+            },
+            container=self,
+            object_id=ObjectID(class_id='#data-text')
+        )
 
 
         # Add: Function DropDown
 
+
     def set_record_count(self, count):
-        pass
+        self.nrecords_field.set_text(f'{count}')
 
     def set_data_range(self, first_date, last_date):
         pass
