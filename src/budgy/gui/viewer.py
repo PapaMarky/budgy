@@ -3,12 +3,13 @@ from pathlib import Path
 
 import pygame
 import pygame_gui
+from pygame_gui.core import ObjectID
 from pygame_gui.windows import UIFileDialog, UIMessageWindow
 from pygame_gui_extras.app import GuiApp
 from pygame_gui.elements import UIPanel, UIButton
 
-from budgy import BudgyDatabase
-from budgy.gui import __version__ as package_version
+from budgy.core.database import BudgyDatabase
+from budgy.version import __version__ as package_version
 
 import budgy.gui
 
@@ -21,14 +22,14 @@ class BudgyViewerApp(GuiApp):
 
     def __init__(self, size=(1280, 960)):
         self._title = f'Budgy Data Viewer: v{package_version}'
+        super().__init__(size, title=self._title)
         self._args = self._parse_args()
         themes_file = budgy.gui.get_themes_file_path('theme.json')
         print(f'themes file: {themes_file}')
         if themes_file:
-            self.ui_manager.get_theme().load_theme(themes_file)
+            self._ui_manager.get_theme().load_theme(themes_file)
         else:
             print(f'WARNING: theme file not found')
-        super().__init__(size, title=self._title)
         self._quit_button:UIButton = None
         self._button_rect = pygame.Rect(0, 0, budgy.gui.BUTTON_WIDTH, budgy.gui.BUTTON_HEIGHT)
         self._database:BudgyDatabase = None
@@ -39,9 +40,11 @@ class BudgyViewerApp(GuiApp):
         return self._config.config_dict['database']['path']
 
     def setup(self):
+        tp_height = (2 * budgy.gui.BUTTON_HEIGHT) + (6 * budgy.gui.MARGIN)
         self.top_panel = TopPanel(
             self._config.config_dict,
-            pygame.Rect(0, 0, self.size[0], 2 * budgy.gui.BUTTON_HEIGHT + (3 * budgy.gui.MARGIN)),
+            pygame.Rect(0, 0,
+                        self.size[0], tp_height),
             1,
             anchors={
                 'top': 'top', 'left': 'left',
@@ -49,7 +52,8 @@ class BudgyViewerApp(GuiApp):
             },
             margins={'top': budgy.gui.MARGIN, 'left': budgy.gui.MARGIN,
                      'bottom': budgy.gui.MARGIN, 'right': budgy.gui.MARGIN},
-            manager=self.ui_manager
+            manager=self.ui_manager,
+            object_id=ObjectID(class_id='#top-panel')
         )
 
     def xxxx(self):

@@ -23,6 +23,10 @@ def get_data_file_path(file_name):
 _themes_dir = os.path.join(_data_dir, 'themes')
 
 def get_themes_dir():
+    print(f'        File: {__file__}')
+    print(f'Install Path: {install_path}')
+    print(f'    Data Dir: {_data_dir}')
+    print(f'  Themes Dir: {_themes_dir}')
     return _themes_dir if os.path.exists(_themes_dir) else None
 
 def get_themes_file_path(file_name):

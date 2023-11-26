@@ -33,13 +33,20 @@
       "text_vert_alignment": "center"
     }
   },
-  "#data-label": {
-    "prototype": "@bold-16",
+  "#top-panel": {
     "colours": {
-      "dark_bg": "#ff0000"
+      "xdark_bg": "#0000ff",
+      "xnormal_border": "#c5cbd8"
+    }
+  },
+  "#data-label": {
+    "prototype": "@bold",
+    "colours": {
+      "xdark_bg": "#ffffff",
+      "xnormal_text": "#c5cbd8"
     },
     "misc": {
-      "text_horiz_alignment": "left",
+      "text_horiz_alignment": "right",
       "text_horiz_alignment_padding": "10",
       "text_vert_alignment": "center"
     }

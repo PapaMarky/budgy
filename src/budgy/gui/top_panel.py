@@ -5,7 +5,7 @@ from pygame_gui.core import ObjectID
 
 class TopPanel(UIPanel):
     LABLE_WIDTH = 100
-    TEXT_WIDTH = 500
+    TEXT_WIDTH = 175
     def __init__(self, config_in, *args, **kwargs):
         self.budgy_config:dict = config_in
         super().__init__(*args, **kwargs)
@@ -17,11 +17,11 @@ class TopPanel(UIPanel):
             self.ui_manager,
             anchors={
                 'top': 'top', 'left': 'left',
-                'bottom': 'top', 'right': 'right'
+                'bottom': 'bottom', 'right': 'right'
             },
             container=self,
-            object_id=ObjectID(class_id='@data-label',
-                               object_id='@bold')
+            object_id=ObjectID(class_id='#data-label',
+                               object_id='@bold-16')
         )
         y += budgy.gui.MARGIN + budgy.gui.BUTTON_HEIGHT
         # Add: Data Range: YYYY-MM-DD to YYYY-MM-DD
@@ -34,8 +34,8 @@ class TopPanel(UIPanel):
                 'bottom': 'top', 'right': 'right'
             },
             container=self,
-            object_id=ObjectID(class_id='@data-label',
-                               object_id='@bold')
+            object_id=ObjectID(class_id='#data-label',
+                               object_id='@bold-16')
         )
 
 
