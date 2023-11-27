@@ -3,7 +3,7 @@ from pathlib import Path
 from budgy.gui.configdata import BudgyConfig
 import pytest
 
-class ConfigTestCase(unittest.TestCase):
+class MyTestCase(unittest.TestCase):
     def test_create(self):
         config = BudgyConfig()
         self.assertIsNotNone(config)
