@@ -2,6 +2,7 @@ import budgy.gui
 import pygame
 from pygame_gui.elements import UIPanel, UILabel
 from pygame_gui.core import ObjectID
+from datetime import datetime
 
 class TopPanel(UIPanel):
     LABLE_WIDTH = 100
@@ -63,6 +64,7 @@ class TopPanel(UIPanel):
             object_id=ObjectID(class_id='#data-text')
         )
 
+        self.set_data_range(datetime.now(), datetime.now())
 
         # Add: Function DropDown
 
@@ -70,5 +72,7 @@ class TopPanel(UIPanel):
     def set_record_count(self, count):
         self.nrecords_field.set_text(f'{count}')
 
-    def set_data_range(self, first_date, last_date):
-        pass
+    def set_data_range(self, first_date:datetime, last_date:datetime):
+        start_date = first_date.strftime('%Y-%m-%d')
+        end_date = last_date.strftime('%Y-%m-%d')
+        self.date_range_field.set_text(f'{start_date} - {end_date}')
