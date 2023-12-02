@@ -39,6 +39,30 @@
       "xnormal_border": "#c5cbd8"
     }
   },
+  "#function-panel": {
+    "colours": {
+      "dark_bg": "#808080",
+      "xnormal_border": "#000000"
+    }
+  },
+  "@function-subpanel": {
+    "colours": {
+      "dark_bg": "#555555",
+      "normal_border": "#000000"
+    }
+  },
+  "#data-panel": {
+    "colours": {
+      "xdark_bg": "#555555",
+      "normal_border": "#ffffff"
+    }
+  },
+  "#report-panel": {
+    "colours": {
+      "dark_bg": "#555555",
+      "normal_border": "#ffffff"
+    }
+  },
   "#data-label": {
     "prototype": "@bold",
     "colours": {

@@ -4,12 +4,14 @@ from pygame_gui.elements import UIPanel, UILabel, UIDropDownMenu
 from pygame_gui.core import ObjectID
 from datetime import datetime
 
+from budgy.gui.configdata import BudgyConfig
+
 class TopPanel(UIPanel):
     LABLE_WIDTH = 100
     TEXT_WIDTH = 175
     DROP_DOWN_WIDTH = 200
-    def __init__(self, config_in, *args, **kwargs):
-        self.budgy_config:dict = config_in
+    def __init__(self, config_in:BudgyConfig, *args, **kwargs):
+        self.budgy_config:BudgyConfig = config_in
         super().__init__(*args, **kwargs)
         # Add: Records: NNNNNN
         y = budgy.gui.MARGIN

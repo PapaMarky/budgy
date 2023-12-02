@@ -13,8 +13,9 @@ from budgy.version import __version__ as package_version
 
 import budgy.gui
 
-from budgy.gui.data_panel import DataPanel
+from budgy.gui.data_panel import BudgyDataPanel
 from budgy.gui.top_panel import TopPanel
+from budgy.gui.function_panel import BudgyFunctionPanel
 from budgy.gui.configdata import BudgyConfig
 from budgy.gui.events import SELECT_DATABASE, OPEN_DATABASE
 
@@ -31,9 +32,9 @@ class BudgyViewerApp(GuiApp):
         else:
             print(f'WARNING: theme file not found')
         self._quit_button:UIButton = None
-        self._button_rect = pygame.Rect(0, 0, budgy.gui.BUTTON_WIDTH, budgy.gui.BUTTON_HEIGHT)
+        self._button_rect:pygame.Rect = pygame.Rect(0, 0, budgy.gui.BUTTON_WIDTH, budgy.gui.BUTTON_HEIGHT)
         self._database:BudgyDatabase = None
-        self._config = BudgyConfig()
+        self._config:BudgyConfig = BudgyConfig()
 
     @property
     def database_path(self):
@@ -41,8 +42,9 @@ class BudgyViewerApp(GuiApp):
 
     def setup(self):
         tp_height = (2 * budgy.gui.BUTTON_HEIGHT) + (6 * budgy.gui.MARGIN)
+        sp_height = tp_height
         self.top_panel = TopPanel(
-            self._config.config_dict,
+            self._config,
             pygame.Rect(0, 0,
                         self.size[0], tp_height),
             1,
@@ -56,18 +58,22 @@ class BudgyViewerApp(GuiApp):
             object_id=ObjectID(class_id='#top-panel')
         )
 
-    def xxxx(self):
-        self._data_panel = DataPanel(
-            self._config.config_dict,
-            pygame.Rect(0, self.top_panel.get_relative_rect().bottom,
-                        self.size[0], self.size[1] - self.top_panel.get_relative_rect().height),
-            1,
-            anchors={
-                'top': 'top', 'left': 'left',
-                'bottom': 'bottom', 'right': 'right'
-            },
-            manager=self.ui_manager,
-        )
+        x = 0
+        y = self.top_panel.relative_rect.bottom
+        w = self.size[0]
+        h = (self.size[1] - (tp_height + sp_height))
+        function_panel_rect = pygame.Rect(x, y, w, h)
+        self.function_panel = \
+            BudgyFunctionPanel(self._config,
+                               function_panel_rect,
+                               starting_height=1,
+                               manager=self.ui_manager,
+                               anchors={
+                                   'top': 'top', 'left': 'left',
+                                   'bottom': 'bottom', 'right': 'right'
+                               },
+                               object_id=ObjectID(object_id='#function-panel')
+                               )
 
     def handle_event(self, event):
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
@@ -79,6 +85,20 @@ class BudgyViewerApp(GuiApp):
         elif event.type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
             if event.ui_element == self.top_panel.drop_down_menu:
                 print(f'New Function: {event.text}')
+                if event.text == 'Report Functions':
+                    self.function_panel.show_subpanel('report')
+                    return True
+                if event.text == 'Data Functions':
+                    self.function_panel.show_subpanel('data')
+                    return True
+                if event.text == 'Exit':
+                    self.is_running = False
+                    self.on_shutdown()
+                    pygame.quit()
+                    return True
+
+                raise Exception(f'Bad Dropdown Function Item: {event.text}')
+
         elif event.type == SELECT_DATABASE:
             print(f'select database {event}')
             dialog = UIFileDialog(
