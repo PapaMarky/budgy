@@ -76,6 +76,9 @@ class BudgyViewerApp(GuiApp):
                 self.on_shutdown()
                 pygame.quit()
                 return True
+        elif event.type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
+            if event.ui_element == self.top_panel.drop_down_menu:
+                print(f'New Function: {event.text}')
         elif event.type == SELECT_DATABASE:
             print(f'select database {event}')
             dialog = UIFileDialog(

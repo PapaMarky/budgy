@@ -1,12 +1,13 @@
 import budgy.gui
 import pygame
-from pygame_gui.elements import UIPanel, UILabel
+from pygame_gui.elements import UIPanel, UILabel, UIDropDownMenu
 from pygame_gui.core import ObjectID
 from datetime import datetime
 
 class TopPanel(UIPanel):
     LABLE_WIDTH = 100
     TEXT_WIDTH = 175
+    DROP_DOWN_WIDTH = 200
     def __init__(self, config_in, *args, **kwargs):
         self.budgy_config:dict = config_in
         super().__init__(*args, **kwargs)
@@ -67,7 +68,34 @@ class TopPanel(UIPanel):
         self.set_data_range(datetime.now(), datetime.now())
 
         # Add: Function DropDown
-
+        data_function_option = 'Data Functions'
+        report_function_option = 'Report Functions'
+        option_list = [
+            data_function_option,
+            report_function_option,
+            'Exit'
+        ]
+        w = self.DROP_DOWN_WIDTH
+        x = (self.relative_rect.width - (w + budgy.gui.MARGIN))
+        x = -(w + budgy.gui.MARGIN)
+        y = label1.get_abs_rect().y
+        h = budgy.gui.BUTTON_HEIGHT
+        rr = pygame.Rect(x, y, w, h)
+        # rect.topright = (budgy.gui.BUTTON_HEIGHT, budgy.gui.MARGIN)
+        self.drop_down_menu = UIDropDownMenu(
+            option_list,
+            data_function_option,
+            rr,
+            manager=self.ui_manager,
+            container=None,
+            anchors={
+                'top': 'top',
+                # 'left': 'right',
+                # 'bottom': 'top',
+                'right': 'right'
+            },
+            expansion_height_limit  = (4 * budgy.gui.BUTTON_HEIGHT)
+        )
 
     def set_record_count(self, count):
         self.nrecords_field.set_text(f'{count}')
