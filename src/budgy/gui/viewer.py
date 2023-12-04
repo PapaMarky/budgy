@@ -61,7 +61,7 @@ class BudgyViewerApp(GuiApp):
         x = 0
         y = self.top_panel.relative_rect.bottom
         w = self.size[0]
-        h = (self.size[1] - (tp_height + sp_height))
+        h = (self.size[1] - y - budgy.gui.MARGIN)
         function_panel_rect = pygame.Rect(x, y, w, h)
         self.function_panel = \
             BudgyFunctionPanel(self._config,
@@ -76,6 +76,8 @@ class BudgyViewerApp(GuiApp):
                                )
 
     def handle_event(self, event):
+        if super().handle_event(event):
+            return True
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_element == self._quit_button:
                 self.is_running = False

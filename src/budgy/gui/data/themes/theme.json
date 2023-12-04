@@ -36,13 +36,13 @@
   "#top-panel": {
     "colours": {
       "xdark_bg": "#0000ff",
-      "xnormal_border": "#c5cbd8"
+      "normal_border": "#ffff00"
     }
   },
   "#function-panel": {
     "colours": {
-      "dark_bg": "#808080",
-      "xnormal_border": "#000000"
+      "dark_bg": "#000000",
+      "normal_border": "#00ff00"
     }
   },
   "@function-subpanel": {
@@ -54,7 +54,13 @@
   "#data-panel": {
     "colours": {
       "xdark_bg": "#555555",
-      "normal_border": "#ffffff"
+      "normal_border": "#0000ff"
+    }
+  },
+  "#data_view_panel": {
+    "colours": {
+      "dark_bg": "#555555",
+      "normal_border": "#ff0000"
     }
   },
   "#report-panel": {

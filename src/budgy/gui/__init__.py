@@ -3,7 +3,7 @@ import os
 from budgy.gui import configdata
 from budgy.gui import data_panel
 
-BUTTON_WIDTH = 100
+BUTTON_WIDTH = 150
 BUTTON_HEIGHT = 35
 MARGIN = 2
 
