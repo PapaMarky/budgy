@@ -44,7 +44,7 @@ class BudgyDataPanel(BudgyFunctionSubPanel):
         h -= 6 * budgy.gui.MARGIN + y
         rr = pygame.Rect(x, y, w, h)
         # rr.bottomright = (-budgy.gui.MARGIN, -budgy.gui.MARGIN)
-        self._data_view_panel = UIPanel(
+        self._records_view_panel = UIPanel(
             rr,
             manager=self.ui_manager,
             container=self,
@@ -52,7 +52,7 @@ class BudgyDataPanel(BudgyFunctionSubPanel):
                 'top': 'top', 'left': 'left',
                 'bottom': 'bottom', 'right': 'right'
             },
-            object_id=ObjectID(object_id='#data_view_panel')
+            object_id=ObjectID(object_id='#records_view_panel')
         )
 
     def process_event(self, event: pygame.event.Event) -> bool:
