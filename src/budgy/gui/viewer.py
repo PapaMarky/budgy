@@ -116,6 +116,10 @@ class BudgyViewerApp(GuiApp):
         elif event.type == OPEN_DATABASE:
             print(f'load database: {event.db_path}')
             #self.open_database(event.db_path)
+        elif event.type == budgy.gui.events.DATA_SOURCE_CONFIRMED:
+            print(f'Loading OFX data from {event.path}')
+            return True
+
 
     def _parse_args(self):
         parser = argparse.ArgumentParser(self._title)
