@@ -57,7 +57,7 @@
       "normal_border": "#0000ff"
     }
   },
-  "#data_view_panel": {
+  "#records_view_panel": {
     "colours": {
       "dark_bg": "#555555",
       "normal_border": "#ff0000"
