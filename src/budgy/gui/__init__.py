@@ -4,7 +4,7 @@ from budgy.gui import configdata
 from budgy.gui import data_panel
 
 BUTTON_WIDTH = 150
-BUTTON_HEIGHT = 35
+BUTTON_HEIGHT = 25
 MARGIN = 2
 
 install_path = os.path.dirname(__file__)

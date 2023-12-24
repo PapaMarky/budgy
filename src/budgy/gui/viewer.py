@@ -43,7 +43,7 @@ class BudgyViewerApp(GuiApp):
         return self._config.config_dict['database']['path']
 
     def setup(self):
-        tp_height = (2 * budgy.gui.BUTTON_HEIGHT) + (6 * budgy.gui.MARGIN)
+        tp_height = (3 * budgy.gui.BUTTON_HEIGHT) + (6 * budgy.gui.MARGIN)
         sp_height = tp_height
         self.top_panel = TopPanel(
             self._config,
@@ -78,6 +78,8 @@ class BudgyViewerApp(GuiApp):
                                )
         # Once the UI is setup, open the database
         self.open_database()
+        target_date = self._config.retirement_target_date
+        self.top_panel.set_retirement_info(target_date)
 
 
     def open_database(self):

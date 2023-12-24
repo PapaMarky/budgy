@@ -37,6 +37,10 @@ class BudgyConfig(object):
         self.config_dict['import_data']['import_dir'] = new_path
         self.save_config()
 
+    @property
+    def retirement_target_date(self):
+        return self.config_dict['retirement']['target-date']
+
     def save_config(self):
         self._filepath.parent.mkdir(exist_ok=True)
         with open(self._filepath, 'w') as configfile:
@@ -55,6 +59,9 @@ class BudgyConfig(object):
             },
             'import_data': {
                 'import_dir': str(import_dir)
+            },
+            'retirement': {
+                'target-date': '2026/06/21'
             }
         }
         self.save_config()

@@ -2,6 +2,7 @@ import budgy.gui
 import pygame
 from pygame_gui.elements import UIPanel, UILabel, UIDropDownMenu
 from pygame_gui.core import ObjectID
+from dateutils import relativedelta
 from datetime import datetime
 
 from budgy.gui.configdata import BudgyConfig
@@ -66,8 +67,34 @@ class TopPanel(UIPanel):
             container=self,
             object_id=ObjectID(class_id='#data-text')
         )
+        self.set_data_range(None, None)
 
-        self.set_data_range(datetime.now(), datetime.now())
+        y += budgy.gui.MARGIN + budgy.gui.BUTTON_HEIGHT
+        label3 = UILabel(
+            pygame.Rect(0, y, self.TEXT_WIDTH, budgy.gui.BUTTON_HEIGHT),
+            'Retirement:',
+            self.ui_manager,
+            anchors={
+                'top': 'top', 'left': 'left',
+                'bottom': 'top', 'right': 'left'
+            },
+            container=self,
+            object_id=ObjectID(class_id='#data-label',
+                               object_id='@bold-16')
+
+        )
+        self.retirement_info = UILabel(
+            pygame.Rect(x, y, w, budgy.gui.BUTTON_HEIGHT),
+            '',
+            self.ui_manager,
+            anchors={
+                'top': 'top', 'left': 'left',
+                'bottom': 'top', 'right': 'right'
+            },
+            container=self,
+            object_id=ObjectID(class_id='#data-text')
+        )
+        self.set_retirement_info(None)
 
         # Add: Function DropDown
         data_function_option = 'Data Functions'
@@ -109,3 +136,27 @@ class TopPanel(UIPanel):
         start_date = first_date.strftime('%Y-%m-%d')
         end_date = last_date.strftime('%Y-%m-%d')
         self.date_range_field.set_text(f'{start_date} - {end_date}')
+
+    def set_retirement_info(self, target_date):
+        if target_date is None:
+            self.retirement_info.set_text('')
+            return
+
+        target_date = datetime.strptime(target_date, '%Y/%m/%d')
+        today = datetime.today()
+
+        delta = relativedelta(target_date, today)
+
+        year_str = ''
+        month_str = ''
+        day_str = ''
+        if delta.years > 0:
+            year_str = f'{delta.years} years '
+
+        if delta.months > 0:
+            month_str = f'{delta.months} months '
+
+        if delta.days > 0:
+            day_str = f'{delta.days} days'
+
+        self.retirement_info.set_text(f'{year_str}{month_str}{day_str}')
