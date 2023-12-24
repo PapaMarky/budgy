@@ -108,6 +108,8 @@ class BudgyDatabase(object):
             print(f'date range result: "{result}"')
             for row in result:
                 print(f'date range row: "{row}"')
+                if row[0] is None or row[1] is None:
+                    return (None, None)
                 start = datetime.datetime.strptime(row[0], '%Y-%m-%d %H:%M:%S%z')
                 end  = datetime.datetime.strptime(row[1], '%Y-%m-%d %H:%M:%S%z')
                 return (start, end)
@@ -122,6 +124,10 @@ class BudgyDatabase(object):
             for row in result:
                 return(row[0])
         return 0
+
+    def delete_all_records(self):
+        sql = f'DELETE FROM {self.TABLE_NAME}'
+        result = self.execute(sql)
 
     def merge_records(self, newrecords):
         result = {

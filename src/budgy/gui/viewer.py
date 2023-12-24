@@ -19,7 +19,7 @@ from budgy.gui.data_panel import BudgyDataPanel
 from budgy.gui.top_panel import TopPanel
 from budgy.gui.function_panel import BudgyFunctionPanel
 from budgy.gui.configdata import BudgyConfig
-from budgy.gui.events import SELECT_DATABASE, OPEN_DATABASE
+from budgy.gui.events import SELECT_DATABASE, OPEN_DATABASE, DELETE_ALL_DATA
 
 class BudgyViewerApp(GuiApp):
 
@@ -94,8 +94,6 @@ class BudgyViewerApp(GuiApp):
         start, end = self._database.get_date_range()
         self.top_panel.set_data_range(start, end)
 
-
-
     def handle_event(self, event):
         if super().handle_event(event):
             return True
@@ -132,8 +130,6 @@ class BudgyViewerApp(GuiApp):
                 object_id='#database_dialog',
                 allow_existing_files_only=False
             )
-            #self._data_panel.disable()
-            #self._report_panel.disable()
         elif event.type == OPEN_DATABASE:
             print(f'load database: {event.db_path}')
             #self.open_database(event.db_path)
@@ -141,6 +137,11 @@ class BudgyViewerApp(GuiApp):
             print(f'Loading OFX data from {event.path}')
             records = load_ofx_file(event.path)
             self._database.merge_records(records)
+            self.update_database_status()
+            return True
+        elif event.type == budgy.gui.events.DELETE_ALL_DATA_CONFIRMED:
+            print(f'DELETING ALL DATA FROM DATABASE')
+            self._database.delete_all_records()
             self.update_database_status()
             return True
 

@@ -61,8 +61,33 @@ class BudgyDataPanel(BudgyFunctionSubPanel):
             object_id=ObjectID(object_id='#records_view_panel')
         )
 
+        # TODO do we need these?
         self.import_path = None
+        self.confirm_import = None
+        self.config_delete_all = None
+        self.import_file_dialog = None
 
+    def process_confirm_dialog_events(self, event: pygame.event.Event) -> bool:
+        if event.type == pygame_gui.UI_CONFIRMATION_DIALOG_CONFIRMED:
+            if event.ui_element == self.confirm_import:
+                print(f'Importing data from {self.import_path}')
+                event_data = {
+                    'path': self.import_path
+                }
+                self.budgy_config.import_data_path = self.import_path
+                pygame.event.post(pygame.event.Event(budgy.gui.events.DATA_SOURCE_CONFIRMED, event_data))
+                self.import_path = None
+                return True
+            if event.ui_element == self.config_delete_all:
+                print(f'Deleting all data from database')
+                event_data = {}
+                pygame.event.post(pygame.event.Event(budgy.gui.events.DELETE_ALL_DATA_CONFIRMED, event_data))
+                return True
+        if event.type == pygame_gui.UI_WINDOW_CLOSE:
+            if event.ui_element == self.confirm_import:
+                self.confirm_import = None
+            if event.ui_element == self.config_delete_all:
+                self.config_delete_all = None
     def process_event(self, event: pygame.event.Event) -> bool:
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_element == self._import_data_button:
@@ -74,7 +99,10 @@ class BudgyDataPanel(BudgyFunctionSubPanel):
                 self._import_data_button.disable()
                 return True
             if event.ui_element == self._clear_data_button:
-                print('CLEAR DATA')
+                event_data = {
+                    'ui_element': self
+                }
+                pygame.event.post(pygame.event.Event(budgy.gui.events.DELETE_ALL_DATA, event_data))
                 return True
         if event.type == pygame_gui.UI_WINDOW_CLOSE and event.ui_element == self.import_file_dialog:
             self.import_file_dialog = None
@@ -107,15 +135,16 @@ class BudgyDataPanel(BudgyFunctionSubPanel):
                     window_title='Confirm Import'
                 )
             return True
-        if event.type == pygame_gui.UI_CONFIRMATION_DIALOG_CONFIRMED and event.ui_element == self.confirm_import:
-            print(f'Importing data from {self.import_path}')
-            event_data = {
-                'path': self.import_path
-            }
-            self.budgy_config.import_data_path = self.import_path
-            pygame.event.post(pygame.event.Event(budgy.gui.events.DATA_SOURCE_CONFIRMED, event_data))
-            self.import_path = None
+        if event.type == budgy.gui.events.DELETE_ALL_DATA:
+            print('CLEAR DATA (data panel)')
+            rect = pygame.Rect(100, 100, 400, 200)
+            self.config_delete_all = UIConfirmationDialog(
+                rect,
+                'Selecting OK will DELETE ALL RECORDS from the database',
+                window_title='Confirm Delete All Data'
+            )
             return True
-        if event.type == pygame_gui.UI_WINDOW_CLOSE and event.ui_element == self.confirm_import:
-            self.confirm_import = None
+        if self.process_confirm_dialog_events(event):
+            return True
+
         return False
