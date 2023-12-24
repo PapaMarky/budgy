@@ -12,7 +12,7 @@ import budgy.gui
 import budgy.gui.events
 from budgy.gui.function_subpanel import BudgyFunctionSubPanel
 from budgy.gui.import_data_dialog import ImportDataDialog
-
+from budgy.gui.dialogs import is_import_file_dialog, show_import_data_file_dialog
 
 class BudgyDataPanel(BudgyFunctionSubPanel):
     def __init__(self, config_in, function_panel, *args, **kwargs):
@@ -65,7 +65,6 @@ class BudgyDataPanel(BudgyFunctionSubPanel):
         self.import_path = None
         self.confirm_import = None
         self.config_delete_all = None
-        self.import_file_dialog = None
 
     def process_confirm_dialog_events(self, event: pygame.event.Event) -> bool:
         if event.type == pygame_gui.UI_CONFIRMATION_DIALOG_CONFIRMED:
@@ -94,8 +93,7 @@ class BudgyDataPanel(BudgyFunctionSubPanel):
                 print('IMPORT DATA')
                 # Create the import data file dialog
                 rect = pygame.Rect(0, 0, 500, 400)
-                self.import_file_dialog = ImportDataDialog(self.budgy_config, rect)
-                self.import_file_dialog.show()
+                show_import_data_file_dialog(self.budgy_config.import_data_path)
                 self._import_data_button.disable()
                 return True
             if event.ui_element == self._clear_data_button:
@@ -104,11 +102,10 @@ class BudgyDataPanel(BudgyFunctionSubPanel):
                 }
                 pygame.event.post(pygame.event.Event(budgy.gui.events.DELETE_ALL_DATA, event_data))
                 return True
-        if event.type == pygame_gui.UI_WINDOW_CLOSE and event.ui_element == self.import_file_dialog:
-            self.import_file_dialog = None
+        if event.type == pygame_gui.UI_WINDOW_CLOSE and is_import_file_dialog(event.ui_element):
             self._import_data_button.enable()
             return True
-        if event.type == pygame_gui.UI_FILE_DIALOG_PATH_PICKED and event.ui_element == self.import_file_dialog:
+        if event.type == pygame_gui.UI_FILE_DIALOG_PATH_PICKED and is_import_file_dialog(event.ui_element):
             print(f' - PATH PICKED: {event.text}')
             event_data = {
                 'import_path': event.text,
