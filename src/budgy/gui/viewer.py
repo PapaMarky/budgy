@@ -1,4 +1,5 @@
 import argparse
+import logging
 from pathlib import Path
 
 import pygame
@@ -9,6 +10,7 @@ from pygame_gui_extras.app import GuiApp
 from pygame_gui.elements import UIPanel, UIButton
 
 from budgy.core.database import BudgyDatabase
+from budgy.core import load_ofx_file
 from budgy.version import __version__ as package_version
 
 import budgy.gui
@@ -74,6 +76,23 @@ class BudgyViewerApp(GuiApp):
                                },
                                object_id=ObjectID(object_id='#function-panel')
                                )
+        # Once the UI is setup, open the database
+        self.open_database()
+
+
+    def open_database(self):
+        dbpath = Path(self.database_path).expanduser()
+        print(f'Open database: {dbpath}')
+        self._database = BudgyDatabase(dbpath)
+        self.update_database_status()
+
+    def update_database_status(self):
+        n_records = self._database.count_records()
+        self.top_panel.set_record_count(n_records)
+        start, end = self._database.get_date_range()
+        self.top_panel.set_data_range(start, end)
+
+
 
     def handle_event(self, event):
         if super().handle_event(event):
@@ -118,6 +137,9 @@ class BudgyViewerApp(GuiApp):
             #self.open_database(event.db_path)
         elif event.type == budgy.gui.events.DATA_SOURCE_CONFIRMED:
             print(f'Loading OFX data from {event.path}')
+            records = load_ofx_file(event.path)
+            self._database.merge_records(records)
+            self.update_database_status()
             return True
 
 

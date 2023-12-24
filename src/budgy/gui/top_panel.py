@@ -103,6 +103,9 @@ class TopPanel(UIPanel):
         self.nrecords_field.set_text(f'{count}')
 
     def set_data_range(self, first_date:datetime, last_date:datetime):
+        if first_date is None:
+            self.date_range_field.set_text('No Data')
+            return
         start_date = first_date.strftime('%Y-%m-%d')
         end_date = last_date.strftime('%Y-%m-%d')
         self.date_range_field.set_text(f'{start_date} - {end_date}')

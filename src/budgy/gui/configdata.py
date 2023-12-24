@@ -51,7 +51,7 @@ class BudgyConfig(object):
         import_dir = Path('~/Downloads').expanduser()
         self._config_dict = {
             'database': {
-                'path': f'{self._config_dir}/budgy/budgydata.db'
+                'path': f'{self._config_dir}/budgydata.db'
             },
             'import_data': {
                 'import_dir': str(import_dir)

@@ -1,3 +1,4 @@
+import datetime
 from pathlib import Path
 
 import sqlite3
@@ -99,6 +100,18 @@ class BudgyDatabase(object):
                     match_text = 'NO MATCH'
                 logging.info(f'|{k:10}|{v1:30}|{v2:30}|{match_text}|')
 
+
+    def get_date_range(self):
+        sql = f'SELECT MIN(posted) AS start, MAX(posted) AS end FROM transactions'
+        result = self.execute(sql)
+        if result is not None:
+            print(f'date range result: "{result}"')
+            for row in result:
+                print(f'date range row: "{row}"')
+                start = datetime.datetime.strptime(row[0], '%Y-%m-%d %H:%M:%S%z')
+                end  = datetime.datetime.strptime(row[1], '%Y-%m-%d %H:%M:%S%z')
+                return (start, end)
+        return (None, None)
 
     def count_records(self):
         sql = f'SELECT COUNT(*) FROM {self.TABLE_NAME}'
