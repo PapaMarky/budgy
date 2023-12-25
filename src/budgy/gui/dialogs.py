@@ -1,15 +1,22 @@
 import pygame
-from pygame_gui.windows import UIFileDialog
 from pygame_gui.core import ObjectID
+from pygame_gui.windows import UIFileDialog
+from pygame_gui.windows.ui_confirmation_dialog import UIConfirmationDialog
 
-IMPORT_FILE_DIALOG_TITLE = 'Import Data File'
-def is_import_file_dialog(element):
-    return isinstance(element, UIFileDialog) and element.window_display_title == IMPORT_FILE_DIALOG_TITLE
-def show_import_data_file_dialog(initial_path):
-    show_file_dialog(IMPORT_FILE_DIALOG_TITLE,
-                     initial_path,
-                     allowed_suffixes=['.ofx', '.qfx'])
+def is_confirmation_dialog(element, window_title):
+    return isinstance(element, UIConfirmationDialog) and element.window_display_title == window_title
 
+def show_confirmation_dialog(window_title, action_long_desc, rect=None):
+    if rect is None:
+        rect = pygame.Rect(100, 100, 400, 200)
+    UIConfirmationDialog(
+        rect,
+        action_long_desc,
+        window_title=window_title
+    )
+
+def is_file_dialog(element, window_title):
+    return isinstance(element, UIFileDialog) and element.window_display_title == window_title
 def show_file_dialog(title, initial_file_path,
                      allowed_suffixes=[],
                      rect=None, manager=None,
