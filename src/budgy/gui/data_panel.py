@@ -11,7 +11,6 @@ from pygame_gui.windows.ui_confirmation_dialog import UIConfirmationDialog
 import budgy.gui
 import budgy.gui.events
 from budgy.gui.function_subpanel import BudgyFunctionSubPanel
-from budgy.gui.import_data_dialog import ImportDataDialog
 from budgy.gui.dialogs import show_confirmation_dialog, show_file_dialog, is_confirmation_dialog, is_file_dialog
 
 
