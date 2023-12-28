@@ -125,6 +125,26 @@ class BudgyDatabase(object):
                 return(row[0])
         return 0
 
+    def all_records(self):
+        sql = f'SELECT fitid, account, type, posted, amount, name, memo, checknum, category FROM {self.TABLE_NAME} ORDER BY posted'
+        print(sql)
+        result = self.execute(sql)
+        records = []
+        if result is not None:
+            for record in result:
+                records.append({
+                    'fitid': record[0],
+                    'account': record[1],
+                    'type': record[2],
+                    'posted': record[3],
+                    'amount': record[4],
+                    'name': record[5],
+                    'memo': record[6],
+                    'checknum': record[7],
+                    'category': record[8]
+                })
+        return records
+
     def delete_all_records(self):
         sql = f'DELETE FROM {self.TABLE_NAME}'
         result = self.execute(sql)

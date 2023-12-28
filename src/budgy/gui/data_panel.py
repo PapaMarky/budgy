@@ -9,9 +9,11 @@ from pygame_gui.windows.ui_message_window import UIMessageWindow
 from pygame_gui.windows.ui_confirmation_dialog import UIConfirmationDialog
 
 import budgy.gui
+from budgy.gui.constants import MARGIN, BUTTON_HEIGHT, BUTTON_WIDTH
+from budgy.gui.dialogs import show_confirmation_dialog, show_file_dialog, is_confirmation_dialog, is_file_dialog
 import budgy.gui.events
 from budgy.gui.function_subpanel import BudgyFunctionSubPanel
-from budgy.gui.dialogs import show_confirmation_dialog, show_file_dialog, is_confirmation_dialog, is_file_dialog
+from budgy.gui.record_view_panel import RecordViewPanel
 
 
 CONFIRM_IMPORT_TITLE = 'Confirm Import'
@@ -42,7 +44,7 @@ class BudgyDataPanel(BudgyFunctionSubPanel):
     def __init__(self, config_in, function_panel, *args, **kwargs):
         super().__init__(config_in, function_panel, *args, **kwargs)
         self._import_data_button = UIButton(
-            pygame.Rect(0, 0, budgy.gui.BUTTON_WIDTH, budgy.gui.BUTTON_HEIGHT),
+            pygame.Rect(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT),
             'Import Data',
             self.ui_manager,
             container=self,
@@ -53,7 +55,7 @@ class BudgyDataPanel(BudgyFunctionSubPanel):
         )
         x = self._import_data_button.get_relative_rect().right
         y = self._import_data_button.get_relative_rect().top
-        w = budgy.gui.BUTTON_WIDTH
+        w = BUTTON_WIDTH
         h = self._import_data_button.get_relative_rect().height
         self._clear_data_button = UIButton(
             pygame.Rect(x, y, w, h),
@@ -67,14 +69,14 @@ class BudgyDataPanel(BudgyFunctionSubPanel):
         )
 
         x = 0
-        y = self._clear_data_button.get_relative_rect().bottom + budgy.gui.MARGIN
+        y = self._clear_data_button.get_relative_rect().bottom + MARGIN
 
         w, h = self.get_relative_rect().size
-        w -= 6 * budgy.gui.MARGIN
-        h -= 6 * budgy.gui.MARGIN + y
+        w -= 6 * MARGIN
+        h -= 6 * MARGIN + y
         rr = pygame.Rect(x, y, w, h)
-        # rr.bottomright = (-budgy.gui.MARGIN, -budgy.gui.MARGIN)
-        self._records_view_panel = UIPanel(
+        # rr.bottomright = (-MARGIN, -MARGIN)
+        self._records_view_panel = RecordViewPanel(
             rr,
             manager=self.ui_manager,
             container=self,
@@ -87,6 +89,9 @@ class BudgyDataPanel(BudgyFunctionSubPanel):
 
         # TODO do we need these?
         self.import_path = None
+
+    def set_data(self, new_data):
+        self._records_view_panel.set_data(new_data)
 
     def process_confirm_dialog_events(self, event: pygame.event.Event) -> bool:
         if event.type == pygame_gui.UI_CONFIRMATION_DIALOG_CONFIRMED:

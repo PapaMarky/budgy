@@ -21,6 +21,7 @@ from budgy.gui.message_panel import MessagePanel
 from budgy.gui.function_panel import BudgyFunctionPanel
 from budgy.gui.configdata import BudgyConfig
 from budgy.gui.events import SELECT_DATABASE, OPEN_DATABASE, DELETE_ALL_DATA, post_show_message, post_clear_messages
+from budgy.gui.constants import BUTTON_WIDTH, BUTTON_HEIGHT, MARGIN
 
 class BudgyViewerApp(GuiApp):
 
@@ -35,7 +36,7 @@ class BudgyViewerApp(GuiApp):
         else:
             print(f'WARNING: theme file not found')
         self._quit_button:UIButton = None
-        self._button_rect:pygame.Rect = pygame.Rect(0, 0, budgy.gui.BUTTON_WIDTH, budgy.gui.BUTTON_HEIGHT)
+        self._button_rect:pygame.Rect = pygame.Rect(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT)
         self._database:BudgyDatabase = None
         self._config:BudgyConfig = BudgyConfig()
 
@@ -44,8 +45,8 @@ class BudgyViewerApp(GuiApp):
         return self._config.config_dict['database']['path']
 
     def setup(self):
-        tp_height = (3 * budgy.gui.BUTTON_HEIGHT) + (6 * budgy.gui.MARGIN)
-        mp_height = (3 * budgy.gui.BUTTON_HEIGHT) + (4 * budgy.gui.MARGIN)
+        tp_height = (3 * BUTTON_HEIGHT) + (6 * MARGIN)
+        mp_height = (3 * BUTTON_HEIGHT) + (4 * MARGIN)
         rect = pygame.Rect(0, 0,
                         self.size[0], tp_height)
         self.top_panel = TopPanel(
@@ -56,15 +57,15 @@ class BudgyViewerApp(GuiApp):
                 'top': 'top', 'left': 'left',
                 'bottom': 'top', 'right': 'right'
             },
-            margins={'top': budgy.gui.MARGIN, 'left': budgy.gui.MARGIN,
-                     'bottom': budgy.gui.MARGIN, 'right': budgy.gui.MARGIN},
+            margins={'top': MARGIN, 'left': MARGIN,
+                     'bottom': MARGIN, 'right': MARGIN},
             manager=self.ui_manager,
             object_id=ObjectID(class_id='#top-panel')
         )
         x = 0
         y = self.top_panel.relative_rect.bottom
         w = self.size[0]
-        h = (self.size[1] - y - budgy.gui.MARGIN) - mp_height
+        h = (self.size[1] - y - MARGIN) - mp_height
         function_panel_rect = pygame.Rect(x, y, w, h)
         self.function_panel = \
             BudgyFunctionPanel(self._config,
@@ -102,10 +103,11 @@ class BudgyViewerApp(GuiApp):
         self.update_database_status()
 
     def update_database_status(self):
-        n_records = self._database.count_records()
-        self.top_panel.set_record_count(n_records)
+        records = self._database.all_records()
+        self.top_panel.set_record_count(len(records))
         start, end = self._database.get_date_range()
         self.top_panel.set_data_range(start, end)
+        self.function_panel.data_panel.set_data(records)
 
     def handle_event(self, event):
         if super().handle_event(event):

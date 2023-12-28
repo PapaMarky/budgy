@@ -89,6 +89,32 @@
       "normal_border": "#ff0000"
     }
   },
+  "#record-panel": {
+    "colours": {
+      "dark_bg": "grey",
+      "normal_border": "grey"
+    }
+  },
+  "#field-left": {
+    "misc": {
+      "text_horiz_alignment": "left",
+      "text_horiz_alignment_padding": "3",
+      "text_vert_alignment": "center"
+    }
+  },
+  "#field-right": {
+    "misc": {
+      "text_horiz_alignment": "right",
+      "text_horiz_alignment_padding": "3",
+      "text_vert_alignment": "center"
+    }
+  },
+  "@record-field": {
+    "colours": {
+      "dark_bg": "white",
+      "normal_text": "black"
+    }
+  },
   "#report-panel": {
     "colours": {
       "dark_bg": "#555555",

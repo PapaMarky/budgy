@@ -1,4 +1,4 @@
-import budgy.gui
+from budgy.gui.constants import MARGIN, BUTTON_HEIGHT
 import pygame
 from pygame_gui.elements import UIPanel, UILabel, UIDropDownMenu
 from pygame_gui.core import ObjectID
@@ -15,10 +15,10 @@ class TopPanel(UIPanel):
         self.budgy_config:BudgyConfig = config_in
         super().__init__(*args, **kwargs)
         # Add: Records: NNNNNN
-        y = budgy.gui.MARGIN
-        x = budgy.gui.MARGIN
+        y = MARGIN
+        x = MARGIN
         label1 = UILabel(
-            pygame.Rect(0, y, self.TEXT_WIDTH, budgy.gui.BUTTON_HEIGHT),
+            pygame.Rect(0, y, self.TEXT_WIDTH, BUTTON_HEIGHT),
             'Record Count:',
             self.ui_manager,
             anchors={
@@ -30,9 +30,9 @@ class TopPanel(UIPanel):
                                object_id='@bold-16')
         )
         w = self.relative_rect.width - label1.relative_rect.width
-        x = self.TEXT_WIDTH + budgy.gui.MARGIN
+        x = self.TEXT_WIDTH + MARGIN
         self.nrecords_field = UILabel(
-            pygame.Rect(x, y, w, budgy.gui.BUTTON_HEIGHT),
+            pygame.Rect(x, y, w, BUTTON_HEIGHT),
             'No Database',
             self.ui_manager,
             anchors={
@@ -42,10 +42,10 @@ class TopPanel(UIPanel):
             container=self,
             object_id=ObjectID(class_id='#data-text')
         )
-        y += budgy.gui.MARGIN + budgy.gui.BUTTON_HEIGHT
+        y += MARGIN + BUTTON_HEIGHT
         # Add: Data Range: YYYY-MM-DD to YYYY-MM-DD
         label2 = UILabel(
-            pygame.Rect(0, y, self.TEXT_WIDTH, budgy.gui.BUTTON_HEIGHT),
+            pygame.Rect(0, y, self.TEXT_WIDTH, BUTTON_HEIGHT),
             'Data Range:',
             self.ui_manager,
             anchors={
@@ -57,7 +57,7 @@ class TopPanel(UIPanel):
                                object_id='@bold-16')
         )
         self.date_range_field = UILabel(
-            pygame.Rect(x, y, w, budgy.gui.BUTTON_HEIGHT),
+            pygame.Rect(x, y, w, BUTTON_HEIGHT),
             'YYYY-MM-DD to YYYY-MM-DD',
             self.ui_manager,
             anchors={
@@ -69,9 +69,9 @@ class TopPanel(UIPanel):
         )
         self.set_data_range(None, None)
 
-        y += budgy.gui.MARGIN + budgy.gui.BUTTON_HEIGHT
+        y += MARGIN + BUTTON_HEIGHT
         label3 = UILabel(
-            pygame.Rect(0, y, self.TEXT_WIDTH, budgy.gui.BUTTON_HEIGHT),
+            pygame.Rect(0, y, self.TEXT_WIDTH, BUTTON_HEIGHT),
             'Retirement:',
             self.ui_manager,
             anchors={
@@ -84,7 +84,7 @@ class TopPanel(UIPanel):
 
         )
         self.retirement_info = UILabel(
-            pygame.Rect(x, y, w, budgy.gui.BUTTON_HEIGHT),
+            pygame.Rect(x, y, w, BUTTON_HEIGHT),
             '',
             self.ui_manager,
             anchors={
@@ -105,12 +105,12 @@ class TopPanel(UIPanel):
             'Exit'
         ]
         w = self.DROP_DOWN_WIDTH
-        x = (self.relative_rect.width - (w + budgy.gui.MARGIN))
-        x = -(w + budgy.gui.MARGIN)
+        x = (self.relative_rect.width - (w + MARGIN))
+        x = -(w + MARGIN)
         y = label1.get_abs_rect().y
-        h = budgy.gui.BUTTON_HEIGHT
+        h = BUTTON_HEIGHT
         rr = pygame.Rect(x, y, w, h)
-        # rect.topright = (budgy.gui.BUTTON_HEIGHT, budgy.gui.MARGIN)
+        # rect.topright = (BUTTON_HEIGHT, MARGIN)
         self.drop_down_menu = UIDropDownMenu(
             option_list,
             data_function_option,
@@ -123,7 +123,7 @@ class TopPanel(UIPanel):
                 # 'bottom': 'top',
                 'right': 'right'
             },
-            expansion_height_limit  = (4 * budgy.gui.BUTTON_HEIGHT)
+            expansion_height_limit  = (4 * BUTTON_HEIGHT)
         )
 
     def set_record_count(self, count):

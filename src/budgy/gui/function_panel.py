@@ -1,10 +1,5 @@
-import pygame
-import pygame_gui
-
-from pygame_gui.core import ObjectID
 from pygame_gui.elements import UIPanel
 
-import budgy
 from budgy.gui.configdata import BudgyConfig
 from budgy.gui.data_panel import BudgyDataPanel
 from budgy.gui.function_subpanel import BudgyFunctionSubPanel
@@ -17,6 +12,14 @@ class BudgyFunctionPanel(UIPanel):
         self._data_panel:UIPanel = self._create_data_panel()
         self._report_panel:UIPanel = self._create_report_panel()
         self.show_subpanel('data')
+
+    @property
+    def data_panel(self) -> BudgyDataPanel:
+        return self._data_panel
+
+    @property
+    def report_panel(self):
+        return self._report_panel
 
     def show_subpanel(self, panel_name):
         print(f'Show function panel: {panel_name}')

@@ -1,6 +1,7 @@
 import pygame
 from pygame_gui.elements import UIPanel, UIProgressBar, UILabel
 from pygame_gui.core import ObjectID
+from budgy.gui.constants import MARGIN, BUTTON_HEIGHT
 from budgy.gui.events import SHOW_MESSAGE, CLEAR_MESSAGES
 import budgy
 
@@ -14,11 +15,11 @@ class MessagePanel(UIPanel):
             'error': self.error
         }
 
-        y = budgy.gui.MARGIN
+        y = MARGIN
         progress_width = self.relative_rect.width * 0.9
         x = self.relative_rect.width / 2 - progress_width / 2
         self.progress_bar = UIProgressBar(
-            pygame.Rect(x, y, progress_width, budgy.gui.BUTTON_HEIGHT),
+            pygame.Rect(x, y, progress_width, BUTTON_HEIGHT),
             manager=self.ui_manager,
             container=self,
             anchors={
@@ -28,9 +29,9 @@ class MessagePanel(UIPanel):
             visible=False
         )
 
-        y += budgy.gui.MARGIN + budgy.gui.BUTTON_HEIGHT
+        y += MARGIN + BUTTON_HEIGHT
         self.message_element = UILabel(
-            pygame.Rect(budgy.gui.MARGIN, y, self.relative_rect.width, budgy.gui.BUTTON_HEIGHT),
+            pygame.Rect(MARGIN, y, self.relative_rect.width, BUTTON_HEIGHT),
             'Message Element',
             manager=self.ui_manager,
             container=self,
@@ -42,9 +43,9 @@ class MessagePanel(UIPanel):
             visible=False
         )
 
-        # y += budgy.gui.MARGIN + budgy.gui.BUTTON_HEIGHT
+        # y += MARGIN + BUTTON_HEIGHT
         self.message_error = UILabel(
-            pygame.Rect(budgy.gui.MARGIN, y, self.relative_rect.width, budgy.gui.BUTTON_HEIGHT),
+            pygame.Rect(MARGIN, y, self.relative_rect.width, BUTTON_HEIGHT),
             'Message Element',
             manager=self.ui_manager,
             container=self,
