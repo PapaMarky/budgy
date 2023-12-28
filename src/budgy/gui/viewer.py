@@ -17,9 +17,10 @@ import budgy.gui
 
 from budgy.gui.data_panel import BudgyDataPanel
 from budgy.gui.top_panel import TopPanel
+from budgy.gui.message_panel import MessagePanel
 from budgy.gui.function_panel import BudgyFunctionPanel
 from budgy.gui.configdata import BudgyConfig
-from budgy.gui.events import SELECT_DATABASE, OPEN_DATABASE, DELETE_ALL_DATA
+from budgy.gui.events import SELECT_DATABASE, OPEN_DATABASE, DELETE_ALL_DATA, post_show_message, post_clear_messages
 
 class BudgyViewerApp(GuiApp):
 
@@ -44,11 +45,12 @@ class BudgyViewerApp(GuiApp):
 
     def setup(self):
         tp_height = (3 * budgy.gui.BUTTON_HEIGHT) + (6 * budgy.gui.MARGIN)
-        sp_height = tp_height
+        mp_height = (3 * budgy.gui.BUTTON_HEIGHT) + (4 * budgy.gui.MARGIN)
+        rect = pygame.Rect(0, 0,
+                        self.size[0], tp_height)
         self.top_panel = TopPanel(
             self._config,
-            pygame.Rect(0, 0,
-                        self.size[0], tp_height),
+            rect,
             1,
             anchors={
                 'top': 'top', 'left': 'left',
@@ -59,11 +61,10 @@ class BudgyViewerApp(GuiApp):
             manager=self.ui_manager,
             object_id=ObjectID(class_id='#top-panel')
         )
-
         x = 0
         y = self.top_panel.relative_rect.bottom
         w = self.size[0]
-        h = (self.size[1] - y - budgy.gui.MARGIN)
+        h = (self.size[1] - y - budgy.gui.MARGIN) - mp_height
         function_panel_rect = pygame.Rect(x, y, w, h)
         self.function_panel = \
             BudgyFunctionPanel(self._config,
@@ -75,7 +76,19 @@ class BudgyViewerApp(GuiApp):
                                    'bottom': 'bottom', 'right': 'right'
                                },
                                object_id=ObjectID(object_id='#function-panel')
-                               )
+            )
+        rect = pygame.Rect(x, -mp_height,
+                           w, mp_height)
+        self.message_panel = MessagePanel(
+            rect,
+            starting_height=1,
+            manager=self.ui_manager,
+            anchors={
+                'top': 'bottom', 'left': 'left',
+                'bottom': 'bottom', 'right': 'right'
+            },
+            object_id=ObjectID(class_id='#message-panel')
+        )
         # Once the UI is setup, open the database
         self.open_database()
         target_date = self._config.retirement_target_date
@@ -108,9 +121,11 @@ class BudgyViewerApp(GuiApp):
                 print(f'New Function: {event.text}')
                 if event.text == 'Report Functions':
                     self.function_panel.show_subpanel('report')
+                    self.message_panel.info('Showing Report Panel')
                     return True
                 if event.text == 'Data Functions':
                     self.function_panel.show_subpanel('data')
+                    self.message_panel.error('Showing Data Panel')
                     return True
                 if event.text == 'Exit':
                     self.is_running = False
@@ -134,10 +149,12 @@ class BudgyViewerApp(GuiApp):
             print(f'load database: {event.db_path}')
             #self.open_database(event.db_path)
         elif event.type == budgy.gui.events.DATA_SOURCE_CONFIRMED:
-            print(f'Loading OFX data from {event.path}')
+            post_show_message(f'Loading OFX data from {event.path}')
             records = load_ofx_file(event.path)
+            post_show_message(f'Merging imported records')
             self._database.merge_records(records)
             self.update_database_status()
+            post_clear_messages()
             return True
         elif event.type == budgy.gui.events.DELETE_ALL_DATA_CONFIRMED:
             print(f'DELETING ALL DATA FROM DATABASE')
