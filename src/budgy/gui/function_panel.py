@@ -1,8 +1,11 @@
 from pygame_gui.elements import UIPanel
 
+from budgy.core.database import BudgyDatabase
 from budgy.gui.configdata import BudgyConfig
 from budgy.gui.data_panel import BudgyDataPanel
 from budgy.gui.function_subpanel import BudgyFunctionSubPanel
+from budgy.gui.report_panel import BudgyReportPanel
+
 
 class BudgyFunctionPanel(UIPanel):
 
@@ -10,8 +13,11 @@ class BudgyFunctionPanel(UIPanel):
         self.budgy_config:BudgyConfig = config_in
         super().__init__(*args, **kwargs)
         self._data_panel:UIPanel = self._create_data_panel()
-        self._report_panel:UIPanel = self._create_report_panel()
-        self.show_subpanel('data')
+        self._report_panel:BudgyReportPanel = self._create_report_panel()
+        self.show_subpanel('report')
+
+    def set_database(self, database:BudgyDatabase):
+        self._report_panel.set_database(database)
 
     @property
     def data_panel(self) -> BudgyDataPanel:
@@ -37,6 +43,6 @@ class BudgyFunctionPanel(UIPanel):
         return self._data_panel
 
     def _create_report_panel(self):
-        self._report_panel = BudgyFunctionSubPanel(self.budgy_config, self, object_id='#report-panel')
+        self._report_panel = BudgyReportPanel(self.budgy_config, self, object_id='#report-panel')
         return self._report_panel
 

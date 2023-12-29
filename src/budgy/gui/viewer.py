@@ -95,6 +95,8 @@ class BudgyViewerApp(GuiApp):
         target_date = self._config.retirement_target_date
         self.top_panel.set_retirement_info(target_date)
 
+        # Once the database is open, pass it to the report panel. (this all need to be thought out better)
+        self.function_panel.set_database(self._database)
 
     def open_database(self):
         dbpath = Path(self.database_path).expanduser()

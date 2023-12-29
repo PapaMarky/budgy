@@ -166,8 +166,8 @@ class RecordViewPanel(UIPanel):
     def process_event(self, event: pygame.event.Event) -> bool:
         if self.scrollbar.has_moved_recently:
             if self.scrollbar.start_percentage != self.last_start_percent:
-                print(f'SB: start: {self.scrollbar.start_percentage}')
                 self.last_start_percent = self.scrollbar.start_percentage
                 self.starting_row = math.ceil(len(self._data) * self.last_start_percent)
                 self.render_data()
-                post_show_message(f'Showing Records {self.starting_row} to {self.starting_row + self.visible_records} out of {len(self._data)}')
+                last = min(self.starting_row + self.visible_records, len(self._data))
+                post_show_message(f'Showing Records {self.starting_row} to {last} out of {len(self._data)}')

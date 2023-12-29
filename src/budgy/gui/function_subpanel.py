@@ -3,6 +3,7 @@ import pygame
 from pygame_gui.core import ObjectID
 from pygame_gui.elements import UIPanel
 
+from budgy.core.database import BudgyDatabase
 from budgy.gui.configdata import BudgyConfig
 from budgy.gui.constants import MARGIN
 

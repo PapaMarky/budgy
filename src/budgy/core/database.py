@@ -125,6 +125,21 @@ class BudgyDatabase(object):
                 return(row[0])
         return 0
 
+    def get_report(self):
+        sql = ('SELECT STRFTIME("%Y", posted) AS year, STRFTIME("%m", posted) AS month, SUM(amount) AS expences FROM transactions '
+               'WHERE amount < 0 GROUP BY year, month ORDER BY year, month DESC;')
+        print(sql)
+        result = self.execute(sql)
+        data = []
+        if result is not None:
+            for row in result:
+                data.append({
+                    'year': row[0],
+                    'month': row[1],
+                    'expenses': row[2]
+                })
+        return data
+
     def all_records(self):
         sql = f'SELECT fitid, account, type, posted, amount, name, memo, checknum, category FROM {self.TABLE_NAME} ORDER BY posted'
         print(sql)
