@@ -12,7 +12,7 @@ class BudgyFunctionPanel(UIPanel):
     def __init__(self, config_in:BudgyConfig, *args, **kwargs):
         self.budgy_config:BudgyConfig = config_in
         super().__init__(*args, **kwargs)
-        self._data_panel:UIPanel = self._create_data_panel()
+        self._data_panel:BudgyDataPanel = self._create_data_panel()
         self._report_panel:BudgyReportPanel = self._create_report_panel()
         self.show_subpanel('report')
 
@@ -38,11 +38,11 @@ class BudgyFunctionPanel(UIPanel):
         else:
             raise Exception(f'show_subpanel: bad panel name: {panel_name}')
 
-    def _create_data_panel(self):
+    def _create_data_panel(self) -> BudgyDataPanel:
         self._data_panel = BudgyDataPanel(self.budgy_config, self, object_id='#data-panel')
         return self._data_panel
 
-    def _create_report_panel(self):
+    def _create_report_panel(self) -> BudgyReportPanel:
         self._report_panel = BudgyReportPanel(self.budgy_config, self, object_id='#report-panel')
         return self._report_panel
 

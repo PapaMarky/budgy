@@ -72,10 +72,15 @@ class MessagePanel(UIPanel):
         self.message_element.show()
 
     def process_event(self, event: pygame.event.Event) -> bool:
-        if event.type == SHOW_MESSAGE:
-            if event.level in self.level_map:
-                self.level_map[event.level](event.message)
-            else:
-                self.error(f'BAD MESSAGE LEVEL: {event.level} ({event.message})')
-        elif event.type == CLEAR_MESSAGES:
-            self.hide_all_messages()
+        event_consumed = super().process_event(event)
+        if not event_consumed:
+            if event.type == SHOW_MESSAGE:
+                if event.level in self.level_map:
+                    self.level_map[event.level](event.message)
+                else:
+                    self.error(f'BAD MESSAGE LEVEL: {event.level} ({event.message})')
+                event_consumed = True
+            elif event.type == CLEAR_MESSAGES:
+                self.hide_all_messages()
+                event_consumed = True
+        return event_consumed

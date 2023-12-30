@@ -29,7 +29,7 @@ class BudgyDatabase(object):
                   f'name TEXT, ' \
                   f'memo TEXT, ' \
                   f'checknum TEXT, ' \
-                  f'category TEXT' \
+                  f'exclude BOOL DEFAULT 0' \
                   f');'
             result = self.execute(sql)
             logging.debug(f'Create Table Result: {result}')
@@ -68,14 +68,14 @@ class BudgyDatabase(object):
             'name': row[5],
             'memo': row[6],
             'checknum': checknum,
-            'category': row[8]
+            'exclude': row[8] != 0
         }
 
     def insert_record(self, record):
         checknum = "" if record['checknum'] is None else record['checknum']
-        sql = f'INSERT INTO {self.TABLE_NAME} (fitid, account, type, posted, amount, name, memo, checknum, category) ' \
+        sql = f'INSERT INTO {self.TABLE_NAME} (fitid, account, type, posted, amount, name, memo, checknum, exclude) ' \
               f'VALUEs ({record["fitid"]}, "{record["account"]}", "{record["type"]}", "{record["posted"]}", ' \
-              f'{record["amount"]}, "{record["name"]}", "{record["memo"]}", "{checknum}", "{record["category"]}" );'
+              f'{record["amount"]}, "{record["name"]}", "{record["memo"]}", "{checknum}", "{record["exclude"]}" );'
         result = self.execute(sql)
         self.connection.commit()
 
@@ -141,7 +141,7 @@ class BudgyDatabase(object):
         return data
 
     def all_records(self):
-        sql = f'SELECT fitid, account, type, posted, amount, name, memo, checknum, category FROM {self.TABLE_NAME} ORDER BY posted'
+        sql = f'SELECT fitid, account, type, posted, amount, name, memo, checknum, exclude FROM {self.TABLE_NAME} ORDER BY posted'
         print(sql)
         result = self.execute(sql)
         records = []
@@ -156,7 +156,7 @@ class BudgyDatabase(object):
                     'name': record[5],
                     'memo': record[6],
                     'checknum': record[7],
-                    'category': record[8]
+                    'exclude': record[8] != 0
                 })
         return records
 
@@ -170,3 +170,9 @@ class BudgyDatabase(object):
         }
         for record in newrecords:
             self.merge_record(record)
+
+    def exclude_fitid(self, fitid:str, exclude:bool):
+        exclude_value = 'True' if exclude else 'False'
+        sql = f'UPDATE {self.TABLE_NAME} SET exclude = {exclude_value} WHERE fitid = "{fitid}"'
+        self.execute(sql)
+        self.connection.commit()

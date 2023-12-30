@@ -8,7 +8,9 @@ from pygame_gui.core import ObjectID
 from pygame_gui.elements import UIPanel, UIVerticalScrollBar, UILabel
 
 import budgy.gui.constants
-from budgy.gui.constants import BUTTON_HEIGHT, BUTTON_WIDTH
+from budgy.gui.toggle_button import ToggleButton, TOGGLE_BUTTON
+
+from budgy.gui.constants import BUTTON_HEIGHT
 from budgy.gui.events import post_show_message
 
 class RecordView(UIPanel):
@@ -22,7 +24,7 @@ class RecordView(UIPanel):
         'name',
         'memo',
         'checknum',
-        'category'
+        'exclude'
     )
     field_defs = {
         'posted': {
@@ -45,10 +47,10 @@ class RecordView(UIPanel):
             'width': 400,
             'oid': ObjectID(class_id='@record-field', object_id='#field-left')
         },
-        'category': {
+        'exclude': {
             'position': 4,
             'width': 100,
-            'oid': ObjectID(class_id='@record-field', object_id='#field-left')
+            'oid': ObjectID(class_id='@record-button', object_id='#field-button')
         }
     }
     def __init__(self,*args, **kwargs):
@@ -59,24 +61,53 @@ class RecordView(UIPanel):
         self._fields:List[UILabel] = []
 
         x = 0
+        self._exclude_button:ToggleButton = None
         for f in self.field_defs:
             w = self.field_defs[f]['width']
             oid = self.field_defs[f]['oid']
-            item = UILabel(
-                pygame.Rect(x, 0, w, self.RECORD_VIEW_HEIGHT),
-                '',
-                container=self, parent_element=self,
-                object_id=oid,
-                anchors={
-                    'top': 'top', 'left': 'left',
-                    'bottom': 'bottom', 'right': 'left'
-                },
-            )
+            item = None
+            if f == 'exclude':
+                item = ToggleButton(
+                    False,
+                    'Excluded',
+                    'Included',
+                    pygame.Rect(x, 0, w, self.RECORD_VIEW_HEIGHT),
+                    'NOT SET',
+                    user_data={
+
+                    },
+                    container=self, parent_element=self,
+                    object_id=oid,
+                    anchors={
+                        'top': 'top', 'left': 'left',
+                        'bottom': 'bottom', 'right': 'left'
+                    }
+                )
+                item.state = False
+                item.disable()
+                self._exclude_button = item
+            else:
+                item = UILabel(
+                    pygame.Rect(x, 0, w, self.RECORD_VIEW_HEIGHT),
+                    '',
+                    container=self, parent_element=self,
+                    object_id=oid,
+                    anchors={
+                        'top': 'top', 'left': 'left',
+                        'bottom': 'bottom', 'right': 'left'
+                    },
+                )
             x += w + 1
             self._fields.append(item)
         self.set_record(None)
 
     def set_record(self, record):
+        if record is None:
+            self._exclude_button.disable()
+            self._exclude_button.user_data = None
+        else:
+            self._exclude_button.enable()
+
         for field in self.field_names:
             if record is None:
                 self._record[field] = ''
@@ -86,15 +117,16 @@ class RecordView(UIPanel):
                 self._record[field] = record[field]
             if field in self.field_defs:
                 i = self.field_defs[field]['position']
-                value = str(self._record[field])
+                value = str(self._record[field]) if field != 'exclude' else self._record[field]
                 if field == 'amount' and isinstance(value, float):
                     value = f'{float(value):8.02f}'
                 elif field == 'posted':
                     value = value[:10]
-                m = re.match(r'^(\d{4}-\d{2}-\d{2})', value)
-                if m:
-                    value = m.group(1)
-                self._fields[i].set_text(str(value))
+                elif field == 'exclude' and value != '':
+                    self._fields[i].state = value
+                    self._fields[i].user_data = self._record
+                if field != 'exclude':
+                    self._fields[i].set_text(str(value))
 
 class RecordViewPanel(UIPanel):
     def __init__(self, *args, **kwargs):
@@ -158,16 +190,21 @@ class RecordViewPanel(UIPanel):
         self._data = rows
         self.starting_row = 0
         self.last_start_percent = self.scrollbar.start_percentage
-        pct = self.visible_records / len(self._data)
+        n_records = len(self._data)
+        pct = self.visible_records / n_records if n_records != 0 else 0
         # do I need to clamp?
         self.scrollbar.set_visible_percentage(pct)
         self.render_data()
 
     def process_event(self, event: pygame.event.Event) -> bool:
-        if self.scrollbar.has_moved_recently:
-            if self.scrollbar.start_percentage != self.last_start_percent:
-                self.last_start_percent = self.scrollbar.start_percentage
-                self.starting_row = math.ceil(len(self._data) * self.last_start_percent)
-                self.render_data()
-                last = min(self.starting_row + self.visible_records, len(self._data))
-                post_show_message(f'Showing Records {self.starting_row} to {last} out of {len(self._data)}')
+        event_consumed = super().process_event(event)
+        if not event_consumed:
+            if self.scrollbar.has_moved_recently:
+                if self.scrollbar.start_percentage != self.last_start_percent:
+                    self.last_start_percent = self.scrollbar.start_percentage
+                    self.starting_row = math.ceil(len(self._data) * self.last_start_percent)
+                    self.render_data()
+                    last = min(self.starting_row + self.visible_records, len(self._data))
+                    post_show_message(f'Showing Records {self.starting_row} to {last} out of {len(self._data)}')
+                event_consumed = True
+        return event_consumed

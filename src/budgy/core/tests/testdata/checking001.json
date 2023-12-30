@@ -8,7 +8,7 @@
         "name": "CHASE ACH JPMORGAN CHASE ID90081",
         "memo": "ACH, Withdrawal, Processed",
         "checknum": null,
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "CHECK",
@@ -19,7 +19,7 @@
         "name": "Check # 1566",
         "memo": "Check, Draft, Withdrawal, Processed",
         "checknum": "1566",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "ATM",
@@ -30,7 +30,7 @@
         "name": "Withdrawal PROVIDENT CU,15425 LO",
         "memo": "ATM, Withdrawal, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DEBIT",
@@ -41,7 +41,7 @@
         "name": "Tfr to ***3074 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DEBIT",
@@ -52,7 +52,7 @@
         "name": "Tfr to ***6996 college living ex",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DEBIT",
@@ -63,7 +63,7 @@
         "name": "Tfr to ***6996 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DEBIT",
@@ -74,7 +74,7 @@
         "name": "Tfr to ***6997 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DIRECTDEP",
@@ -85,7 +85,7 @@
         "name": "TRANSFER PAYPAL IDPAYPALSD11",
         "memo": "ACH, Deposit, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DEBIT",
@@ -96,7 +96,7 @@
         "name": "INST XFER PAYPAL IDPAYPALSI77 In",
         "memo": "ACH, Withdrawal, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DEBIT",
@@ -107,7 +107,7 @@
         "name": "INST XFER PAYPAL IDPAYPALSI77 In",
         "memo": "ACH, Withdrawal, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DEP",
@@ -118,7 +118,7 @@
         "name": "SB Check/Cash Deposit - Providen",
         "memo": "Deposit, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DIRECTDEP",
@@ -129,7 +129,7 @@
         "name": "PAYROLL MIDORI NISHIMURA ID90024",
         "memo": "ACH, Deposit, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DEBIT",
@@ -140,7 +140,7 @@
         "name": "INVESTMENT VANGUARD BUY IDVMC PU",
         "memo": "ACH, Withdrawal, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DIRECTDEP",
@@ -151,7 +151,7 @@
         "name": "DEPOSIT CA DIR ACH ID3680440016",
         "memo": "ACH, Deposit, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DIRECTDEP",
@@ -162,7 +162,7 @@
         "name": "DEPOSIT CA DIR ACH ID3680440016",
         "memo": "ACH, Deposit, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DEBIT",
@@ -173,7 +173,7 @@
         "name": "UC Merced Univ CA Merced ID12700",
         "memo": "ACH, Withdrawal, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DEBIT",
@@ -184,7 +184,7 @@
         "name": "Tfr to ***6996 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DEBIT",
@@ -195,7 +195,7 @@
         "name": "Tfr to ***6997 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DEBIT",
@@ -206,7 +206,7 @@
         "name": "INST XFER PAYPAL IDPAYPALSI77 In",
         "memo": "ACH, Withdrawal, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DIRECTDEP",
@@ -217,7 +217,7 @@
         "name": "TRANSFER PAYPAL IDPAYPALSD11",
         "memo": "ACH, Deposit, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DIRECTDEP",
@@ -228,7 +228,7 @@
         "name": "DIRECT DEP SHAPE SECURITY I ID91",
         "memo": "ACH, Deposit, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DEBIT",
@@ -239,7 +239,7 @@
         "name": "CONTRIB CA DIR ACH ID2680440016",
         "memo": "ACH, Withdrawal, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DEBIT",
@@ -250,7 +250,7 @@
         "name": "CONTRIB CA DIR ACH ID2680440016",
         "memo": "ACH, Withdrawal, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DEBIT",
@@ -261,7 +261,7 @@
         "name": "Tfr to ***6997 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DEBIT",
@@ -272,7 +272,7 @@
         "name": "Tfr to ***6996 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DEBIT",
@@ -283,7 +283,7 @@
         "name": "INST XFER PAYPAL IDPAYPALSI77 In",
         "memo": "ACH, Withdrawal, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DEBIT",
@@ -294,7 +294,7 @@
         "name": "Tfr to ***6997 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DEBIT",
@@ -305,7 +305,7 @@
         "name": "Tfr to ***6996 Internet Banking",
         "memo": "InternetBanking, Telephone, Withdrawal, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "CHECK",
@@ -316,7 +316,7 @@
         "name": "Check # 1568",
         "memo": "Check, Draft, Withdrawal, Processed",
         "checknum": "1568",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DIRECTDEP",
@@ -327,7 +327,7 @@
         "name": "DIRECT DEP SHAPE SECURITY I ID91",
         "memo": "ACH, Deposit, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     },
     {
         "type": "DIV",
@@ -338,6 +338,6 @@
         "name": "Dividend Credit",
         "memo": "Dividend, Interest, Deposit, Processed",
         "checknum": "",
-        "category": ""
+        "exclude": 0
     }
 ]

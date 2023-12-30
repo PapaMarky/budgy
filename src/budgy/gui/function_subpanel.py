@@ -3,7 +3,6 @@ import pygame
 from pygame_gui.core import ObjectID
 from pygame_gui.elements import UIPanel
 
-from budgy.core.database import BudgyDatabase
 from budgy.gui.configdata import BudgyConfig
 from budgy.gui.constants import MARGIN
 
@@ -14,8 +13,8 @@ class BudgyFunctionSubPanel(UIPanel):
         self.parent_panel = function_panel
         x = MARGIN
         y = MARGIN
-        w = function_panel.relative_rect.width - (2 * MARGIN)
-        h = function_panel.relative_rect.height - (2 * MARGIN)
+        w = function_panel.relative_rect.width - (4 * MARGIN)
+        h = function_panel.relative_rect.height - (4 * MARGIN)
         subpanel_rect: pygame.Rect = pygame.Rect(x, y, w, h)
         super().__init__(
             subpanel_rect,

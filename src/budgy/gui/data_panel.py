@@ -111,50 +111,52 @@ class BudgyDataPanel(BudgyFunctionSubPanel):
                 return True
 
     def process_event(self, event: pygame.event.Event) -> bool:
-        if event.type == pygame_gui.UI_BUTTON_PRESSED:
-            if event.ui_element == self._import_data_button:
-                print('IMPORT DATA')
-                # Create the import data file dialog
-                rect = pygame.Rect(0, 0, 500, 400)
-                show_import_data_file_dialog(self.budgy_config.import_data_path)
-                self._import_data_button.disable()
-                return True
-            if event.ui_element == self._clear_data_button:
+        event_consumed = super().process_event(event)
+        if not event_consumed:
+            if event.type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == self._import_data_button:
+                    print('IMPORT DATA')
+                    # Create the import data file dialog
+                    rect = pygame.Rect(0, 0, 500, 400)
+                    show_import_data_file_dialog(self.budgy_config.import_data_path)
+                    self._import_data_button.disable()
+                    event_consumed = True
+                if event.ui_element == self._clear_data_button:
+                    event_data = {
+                        'ui_element': self
+                    }
+                    pygame.event.post(pygame.event.Event(budgy.gui.events.DELETE_ALL_DATA, event_data))
+                    event_consumed = True
+            if event.type == pygame_gui.UI_WINDOW_CLOSE and is_import_file_dialog(event.ui_element):
+                self._import_data_button.enable()
+                event_consumed = True
+            if event.type == pygame_gui.UI_FILE_DIALOG_PATH_PICKED and is_import_file_dialog(event.ui_element):
+                print(f' - PATH PICKED: {event.text}')
                 event_data = {
+                    'import_path': event.text,
                     'ui_element': self
                 }
-                pygame.event.post(pygame.event.Event(budgy.gui.events.DELETE_ALL_DATA, event_data))
-                return True
-        if event.type == pygame_gui.UI_WINDOW_CLOSE and is_import_file_dialog(event.ui_element):
-            self._import_data_button.enable()
-            return True
-        if event.type == pygame_gui.UI_FILE_DIALOG_PATH_PICKED and is_import_file_dialog(event.ui_element):
-            print(f' - PATH PICKED: {event.text}')
-            event_data = {
-                'import_path': event.text,
-                'ui_element': self
-            }
-            pygame.event.post(pygame.event.Event(budgy.gui.events.DATA_SOURCE_SELECTED, event_data))
-            return True
-        if event.type == budgy.gui.events.DATA_SOURCE_SELECTED:
-            self.import_path = event.import_path
-            print(f'LOAD DATA: {self.import_path}')
-            if not os.path.exists(self.import_path):
-                rect = pygame.Rect(100, 100, 400, 200)
-                UIMessageWindow(rect,
-                                f'<br/><b>File does not exist:</b> <br/>{os.path.basename(event.import_path)}',
-                                manager=None,
-                                window_title='File Missing')
-                self.import_path = None
-            else:
-                # import the data
-                show_confirm_import_dialog()
-            return True
-        if event.type == budgy.gui.events.DELETE_ALL_DATA:
-            print('CLEAR DATA (data panel)')
-            show_confirm_delete_all_dialog()
-            return True
-        if self.process_confirm_dialog_events(event):
-            return True
+                pygame.event.post(pygame.event.Event(budgy.gui.events.DATA_SOURCE_SELECTED, event_data))
+                event_consumed = True
+            if event.type == budgy.gui.events.DATA_SOURCE_SELECTED:
+                self.import_path = event.import_path
+                print(f'LOAD DATA: {self.import_path}')
+                if not os.path.exists(self.import_path):
+                    rect = pygame.Rect(100, 100, 400, 200)
+                    UIMessageWindow(rect,
+                                    f'<br/><b>File does not exist:</b> <br/>{os.path.basename(event.import_path)}',
+                                    manager=None,
+                                    window_title='File Missing')
+                    self.import_path = None
+                else:
+                    # import the data
+                    show_confirm_import_dialog()
+                event_consumed = True
+            if event.type == budgy.gui.events.DELETE_ALL_DATA:
+                print('CLEAR DATA (data panel)')
+                show_confirm_delete_all_dialog()
+                event_consumed = True
+            if self.process_confirm_dialog_events(event):
+                event_consumed = True
 
-        return False
+        return event_consumed

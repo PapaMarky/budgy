@@ -15,6 +15,8 @@ CLEAR_MESSAGES = pygame_event.custom_type()
 SHOW_PROGRESS = pygame_event.custom_type()
 HIDE_PROGRESS = pygame_event.custom_type()
 
+TOGGLE_BUTTON = pygame_event.custom_type()
+
 def post_show_message(message, level='info'):
     event_data = {
         'message': message,

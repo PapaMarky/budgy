@@ -31,7 +31,7 @@ def load_ofx_file(ofxfile:Path):
                 'name': txn.name,
                 'memo': txn.memo,
                 'checknum': checknum,
-                'category': ""
+                'exclude': 0
             }
             records.append(record)
     return records
