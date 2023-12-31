@@ -1,8 +1,8 @@
 import datetime
-from pathlib import Path
 
-import sqlite3
 import logging
+import sqlite3
+from typing import List, Dict
 
 class BudgyDatabase(object):
     TABLE_NAME = 'transactions'
@@ -127,21 +127,48 @@ class BudgyDatabase(object):
 
     def get_report(self):
         sql = ('SELECT STRFTIME("%Y", posted) AS year, STRFTIME("%m", posted) AS month, SUM(amount) AS expences FROM transactions '
-               'WHERE amount < 0 GROUP BY year, month ORDER BY year, month DESC;')
+               'WHERE amount < 0 AND NOT exclude GROUP BY year, month ORDER BY year, month DESC;')
         print(sql)
         result = self.execute(sql)
-        data = []
+        data = {}
         if result is not None:
             for row in result:
-                data.append({
-                    'year': row[0],
-                    'month': row[1],
-                    'expenses': row[2]
-                })
+                year = row[0]
+                expense_month = int(row[1]) - 1
+                expense = row[2]
+                if year not in data:
+                    data[year] = {
+                        'months': [None, None, None, None, None, None, None, None, None, None, None, None],
+                        'average': None
+                    }
+                data[year]['months'][expense_month] = expense
+
+            for year in data:
+                sum = 0
+                n = 0
+                for monthly_expense in data[year]['months']:
+                    if monthly_expense is not None:
+                        sum += float(monthly_expense)
+                        n += 1
+                data[year]['average'] = sum / n
+
         return data
 
-    def all_records(self):
-        sql = f'SELECT fitid, account, type, posted, amount, name, memo, checknum, exclude FROM {self.TABLE_NAME} ORDER BY posted'
+
+    def all_records(self, year=None, month=None) -> List[Dict]:
+        where_clause = ''
+        if year is not None or month is not None:
+            where_clause = ' WHERE '
+            and_clause = ''
+            if year is not None:
+                where_clause += f'STRFTIME("%Y", posted) = "{year}"'
+                and_clause = ' AND '
+            if month is not None:
+                where_clause += and_clause + f'STRFTIME("%m", posted) = "{month}" '
+        sql = (f'SELECT fitid, account, type, posted, amount, name, memo, checknum, exclude '
+               f'FROM {self.TABLE_NAME} '
+               f'{where_clause}'
+               f'ORDER BY posted')
         print(sql)
         result = self.execute(sql)
         records = []

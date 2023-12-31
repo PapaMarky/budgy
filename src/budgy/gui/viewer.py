@@ -110,6 +110,7 @@ class BudgyViewerApp(GuiApp):
         start, end = self._database.get_date_range()
         self.top_panel.set_data_range(start, end)
         self.function_panel.data_panel.set_data(records)
+        self.function_panel.report_panel.rebuild_report()
 
     def handle_event(self, event):
         if super().handle_event(event):
@@ -125,11 +126,9 @@ class BudgyViewerApp(GuiApp):
                 print(f'New Function: {event.text}')
                 if event.text == 'Report Functions':
                     self.function_panel.show_subpanel('report')
-                    self.message_panel.info('Showing Report Panel')
                     return True
                 if event.text == 'Data Functions':
                     self.function_panel.show_subpanel('data')
-                    self.message_panel.error('Showing Data Panel')
                     return True
                 if event.text == 'Exit':
                     self.is_running = False

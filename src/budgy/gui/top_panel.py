@@ -113,7 +113,7 @@ class TopPanel(UIPanel):
         # rect.topright = (BUTTON_HEIGHT, MARGIN)
         self.drop_down_menu = UIDropDownMenu(
             option_list,
-            data_function_option,
+            report_function_option,
             rr,
             manager=self.ui_manager,
             container=None,
