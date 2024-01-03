@@ -12,6 +12,7 @@ class ToggleButton(UIButton):
                  false_string:str,
                  *args,
                  user_data = None,
+                 callback = None,
                  **kwargs):
         super().__init__(*args, **kwargs)
         self._state = initial_state
@@ -19,6 +20,7 @@ class ToggleButton(UIButton):
         self._false_string = false_string
         self._user_data = user_data
         self.state = self._state
+        self.callback = callback
 
     @property
     def user_data(self):
@@ -34,11 +36,14 @@ class ToggleButton(UIButton):
 
     @state.setter
     def state(self, new_state):
+        changed = self._state != new_state
         self._state = new_state
         if self._state:
             self.set_text(self._true_string)
         else:
             self.set_text(self._false_string)
+        if changed and self.callback:
+            self.callback(self._state)
 
     def process_event(self, event: pygame.event.Event) -> bool:
         event_consumed = super().process_event(event)

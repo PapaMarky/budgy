@@ -53,14 +53,30 @@ class RecordView(UIPanel):
             'oid': ObjectID(class_id='@record-button', object_id='#field-button')
         }
     }
+
     def __init__(self,*args, **kwargs):
         kwargs.__setitem__('object_id',
-                           ObjectID(class_id='@record-panel'))
+                           ObjectID(class_id='@record-view-panel'))
         super().__init__(*args, **kwargs)
         self._record:dict = {}
         self._fields:List[UILabel] = []
-
+        layer = 1
+        self._highlight = UIPanel(
+            pygame.Rect(0,0, self.relative_rect.width, self.relative_rect.height),
+            starting_height=layer,
+            container=self,
+            parent_element=self,
+            object_id=ObjectID(class_id='@record-highlight'),
+            anchors=kwargs.get('anchors')
+        )
+        layer += 1
         x = 0
+        def toggle_callback(state):
+            print(f'NEW EXCLUDE STATE: {state}')
+            print(f'- button state: {self._exclude_button.state}')
+            if self.visible:
+                self._record['exclude'] = state
+
         self._exclude_button:ToggleButton = None
         for f in self.field_defs:
             w = self.field_defs[f]['width']
@@ -76,8 +92,10 @@ class RecordView(UIPanel):
                     user_data={
 
                     },
+                    callback=toggle_callback,
                     container=self, parent_element=self,
                     object_id=oid,
+                    starting_height=layer,
                     anchors={
                         'top': 'top', 'left': 'left',
                         'bottom': 'bottom', 'right': 'left'
@@ -95,7 +113,7 @@ class RecordView(UIPanel):
                     anchors={
                         'top': 'top', 'left': 'left',
                         'bottom': 'bottom', 'right': 'left'
-                    },
+                    }
                 )
             x += w + 1
             self._fields.append(item)
@@ -104,9 +122,13 @@ class RecordView(UIPanel):
     def set_record(self, record):
         if record is None:
             self._exclude_button.disable()
+            self._exclude_button.hide()
             self._exclude_button.user_data = None
+            self._highlight.visible = False
         else:
             self._exclude_button.enable()
+            if self.visible:
+                self._exclude_button.show()
 
         for field in self.field_names:
             if record is None:
@@ -125,8 +147,25 @@ class RecordView(UIPanel):
                 elif field == 'exclude' and value != '':
                     self._fields[i].state = value
                     self._fields[i].user_data = self._record
+                    if self.visible:
+                        if value:
+                            self._highlight.hide()
+                        else:
+                            self._highlight.show()
                 if field != 'exclude':
                     self._fields[i].set_text(str(value))
+
+    def process_event(self, event: pygame.event.Event) -> bool:
+        event_consumed = super().process_event(event)
+        if not event_consumed:
+            if event.type == TOGGLE_BUTTON:
+                fitid = event.user_data["fitid"]
+                if self._record['fitid'] == fitid:
+                    if self._record['exclude']:
+                        self._highlight.hide()
+                    else:
+                        self._highlight.show()
+        return event_consumed
 
 class RecordViewPanel(UIPanel):
     def __init__(self, *args, **kwargs):
@@ -180,6 +219,9 @@ class RecordViewPanel(UIPanel):
 
 
     def render_data(self):
+        if not self.visible:
+            return
+
         for i in range(self.visible_records):
             if self.starting_row + i < len(self._data):
                 self.record_views[i].set_record(self._data[self.starting_row + i])

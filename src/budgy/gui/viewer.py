@@ -126,9 +126,11 @@ class BudgyViewerApp(GuiApp):
                 print(f'New Function: {event.text}')
                 if event.text == 'Report Functions':
                     self.function_panel.show_subpanel('report')
+                    self.function_panel.report_panel.render_data()
                     return True
                 if event.text == 'Data Functions':
                     self.function_panel.show_subpanel('data')
+                    self.function_panel.data_panel.render_data()
                     return True
                 if event.text == 'Exit':
                     self.is_running = False

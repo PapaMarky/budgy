@@ -93,6 +93,9 @@ class BudgyDataPanel(BudgyFunctionSubPanel):
     def set_data(self, new_data):
         self._records_view_panel.set_data(new_data)
 
+    def render_data(self):
+        self._records_view_panel.render_data()
+
     def process_confirm_dialog_events(self, event: pygame.event.Event) -> bool:
         if event.type == pygame_gui.UI_CONFIRMATION_DIALOG_CONFIRMED:
             if is_confirm_import_dialog(event.ui_element):

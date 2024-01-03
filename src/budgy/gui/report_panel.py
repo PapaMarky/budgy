@@ -175,6 +175,10 @@ class BudgyReportPanel(BudgyFunctionSubPanel):
                 post_show_message(f'ERROR: Year {year} not found in summary table', 'error')
 
 
+    def render_data(self):
+        if self.detail_record_view is not None:
+            self.detail_record_view.render_data()
+
     def create_detail_report(self, year, month):
         if self.detail_panel is not None:
             self.detail_panel.kill()
@@ -235,6 +239,6 @@ class BudgyReportPanel(BudgyFunctionSubPanel):
             elif event.type == TOGGLE_BUTTON:
                 fitid = event.user_data["fitid"]
                 self.database.exclude_fitid(fitid, event.state)
-                event_consumed = True
+                # event_consumed = True
                 self.update_summary_table()
         return event_consumed

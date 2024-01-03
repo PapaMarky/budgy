@@ -83,15 +83,15 @@
       "normal_border": "#0000ff"
     }
   },
-  "#records_view_panel": {
+  "@record-view-panel": {
     "colours": {
-      "dark_bg": "#555555",
-      "normal_border": "#ff0000"
+      "dark_bg": "#cccccc",
+      "xnormal_border": "#ff0000"
     }
   },
   "#record-panel": {
     "colours": {
-      "dark_bg": "grey",
+      "dark_bg": "#ff00ff",
       "normal_border": "grey"
     }
   },
@@ -111,7 +111,7 @@
   },
   "@record-field": {
     "colours": {
-      "dark_bg": "white",
+      "dark_bg": "#00000000",
       "normal_text": "black"
     }
   },
@@ -121,9 +121,15 @@
       "normal_text": "black"
     }
   },
+  "@record-highlight": {
+    "colours": {
+      "dark_bg": "white",
+      "normal_border": "blue"
+    }
+  },
   "#report-panel": {
     "colours": {
-      "dark_bg": "#555555",
+      "dark_bg": "gray",
       "normal_border": "#ffffff"
     }
   },
