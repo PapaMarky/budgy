@@ -118,6 +118,10 @@ class BudgyReportPanel(BudgyFunctionSubPanel):
                     'bottom': 'top', 'right': 'left'
                 }
             )
+            year_label.set_tooltip(f'<b><center>{year}</center></b><br/>'
+                                   f'<b>Min: </b>{report_data[year]["minimum"]:.0f}<br/>'
+                                   f'<b>Max: </b>{report_data[year]["maximum"]:.0f}<br/>'
+                                   f'<b>Ave: </b>{report_data[year]["average"]:.0f}')
             self.row_items[year]['label'] = year_label
             x += column0_width + 1
 

@@ -146,8 +146,24 @@ class BudgyDatabase(object):
             for year in data:
                 sum = 0
                 n = 0
+                data[year]['minimum'] = None
+                data[year]['maximum'] = None
+                max_expense = None
                 for monthly_expense in data[year]['months']:
+                    # NOTE: expenses are negative so the max expense is less-than the others
                     if monthly_expense is not None:
+                        if data[year]['minimum'] is None:
+                            data[year]['minimum'] = monthly_expense
+                        else:
+                            if monthly_expense > data[year]['minimum']:
+                                data[year]['minimum'] = monthly_expense
+
+                        if data[year]['maximum'] is None:
+                            data[year]['maximum'] = monthly_expense
+                        else:
+                            if monthly_expense < data[year]['maximum']:
+                                data[year]['maximum'] = monthly_expense
+
                         sum += float(monthly_expense)
                         n += 1
                 data[year]['average'] = sum / n
