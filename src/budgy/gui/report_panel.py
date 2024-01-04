@@ -129,7 +129,7 @@ class BudgyReportPanel(BudgyFunctionSubPanel):
             button = ExpenseDetailButton(
                 year, None,
                 pygame.Rect(x, y, column_width - 1, column_height),
-                f'{average:.0f}',
+                f'{abs(average):.0f}',
                 container=self,
                 anchors={
                     'top': 'top', 'left': 'left',
@@ -148,7 +148,7 @@ class BudgyReportPanel(BudgyFunctionSubPanel):
                     button = ExpenseDetailButton(
                         year, f'{month:02d}',
                         pygame.Rect(x, y, column_width - 1, column_height),
-                        f'{float(monthly_expense):.0f}',
+                        f'{abs(float(monthly_expense)):.0f}',
                         container=self,
                         anchors={
                             'top': 'top', 'left': 'left',
@@ -166,13 +166,13 @@ class BudgyReportPanel(BudgyFunctionSubPanel):
         for year in report_data:
             if year in self.row_items:
                 average = report_data[year]['average']
-                self.row_items[year]['buttons'][0].set_text(f'{average:.0f}')
+                self.row_items[year]['buttons'][0].set_text(f'{abs(average):.0f}')
                 for month in range(12):
                     expense = report_data[year]['months'][month]
                     if expense is not None:
                         month_item = self.row_items[year]['buttons'][month+1] # add one to skip monthly average
                         if month_item is not None:
-                            month_item.set_text(f'{float(expense):.0f}')
+                            month_item.set_text(f'{abs(float(expense)):.0f}')
                         else:
                             post_show_message(f'ERROR: Month {year}/{month} not found in summary table', 'error')
             else:
