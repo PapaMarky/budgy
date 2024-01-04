@@ -245,6 +245,13 @@ class RecordViewPanel(UIPanel):
     def process_event(self, event: pygame.event.Event) -> bool:
         event_consumed = super().process_event(event)
         if not event_consumed:
+            if event.type == pygame.MOUSEWHEEL:
+                # Trick the scrollbar into thinking it got the event
+                self.scrollbar.scroll_wheel_moved = True
+                self.scrollbar.scroll_wheel_amount = event.y
+                # forcing an update makes the scrolling smoother
+                self.scrollbar.update(0.01)
+
             if self.scrollbar.has_moved_recently:
                 if self.scrollbar.start_percentage != self.last_start_percent:
                     self.last_start_percent = self.scrollbar.start_percentage
