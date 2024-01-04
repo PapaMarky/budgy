@@ -59,6 +59,7 @@ class RecordView(UIPanel):
                            ObjectID(class_id='@record-view-panel'))
         super().__init__(*args, **kwargs)
         self._record:dict = {}
+        self._outer_record = None
         self._fields:List[UILabel] = []
         layer = 1
         self._highlight = UIPanel(
@@ -72,10 +73,12 @@ class RecordView(UIPanel):
         layer += 1
         x = 0
         def toggle_callback(state):
-            print(f'NEW EXCLUDE STATE: {state}')
-            print(f'- button state: {self._exclude_button.state}')
             if self.visible:
                 self._record['exclude'] = state
+                # TODO self._record and self._outer_records should always be in sync. Figure out a way to replace _record
+                # with _outer_record so we only have one copy
+                if self._outer_record is not None:
+                    self._outer_record['exclude'] = state
 
         self._exclude_button:ToggleButton = None
         for f in self.field_defs:
@@ -120,6 +123,7 @@ class RecordView(UIPanel):
         self.set_record(None)
 
     def set_record(self, record):
+        self._outer_record = record
         if record is None:
             self._exclude_button.disable()
             self._exclude_button.hide()
