@@ -5,7 +5,8 @@ import sqlite3
 from typing import List, Dict
 
 class BudgyDatabase(object):
-    TABLE_NAME = 'transactions'
+    TXN_TABLE_NAME = 'transactions'
+    CATEGORY_TABLE_NAME = 'categories'
 
     def __init__(self, path):
         self.db_path = path
@@ -18,7 +19,8 @@ class BudgyDatabase(object):
         rows = result.fetchall()
         return len(rows) > 0
 
-    def _create_table_if_missing(self, table_name):
+    def _create_txn_table_if_missing(self):
+        table_name = self.TXN_TABLE_NAME
         if not self.table_exists(table_name):
             sql = f'CREATE TABLE IF NOT EXISTS {table_name} (' \
                   f'fitid INT, ' \
@@ -28,6 +30,7 @@ class BudgyDatabase(object):
                   f'amount FLOAT, ' \
                   f'name TEXT, ' \
                   f'memo TEXT, ' \
+                  f'category INT, ' \
                   f'checknum TEXT, ' \
                   f'exclude BOOL DEFAULT 0' \
                   f');'
@@ -37,6 +40,91 @@ class BudgyDatabase(object):
             result = self.execute(sql)
             logging.debug(f'Create Unique Index: {result}')
 
+    def _create_category_table_if_missing(self):
+        table_name = self.CATEGORY_TABLE_NAME
+        if not self.table_exists(table_name):
+            sql = f'CREATE TABLE IF NOT EXISTS {table_name} (' \
+                  f'id INTEGER PRIMARY KEY AUTOINCREMENT, ' \
+                  f'name TEXT, ' \
+                  f'is_expense BOOL DEFAULT 0' \
+                  f');'
+            result = self.execute(sql)
+            logging.debug(f'Create Table Result: {result}')
+            # load default values
+            default_categories = [
+                ('No Category', False),
+                # Expense categories
+                ('Expense', True),
+                ('Auto', True),
+                ('Auto: Gas', True),
+                ('Auto: Purchase', True),
+                ('Auto: Repairs', True),
+                ('Auto: Service', True),
+                ('Cash Withdrawal', True),
+                ('Clothing', True),
+                ('Dry Cleaning', True),
+                ('Education', True),
+                ('Education: Books', True),
+                ('Education: College', True),
+                ('Education: Professional', True),
+                ('Education: Tuition', True),
+                ('Entertainment', True),
+                ('Entertainment: Drinks', True),
+                ('Entertainment: Coffee', True),
+                ('Entertainment: Dining', True),
+                ('Entertainment: Movies', True),
+                ('Entertainment: Video Streaming', True),
+                ('Groceries / Food', True),
+                ('Household', True),
+                ('Household: Cleaning', True),
+                ('Household: Furniture', True),
+                ('Household: Gardener', True),
+                ('Household: Pool Maintenance', True),
+                ('Household: Remodel', True),
+                ('Household: Rent', True),
+                ('Household: Repairs', True),
+                ('Insurance', True),
+                ('Insurance: Auto', True),
+                ('Insurance: Home', True),
+                ('Insurance: Life', True),
+                ('Insurance: Medical', True),
+                ('Postage / Shipping', True),
+                ('Recreation', True),
+                ('Recreation: Golf', True),
+                ('Recreation: Camping', True),
+                ('Rideshare', True),
+                ('Taxes', True),
+                ('Taxes: Federal', True),
+                ('Taxes: State', True),
+                ('Travel', True),
+                ('Travel: Hotel', True),
+                ('Travel: Tours', True),
+                ('Travel: Transportation (air, sea, rail)', True),
+                ('Utilities', True),
+                ('Utilities: Cable', True),
+                ('Utilities: Gas / Electric', True),
+                ('Utilities: Internet', True),
+                ('Utilities: Phone', True),
+                ('Utilities: Water', True),
+                # Income Categories
+                ('Income', False),
+                ('Income: Dividends', False),
+                ('Income: Interest', False),
+                ('Income: Salary / Wages', False),
+                ('Income: Unemployment', False),
+                ('Savings', False),
+                ('Savings: College fund', False),
+                ('Savings: Investment', False),
+                ('Savings: Retirement', False),
+            ]
+
+            result = result.executemany(
+                f'INSERT OR REPLACE INTO {self.CATEGORY_TABLE_NAME} (name, is_expense) VALUES (?, ?)',
+                default_categories
+            )
+            self.connection.commit()
+            print(f'RESULT: {result}')
+
     def execute(self, sql):
         cursor = self.connection.cursor()
         logging.debug(f'EXECUTE: {sql}')
@@ -45,10 +133,11 @@ class BudgyDatabase(object):
     def _open_database(self):
         logging.debug(f'Opening {self.db_path}')
         self.connection = sqlite3.connect(self.db_path)
-        self._create_table_if_missing(self.TABLE_NAME)
+        self._create_txn_table_if_missing()
+        self._create_category_table_if_missing()
 
     def get_record_by_fitid(self, fitid, account):
-        sql = f'SELECT * from {self.TABLE_NAME} WHERE fitid = {fitid} AND account = "{account}";'
+        sql = f'SELECT * from {self.TXN_TABLE_NAME} WHERE fitid = {fitid} AND account = "{account}";'
         result = self.execute(sql)
         rows = result.fetchall()
         output = []
@@ -73,7 +162,7 @@ class BudgyDatabase(object):
 
     def insert_record(self, record):
         checknum = "" if record['checknum'] is None else record['checknum']
-        sql = f'INSERT INTO {self.TABLE_NAME} (fitid, account, type, posted, amount, name, memo, checknum, exclude) ' \
+        sql = f'INSERT INTO {self.TXN_TABLE_NAME} (fitid, account, type, posted, amount, name, memo, checknum, exclude) ' \
               f'VALUEs ({record["fitid"]}, "{record["account"]}", "{record["type"]}", "{record["posted"]}", ' \
               f'{record["amount"]}, "{record["name"]}", "{record["memo"]}", "{checknum}", "{record["exclude"]}" );'
         result = self.execute(sql)
@@ -116,7 +205,7 @@ class BudgyDatabase(object):
         return (None, None)
 
     def count_records(self):
-        sql = f'SELECT COUNT(*) FROM {self.TABLE_NAME}'
+        sql = f'SELECT COUNT(*) FROM {self.TXN_TABLE_NAME}'
         result = self.execute(sql)
         count = 0
         if result is not None:
@@ -182,7 +271,7 @@ class BudgyDatabase(object):
             if month is not None:
                 where_clause += and_clause + f'STRFTIME("%m", posted) = "{month}" '
         sql = (f'SELECT fitid, account, type, posted, amount, name, memo, checknum, exclude '
-               f'FROM {self.TABLE_NAME} '
+               f'FROM {self.TXN_TABLE_NAME} '
                f'{where_clause}'
                f'ORDER BY posted')
         print(sql)
@@ -204,7 +293,7 @@ class BudgyDatabase(object):
         return records
 
     def delete_all_records(self):
-        sql = f'DELETE FROM {self.TABLE_NAME}'
+        sql = f'DELETE FROM {self.TXN_TABLE_NAME}'
         result = self.execute(sql)
 
     def merge_records(self, newrecords):
@@ -216,6 +305,6 @@ class BudgyDatabase(object):
 
     def exclude_fitid(self, fitid:str, exclude:bool):
         exclude_value = 'True' if exclude else 'False'
-        sql = f'UPDATE {self.TABLE_NAME} SET exclude = {exclude_value} WHERE fitid = "{fitid}"'
+        sql = f'UPDATE {self.TXN_TABLE_NAME} SET exclude = {exclude_value} WHERE fitid = "{fitid}"'
         self.execute(sql)
         self.connection.commit()
