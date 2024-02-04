@@ -121,12 +121,6 @@
       "normal_text": "black"
     }
   },
-  "@record-highlight": {
-    "colours": {
-      "dark_bg": "white",
-      "normal_border": "blue"
-    }
-  },
   "#report-panel": {
     "colours": {
       "dark_bg": "gray",

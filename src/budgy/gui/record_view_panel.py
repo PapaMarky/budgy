@@ -12,9 +12,12 @@ from budgy.gui.toggle_button import ToggleButton, TOGGLE_BUTTON
 
 from budgy.gui.constants import BUTTON_HEIGHT
 from budgy.gui.events import post_show_message
+from budgy.gui.bg_color_panel import BgColorPanel
 
-class RecordView(UIPanel):
+class RecordView(BgColorPanel):
     RECORD_VIEW_HEIGHT = BUTTON_HEIGHT
+    INCLUDE_COLOR = 'ivory'
+    EXCLUDE_COLOR = 'lightsteelblue'
     field_names = (
         'fitid',
         'account',
@@ -57,20 +60,11 @@ class RecordView(UIPanel):
     def __init__(self,*args, **kwargs):
         kwargs.__setitem__('object_id',
                            ObjectID(class_id='@record-view-panel'))
-        super().__init__(*args, **kwargs)
+        super().__init__('Ivory', *args, **kwargs)
         self._record:dict = {}
         self._outer_record = None
         self._fields:List[UILabel] = []
         layer = 1
-        self._highlight = UIPanel(
-            pygame.Rect(0,0, self.relative_rect.width, self.relative_rect.height),
-            starting_height=layer,
-            container=self,
-            parent_element=self,
-            object_id=ObjectID(class_id='@record-highlight'),
-            anchors=kwargs.get('anchors')
-        )
-        layer += 1
         x = 0
         def toggle_callback(state):
             if self.visible:
@@ -128,7 +122,7 @@ class RecordView(UIPanel):
             self._exclude_button.disable()
             self._exclude_button.hide()
             self._exclude_button.user_data = None
-            self._highlight.visible = False
+            self.set_color(self.EXCLUDE_COLOR)
         else:
             self._exclude_button.enable()
             if self.visible:
@@ -153,9 +147,9 @@ class RecordView(UIPanel):
                     self._fields[i].user_data = self._record
                     if self.visible:
                         if value:
-                            self._highlight.hide()
+                            self.set_color(self.EXCLUDE_COLOR)
                         else:
-                            self._highlight.show()
+                            self.set_color(self.INCLUDE_COLOR)
                 if field != 'exclude':
                     self._fields[i].set_text(str(value))
 
@@ -166,9 +160,9 @@ class RecordView(UIPanel):
                 fitid = event.user_data["fitid"]
                 if self._record['fitid'] == fitid:
                     if self._record['exclude']:
-                        self._highlight.hide()
+                        self.set_color(self.EXCLUDE_COLOR)
                     else:
-                        self._highlight.show()
+                        self.set_color(self.INCLUDE_COLOR)
         return event_consumed
 
 class RecordViewPanel(UIPanel):
