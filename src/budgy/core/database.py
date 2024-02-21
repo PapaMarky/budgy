@@ -7,10 +7,10 @@ from typing import List, Dict
 class BudgyDatabase(object):
     TXN_TABLE_NAME = 'transactions'
     CATEGORY_TABLE_NAME = 'categories'
+    connection = None
 
     def __init__(self, path):
         self.db_path = path
-        self.connection = None
         self._open_database()
 
     def table_exists(self, table_name):
@@ -30,7 +30,7 @@ class BudgyDatabase(object):
                   f'amount FLOAT, ' \
                   f'name TEXT, ' \
                   f'memo TEXT, ' \
-                  f'category INT, ' \
+                  f'category INT DEFAULT 1, ' \
                   f'checknum TEXT, ' \
                   f'exclude BOOL DEFAULT 0' \
                   f');'
@@ -132,7 +132,8 @@ class BudgyDatabase(object):
 
     def _open_database(self):
         logging.debug(f'Opening {self.db_path}')
-        self.connection = sqlite3.connect(self.db_path)
+        if self.connection is None:
+            self.connection = sqlite3.connect(self.db_path)
         self._create_txn_table_if_missing()
         self._create_category_table_if_missing()
 
@@ -270,7 +271,7 @@ class BudgyDatabase(object):
                 and_clause = ' AND '
             if month is not None:
                 where_clause += and_clause + f'STRFTIME("%m", posted) = "{month}" '
-        sql = (f'SELECT fitid, account, type, posted, amount, name, memo, checknum, exclude '
+        sql = (f'SELECT fitid, account, type, posted, amount, name, memo, checknum, exclude, category '
                f'FROM {self.TXN_TABLE_NAME} '
                f'{where_clause}'
                f'ORDER BY posted')
@@ -288,7 +289,8 @@ class BudgyDatabase(object):
                     'name': record[5],
                     'memo': record[6],
                     'checknum': record[7],
-                    'exclude': record[8] != 0
+                    'exclude': record[8] != 0,
+                    'category': record[9] if record[9] != '' else 1
                 })
         return records
 
@@ -308,3 +310,18 @@ class BudgyDatabase(object):
         sql = f'UPDATE {self.TXN_TABLE_NAME} SET exclude = {exclude_value} WHERE fitid = "{fitid}"'
         self.execute(sql)
         self.connection.commit()
+
+    def get_category_text(self, category:int):
+        category_dict = self.get_catetory_dict()
+        if category in category_dict:
+            return category_dict[category]
+        else:
+            return None
+
+    def get_catetory_dict(self):
+        sql = f'SELECT id, name, is_expense FROM categories ORDER BY name'
+        result = self.execute(sql)
+        category_dict = {}
+        for row in result:
+            category_dict[row[0]] = {'name': row[1], 'is_expense': row[2]}
+        return category_dict

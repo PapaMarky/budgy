@@ -41,6 +41,9 @@ class BudgyConfig(object):
     def retirement_target_date(self):
         return self.config_dict['retirement']['target-date']
 
+    @property
+    def database_path(self):
+        return self.config_dict['database']['path']
     def save_config(self):
         self._filepath.parent.mkdir(exist_ok=True)
         with open(self._filepath, 'w') as configfile:

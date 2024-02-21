@@ -14,7 +14,7 @@ from budgy.gui.dialogs import show_confirmation_dialog, show_file_dialog, is_con
 import budgy.gui.events
 from budgy.gui.function_subpanel import BudgyFunctionSubPanel
 from budgy.gui.record_view_panel import RecordViewPanel
-
+from budgy.gui.configdata import BudgyConfig
 
 CONFIRM_IMPORT_TITLE = 'Confirm Import'
 CONFIRM_DELETE_ALL_TITLE = 'Confirm Delete All Data'
@@ -41,7 +41,7 @@ def show_import_data_file_dialog(initial_path):
 
 
 class BudgyDataPanel(BudgyFunctionSubPanel):
-    def __init__(self, config_in, function_panel, *args, **kwargs):
+    def __init__(self, config_in:BudgyConfig, function_panel, *args, **kwargs):
         super().__init__(config_in, function_panel, *args, **kwargs)
         self._import_data_button = UIButton(
             pygame.Rect(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT),
@@ -76,7 +76,9 @@ class BudgyDataPanel(BudgyFunctionSubPanel):
         h -= 6 * MARGIN + y
         rr = pygame.Rect(x, y, w, h)
         # rr.bottomright = (-MARGIN, -MARGIN)
+        # need to pass data base to RecordViewPanel ... CategoryButton
         self._records_view_panel = RecordViewPanel(
+            Path(config_in.database_path),
             rr,
             manager=self.ui_manager,
             container=self,

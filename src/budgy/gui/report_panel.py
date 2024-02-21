@@ -224,6 +224,7 @@ class BudgyReportPanel(BudgyFunctionSubPanel):
         y += h + MARGIN
         h = self.detail_panel.relative_rect.height - y - 2 * MARGIN
         self.detail_record_view = RecordViewPanel(
+            self.database,
             pygame.Rect(x, y, w, h),
             manager=self.ui_manager,
             container=self.detail_panel,

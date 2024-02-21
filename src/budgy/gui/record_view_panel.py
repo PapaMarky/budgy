@@ -1,6 +1,7 @@
 import datetime
 import math
 import re
+from pathlib import Path
 from typing import List
 import pygame
 
@@ -8,6 +9,8 @@ from pygame_gui.core import ObjectID
 from pygame_gui.elements import UIPanel, UIVerticalScrollBar, UILabel
 
 import budgy.gui.constants
+from budgy.core.database import BudgyDatabase
+from budgy.gui.category_button import CategoryButton
 from budgy.gui.toggle_button import ToggleButton, TOGGLE_BUTTON
 
 from budgy.gui.constants import BUTTON_HEIGHT
@@ -27,7 +30,8 @@ class RecordView(BgColorPanel):
         'name',
         'memo',
         'checknum',
-        'exclude'
+        'exclude',
+        'category'
     )
     field_defs = {
         'posted': {
@@ -54,12 +58,18 @@ class RecordView(BgColorPanel):
             'position': 4,
             'width': 100,
             'oid': ObjectID(class_id='@record-button', object_id='#field-button')
+        },
+        'category': {
+            'position': 5,
+            'width': 100,
+            'oid': ObjectID(class_id='@record-button', object_id='#field-button')
         }
     }
 
-    def __init__(self,*args, **kwargs):
+    def __init__(self, database:BudgyDatabase, *args, **kwargs):
         kwargs.__setitem__('object_id',
                            ObjectID(class_id='@record-view-panel'))
+        self._database = database
         super().__init__('Ivory', *args, **kwargs)
         self._record:dict = {}
         self._outer_record = None
@@ -101,6 +111,18 @@ class RecordView(BgColorPanel):
                 item.state = False
                 item.disable()
                 self._exclude_button = item
+            elif f == 'category':
+                item = CategoryButton(
+                    self._database,
+                    pygame.Rect(x, 0, w, self.RECORD_VIEW_HEIGHT),
+                    'category',
+                    container=self, parent_element=self,
+                    object_id=oid,
+                    anchors={
+                        'top': 'top', 'left': 'left',
+                        'bottom': 'bottom', 'right': 'left'
+                    }
+                )
             else:
                 item = UILabel(
                     pygame.Rect(x, 0, w, self.RECORD_VIEW_HEIGHT),
@@ -150,7 +172,11 @@ class RecordView(BgColorPanel):
                             self.set_color(self.EXCLUDE_COLOR)
                         else:
                             self.set_color(self.INCLUDE_COLOR)
-                if field != 'exclude':
+                elif field == 'category':
+                    self._fields[i].set_category_text()
+                    self._fields[i].fitid = self._record['fitid']
+
+                if field != 'exclude' and field != 'category':
                     self._fields[i].set_text(str(value))
 
     def process_event(self, event: pygame.event.Event) -> bool:
@@ -166,7 +192,14 @@ class RecordView(BgColorPanel):
         return event_consumed
 
 class RecordViewPanel(UIPanel):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, database_path:Path, *args, **kwargs):
+        if isinstance(database_path, str):
+            database_path = Path(database_path)
+        if isinstance(database_path, Path):
+            database_path = database_path.expanduser()
+            self.database = BudgyDatabase(database_path)
+        else:
+            self.database = database_path
         super().__init__(*args, **kwargs)
         self.record_views = []
 
@@ -203,6 +236,7 @@ class RecordViewPanel(UIPanel):
         h = RecordView.RECORD_VIEW_HEIGHT
         for i in range(n):
             rv = RecordView(
+                self.database,
                 pygame.Rect(x, y, w, h),
                 container=self,
                 parent_element=self,
