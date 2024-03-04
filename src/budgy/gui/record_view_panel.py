@@ -61,7 +61,7 @@ class RecordView(BgColorPanel):
         },
         'category': {
             'position': 5,
-            'width': 100,
+            'width': 150,
             'oid': ObjectID(class_id='@record-button', object_id='#field-button')
         }
     }
@@ -173,8 +173,10 @@ class RecordView(BgColorPanel):
                         else:
                             self.set_color(self.INCLUDE_COLOR)
                 elif field == 'category':
-                    self._fields[i].set_category_text()
-                    self._fields[i].fitid = self._record['fitid']
+                    if record is None:
+                        self._fields[i].fitid = None
+                    else:
+                        self._fields[i].fitid = self._record['fitid']
 
                 if field != 'exclude' and field != 'category':
                     self._fields[i].set_text(str(value))

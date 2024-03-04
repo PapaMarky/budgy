@@ -7,6 +7,7 @@ from typing import List, Dict
 class BudgyDatabase(object):
     TXN_TABLE_NAME = 'transactions'
     CATEGORY_TABLE_NAME = 'categories'
+    DEFAULT_CATEGORY = 1
     connection = None
 
     def __init__(self, path):
@@ -325,3 +326,18 @@ class BudgyDatabase(object):
         for row in result:
             category_dict[row[0]] = {'name': row[1], 'is_expense': row[2]}
         return category_dict
+
+    def get_category_for_fitid(self, fitid):
+        if fitid is None:
+            return self.DEFAULT_CATEGORY
+        sql = f'SELECT category FROM {self.TXN_TABLE_NAME} WHERE fitid = {fitid}'
+        result = self.execute(sql)
+        if not result:
+            return self.DEFAULT_CATEGORY
+        for row in result:
+            return row[0]
+
+
+    def get_category_text_for_fitid(self, fitid):
+        category = self.get_category_for_fitid(fitid)
+        return self.get_category_text(category)
