@@ -1,5 +1,7 @@
 import argparse
+import glob
 import logging
+import os.path
 from pathlib import Path
 
 import pygame
@@ -154,12 +156,23 @@ class BudgyViewerApp(GuiApp):
             print(f'load database: {event.db_path}')
             #self.open_database(event.db_path)
         elif event.type == budgy.gui.events.DATA_SOURCE_CONFIRMED:
-            post_show_message(f'Loading OFX data from {event.path}')
-            records = load_ofx_file(event.path)
-            post_show_message(f'Merging imported records')
-            self._database.merge_records(records)
-            self.update_database_status()
-            post_clear_messages()
+            files = []
+            if os.path.isdir(event.path):
+                all_files = glob.glob(event.path + '/*')
+                print(f'ALL FILES: {all_files}')
+                for file in all_files:
+                    if file.endswith('.ofx') or file.endswith('.qfx'):
+                        files.append(file)
+                        print(f'FILE: {file}')
+            else:
+                files.append(event.path)
+            for file in files:
+                post_show_message(f'Loading OFX data from {file}')
+                records = load_ofx_file(file)
+                post_show_message(f'Merging imported records')
+                self._database.merge_records(records)
+                self.update_database_status()
+                post_clear_messages()
             return True
         elif event.type == budgy.gui.events.DELETE_ALL_DATA_CONFIRMED:
             print(f'DELETING ALL DATA FROM DATABASE')

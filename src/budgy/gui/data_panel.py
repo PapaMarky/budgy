@@ -29,15 +29,17 @@ def show_confirm_delete_all_dialog():
 def is_confirm_import_dialog(element):
     return is_confirmation_dialog(element, CONFIRM_IMPORT_TITLE)
 
-def show_confirm_import_dialog():
-    long_desc = 'Selecting OK will import the data from the file into the database'
+def show_confirm_import_dialog(import_directory=False):
+    long_desc = 'Selecting OK will import data from all files in the direcory' if import_directory else \
+        'Selecting OK will import the data from the file into the database'
     show_confirmation_dialog(CONFIRM_IMPORT_TITLE, long_desc)
 def is_import_file_dialog(element):
     return is_file_dialog(element, IMPORT_FILE_DIALOG_TITLE)
 def show_import_data_file_dialog(initial_path):
     show_file_dialog(IMPORT_FILE_DIALOG_TITLE,
                      initial_path,
-                     allowed_suffixes=['.ofx', '.qfx'])
+                     allowed_suffixes=['.ofx', '.qfx'],
+                     allow_picking_directories=True)
 
 
 class BudgyDataPanel(BudgyFunctionSubPanel):
@@ -155,7 +157,8 @@ class BudgyDataPanel(BudgyFunctionSubPanel):
                     self.import_path = None
                 else:
                     # import the data
-                    show_confirm_import_dialog()
+                    is_directory = os.path.isdir(self.import_path)
+                    show_confirm_import_dialog(import_directory=is_directory)
                 event_consumed = True
             if event.type == budgy.gui.events.DELETE_ALL_DATA:
                 print('CLEAR DATA (data panel)')
