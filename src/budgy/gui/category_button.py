@@ -3,6 +3,7 @@ import pygame_gui
 from pygame_gui.elements import UIButton
 
 from budgy.core.database import BudgyDatabase
+from budgy.gui.category_dialog import CategoryDialog
 
 
 class CategoryButton(UIButton):
@@ -10,7 +11,7 @@ class CategoryButton(UIButton):
                  database:BudgyDatabase,
                  *args,
                  fitid = None,
-                 category = 1,
+                 category = BudgyDatabase.DEFAULT_CATEGORY,
                  **kwargs
                  ):
         self.category = category
@@ -32,6 +33,13 @@ class CategoryButton(UIButton):
             return True
         if event.type == pygame_gui.UI_BUTTON_PRESSED and event.ui_element == self:
             print(f'Category Button pressed for {self.fitid}')
+            self.dialog = CategoryDialog(
+                self.fitid,
+                self.database,
+                pygame.Rect(20, 20, 800, 600),
+                self.ui_manager,
+                'Choose Category'
+            )
             return True
 
     def set_category_text(self):
