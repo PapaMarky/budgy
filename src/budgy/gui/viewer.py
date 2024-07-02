@@ -185,6 +185,9 @@ class BudgyViewerApp(GuiApp):
             print(f'Toggling excluded for {fitid} to {event.state}')
             self._database.exclude_fitid(fitid, event.state)
             return True
+        elif event.type == budgy.gui.events.CATEGORY_CHANGED:
+            self.update_database_status()
+            return True
 
     def _parse_args(self):
         parser = argparse.ArgumentParser(self._title)

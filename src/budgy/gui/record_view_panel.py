@@ -11,17 +11,16 @@ from pygame_gui.elements import UIPanel, UIVerticalScrollBar, UILabel
 import budgy.gui.constants
 from budgy.core.database import BudgyDatabase
 from budgy.gui.category_button import CategoryButton
+from budgy.gui.db_record_view_panel import DbRecordView
 from budgy.gui.toggle_button import ToggleButton, TOGGLE_BUTTON
 
-from budgy.gui.constants import BUTTON_HEIGHT
-from budgy.gui.events import post_show_message
-from budgy.gui.bg_color_panel import BgColorPanel
+from budgy.gui.events import post_show_message, CATEGORY_CHANGED
 
-class RecordView(BgColorPanel):
-    RECORD_VIEW_HEIGHT = BUTTON_HEIGHT
+
+class RecordView(DbRecordView):
     INCLUDE_COLOR = 'ivory'
     EXCLUDE_COLOR = 'lightsteelblue'
-    field_names = (
+    my_field_names = (
         'fitid',
         'account',
         'type',
@@ -33,7 +32,7 @@ class RecordView(BgColorPanel):
         'exclude',
         'category'
     )
-    field_defs = {
+    my_field_defs = {
         'posted': {
             'position': 0,
             'width': 100,
@@ -69,11 +68,13 @@ class RecordView(BgColorPanel):
     def __init__(self, database:BudgyDatabase, *args, **kwargs):
         kwargs.__setitem__('object_id',
                            ObjectID(class_id='@record-view-panel'))
-        self._database = database
-        super().__init__('Ivory', *args, **kwargs)
-        self._record:dict = {}
         self._outer_record = None
-        self._fields:List[UILabel] = []
+
+        self._exclude_button:ToggleButton = None
+        self._category_button:CategoryButton = None
+        super().__init__(database, self.my_field_names, self.my_field_defs, *args, **kwargs)
+
+    def build_items(self):
         layer = 1
         x = 0
         def toggle_callback(state):
@@ -83,8 +84,6 @@ class RecordView(BgColorPanel):
                 # with _outer_record so we only have one copy
                 if self._outer_record is not None:
                     self._outer_record['exclude'] = state
-
-        self._exclude_button:ToggleButton = None
         for f in self.field_defs:
             w = self.field_defs[f]['width']
             oid = self.field_defs[f]['oid']
@@ -123,6 +122,8 @@ class RecordView(BgColorPanel):
                         'bottom': 'bottom', 'right': 'left'
                     }
                 )
+                item.disable()
+                self._category_button = item
             else:
                 item = UILabel(
                     pygame.Rect(x, 0, w, self.RECORD_VIEW_HEIGHT),
@@ -136,7 +137,6 @@ class RecordView(BgColorPanel):
                 )
             x += w + 1
             self._fields.append(item)
-        self.set_record(None)
 
     def set_record(self, record):
         self._outer_record = record
@@ -144,11 +144,16 @@ class RecordView(BgColorPanel):
             self._exclude_button.disable()
             self._exclude_button.hide()
             self._exclude_button.user_data = None
+            self._category_button.disable()
+            self._category_button.hide()
             self.set_color(self.EXCLUDE_COLOR)
         else:
             self._exclude_button.enable()
+            self._category_button.enable()
             if self.visible:
                 self._exclude_button.show()
+                self._category_button.show()
+                self._category_button.set_category_text()
 
         for field in self.field_names:
             if record is None:
@@ -290,4 +295,5 @@ class RecordViewPanel(UIPanel):
                     last = min(self.starting_row + self.visible_records, len(self._data))
                     post_show_message(f'Showing Records {self.starting_row} to {last} out of {len(self._data)}')
                 event_consumed = True
+
         return event_consumed

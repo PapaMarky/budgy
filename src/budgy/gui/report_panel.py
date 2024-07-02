@@ -56,6 +56,7 @@ class BudgyReportPanel(BudgyFunctionSubPanel):
         if self.database is not None:
             self.clear_report()
             self.create_summary_table()
+            self.render_data()
 
     def clear_report(self):
         for label in self.header_labels:
