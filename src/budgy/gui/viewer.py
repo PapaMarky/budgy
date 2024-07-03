@@ -111,6 +111,8 @@ class BudgyViewerApp(GuiApp):
         self.top_panel.set_record_count(len(records))
         start, end = self._database.get_date_range()
         self.top_panel.set_data_range(start, end)
+
+        # TODO: BudgyFunctionalPanel should have a "update_database_status"
         self.function_panel.data_panel.set_data(records)
         self.function_panel.report_panel.rebuild_report()
 
@@ -187,7 +189,7 @@ class BudgyViewerApp(GuiApp):
             return True
         elif event.type == budgy.gui.events.CATEGORY_CHANGED:
             self.update_database_status()
-            return True
+            return False
 
     def _parse_args(self):
         parser = argparse.ArgumentParser(self._title)

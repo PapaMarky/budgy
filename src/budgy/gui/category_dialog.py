@@ -213,7 +213,11 @@ class CategoryDialog(UIWindow):
             print(f'NEW CATEGORY for {self.fitid}: {category} / {subcategory}')
             self.database.set_txn_category(self.fitid, category, subcategory)
             event_data = {
-                'fitid': self.fitid
+                'fitid': self.fitid,
+                'category': category,
+                'subcategory': subcategory,
+                'category_id': self.categories[category][subcategory]['id'],
+                'is_expense': self.categories[category][subcategory]['is_expense'],
             }
             pygame.event.post(pygame.event.Event(CATEGORY_CHANGED, event_data))
             self.kill()

@@ -17,6 +17,7 @@ class CategoryButton(UIButton):
         self.category = category
         self.database = database
         self._fitid = fitid
+        self.is_expense = False
         super().__init__(*args, **kwargs)
 
     @property
@@ -44,6 +45,7 @@ class CategoryButton(UIButton):
 
     def set_category_text(self):
         category = self.database.get_category_for_fitid(self.fitid)
-        expense_marker = '*' if category[2] != 0 else ''
+        self.is_expense = category[2] != 0
+        expense_marker = '*' if self.is_expense else ''
         category_str = f'{expense_marker}{category[0]}' if category[1] == '' else f'{expense_marker}{category[0]} | {category[1]}'
         self.set_text(category_str)

@@ -322,21 +322,14 @@ class BudgyDatabase(object):
         self.execute(sql)
         self.connection.commit()
 
-    def get_category_text(self, category:int):
-        category_dict = self.get_catetory_dict()
-        if category in category_dict:
-            return category_dict[category]
-        else:
-            return None
-
     def get_catetory_dict(self):
-        sql = f'SELECT name, subcategory, is_expense FROM {self.CATEGORY_TABLE_NAME} ORDER BY name'
+        sql = f'SELECT name, subcategory, is_expense, id FROM {self.CATEGORY_TABLE_NAME} ORDER BY name'
         result = self.execute(sql)
         category_dict = {}
         for row in result:
             if not row[0] in category_dict:
                 category_dict[row[0]] = {}
-            category_dict[row[0]][row[1]] = row[2]
+            category_dict[row[0]][row[1]] = {'is_expense': row[2] != 0, 'id': row[3]}
         return category_dict
 
     def get_category_list(self):

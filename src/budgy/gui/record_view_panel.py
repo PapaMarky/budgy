@@ -20,6 +20,8 @@ from budgy.gui.events import post_show_message, CATEGORY_CHANGED
 class RecordView(DbRecordView):
     INCLUDE_COLOR = 'ivory'
     EXCLUDE_COLOR = 'lightsteelblue'
+    # TODO: this level of abstraction just makes it impossible to follow what is going on. SIMPLIFY THIS
+    #       Make it a functional Interface?
     my_field_names = (
         'fitid',
         'account',
@@ -172,7 +174,7 @@ class RecordView(DbRecordView):
                 elif field == 'exclude' and value != '':
                     self._fields[i].state = value
                     self._fields[i].user_data = self._record
-                    if self.visible:
+                    if False and self.visible:
                         if value:
                             self.set_color(self.EXCLUDE_COLOR)
                         else:
@@ -182,7 +184,11 @@ class RecordView(DbRecordView):
                         self._fields[i].fitid = None
                     else:
                         self._fields[i].fitid = self._record['fitid']
-
+                    if self.visible:
+                        if self._fields[i].is_expense:
+                            self.set_color(self.INCLUDE_COLOR)
+                        else:
+                            self.set_color(self.EXCLUDE_COLOR)
                 if field != 'exclude' and field != 'category':
                     self._fields[i].set_text(str(value))
 
@@ -196,6 +202,14 @@ class RecordView(DbRecordView):
                         self.set_color(self.EXCLUDE_COLOR)
                     else:
                         self.set_color(self.INCLUDE_COLOR)
+                    return False
+            elif event.type == budgy.gui.events.CATEGORY_CHANGED:
+                if event.fitid == self._record['fitid']:
+                    if event.is_expense:
+                        self.set_color(self.INCLUDE_COLOR)
+                    else:
+                        self.set_color(self.EXCLUDE_COLOR)
+                    return False
         return event_consumed
 
 class RecordViewPanel(UIPanel):
