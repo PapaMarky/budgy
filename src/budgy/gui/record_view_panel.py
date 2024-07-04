@@ -18,8 +18,8 @@ from budgy.gui.events import post_show_message, CATEGORY_CHANGED
 
 
 class RecordView(DbRecordView):
-    INCLUDE_COLOR = 'ivory'
-    EXCLUDE_COLOR = 'lightsteelblue'
+    EXPENSE_COLOR = 'ivory'
+    NONEXPENSE_COLOR = 'lightsteelblue'
     # TODO: this level of abstraction just makes it impossible to follow what is going on. SIMPLIFY THIS
     #       Make it a functional Interface?
     my_field_names = (
@@ -62,7 +62,7 @@ class RecordView(DbRecordView):
         },
         'category': {
             'position': 5,
-            'width': 150,
+            'width': 300,
             'oid': ObjectID(class_id='@record-button', object_id='#field-button')
         }
     }
@@ -148,7 +148,7 @@ class RecordView(DbRecordView):
             self._exclude_button.user_data = None
             self._category_button.disable()
             self._category_button.hide()
-            self.set_color(self.EXCLUDE_COLOR)
+            self.set_color(self.NONEXPENSE_COLOR)
         else:
             self._exclude_button.enable()
             self._category_button.enable()
@@ -156,6 +156,7 @@ class RecordView(DbRecordView):
                 self._exclude_button.show()
                 self._category_button.show()
                 self._category_button.set_category_text()
+                self._category_button.txn_name = record['name']
 
         for field in self.field_names:
             if record is None:
@@ -176,9 +177,9 @@ class RecordView(DbRecordView):
                     self._fields[i].user_data = self._record
                     if False and self.visible:
                         if value:
-                            self.set_color(self.EXCLUDE_COLOR)
+                            self.set_color(self.NONEXPENSE_COLOR)
                         else:
-                            self.set_color(self.INCLUDE_COLOR)
+                            self.set_color(self.EXPENSE_COLOR)
                 elif field == 'category':
                     if record is None:
                         self._fields[i].fitid = None
@@ -186,9 +187,9 @@ class RecordView(DbRecordView):
                         self._fields[i].fitid = self._record['fitid']
                     if self.visible:
                         if self._fields[i].is_expense:
-                            self.set_color(self.INCLUDE_COLOR)
+                            self.set_color(self.EXPENSE_COLOR)
                         else:
-                            self.set_color(self.EXCLUDE_COLOR)
+                            self.set_color(self.NONEXPENSE_COLOR)
                 if field != 'exclude' and field != 'category':
                     self._fields[i].set_text(str(value))
 
@@ -199,16 +200,16 @@ class RecordView(DbRecordView):
                 fitid = event.user_data["fitid"]
                 if self._record['fitid'] == fitid:
                     if self._record['exclude']:
-                        self.set_color(self.EXCLUDE_COLOR)
+                        self.set_color(self.NONEXPENSE_COLOR)
                     else:
-                        self.set_color(self.INCLUDE_COLOR)
+                        self.set_color(self.EXPENSE_COLOR)
                     return False
             elif event.type == budgy.gui.events.CATEGORY_CHANGED:
                 if event.fitid == self._record['fitid']:
                     if event.is_expense:
-                        self.set_color(self.INCLUDE_COLOR)
+                        self.set_color(self.EXPENSE_COLOR)
                     else:
-                        self.set_color(self.EXCLUDE_COLOR)
+                        self.set_color(self.NONEXPENSE_COLOR)
                     return False
         return event_consumed
 

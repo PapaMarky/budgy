@@ -17,8 +17,17 @@ class CategoryButton(UIButton):
         self.category = category
         self.database = database
         self._fitid = fitid
+        self._txn_name = 'None'
         self.is_expense = False
         super().__init__(*args, **kwargs)
+
+    @property
+    def txn_name(self):
+        return self._txn_name
+
+    @txn_name.setter
+    def txn_name(self, txn_name):
+        self._txn_name = txn_name
 
     @property
     def fitid(self):
@@ -39,7 +48,7 @@ class CategoryButton(UIButton):
                 self.database,
                 pygame.Rect(20, 20, 800, 600),
                 self.ui_manager,
-                'Choose Category'
+                f'Choose Category for "{self.txn_name}"'
             )
             return True
 
