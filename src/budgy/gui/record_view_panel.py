@@ -31,7 +31,6 @@ class RecordView(DbRecordView):
         'name',
         'memo',
         'checknum',
-        'exclude',
         'category'
     )
     my_field_defs = {
@@ -55,13 +54,8 @@ class RecordView(DbRecordView):
             'width': 400,
             'oid': ObjectID(class_id='@record-field', object_id='#field-left')
         },
-        'exclude': {
-            'position': 4,
-            'width': 100,
-            'oid': ObjectID(class_id='@record-button', object_id='#field-button')
-        },
         'category': {
-            'position': 5,
+            'position': 4,
             'width': 300,
             'oid': ObjectID(class_id='@record-button', object_id='#field-button')
         }
@@ -72,47 +66,17 @@ class RecordView(DbRecordView):
                            ObjectID(class_id='@record-view-panel'))
         self._outer_record = None
 
-        self._exclude_button:ToggleButton = None
         self._category_button:CategoryButton = None
         super().__init__(database, self.my_field_names, self.my_field_defs, *args, **kwargs)
 
     def build_items(self):
         layer = 1
         x = 0
-        def toggle_callback(state):
-            if self.visible:
-                self._record['exclude'] = state
-                # TODO self._record and self._outer_records should always be in sync. Figure out a way to replace _record
-                # with _outer_record so we only have one copy
-                if self._outer_record is not None:
-                    self._outer_record['exclude'] = state
         for f in self.field_defs:
             w = self.field_defs[f]['width']
             oid = self.field_defs[f]['oid']
             item = None
-            if f == 'exclude':
-                item = ToggleButton(
-                    False,
-                    'Excluded',
-                    'Included',
-                    pygame.Rect(x, 0, w, self.RECORD_VIEW_HEIGHT),
-                    'NOT SET',
-                    user_data={
-
-                    },
-                    callback=toggle_callback,
-                    container=self, parent_element=self,
-                    object_id=oid,
-                    starting_height=layer,
-                    anchors={
-                        'top': 'top', 'left': 'left',
-                        'bottom': 'bottom', 'right': 'left'
-                    }
-                )
-                item.state = False
-                item.disable()
-                self._exclude_button = item
-            elif f == 'category':
+            if f == 'category':
                 item = CategoryButton(
                     self._database,
                     pygame.Rect(x, 0, w, self.RECORD_VIEW_HEIGHT),
@@ -143,17 +107,12 @@ class RecordView(DbRecordView):
     def set_record(self, record):
         self._outer_record = record
         if record is None:
-            self._exclude_button.disable()
-            self._exclude_button.hide()
-            self._exclude_button.user_data = None
             self._category_button.disable()
             self._category_button.hide()
             self.set_color(self.NONEXPENSE_COLOR)
         else:
-            self._exclude_button.enable()
             self._category_button.enable()
             if self.visible:
-                self._exclude_button.show()
                 self._category_button.show()
                 self._category_button.set_category_text()
                 self._category_button.txn_name = record['name']
@@ -167,19 +126,11 @@ class RecordView(DbRecordView):
                 self._record[field] = record[field]
             if field in self.field_defs:
                 i = self.field_defs[field]['position']
-                value = str(self._record[field]) if field != 'exclude' else self._record[field]
+                value = str(self._record[field])
                 if field == 'amount' and isinstance(value, float):
                     value = f'{float(value):8.02f}'
                 elif field == 'posted':
                     value = value[:10]
-                elif field == 'exclude' and value != '':
-                    self._fields[i].state = value
-                    self._fields[i].user_data = self._record
-                    if False and self.visible:
-                        if value:
-                            self.set_color(self.NONEXPENSE_COLOR)
-                        else:
-                            self.set_color(self.EXPENSE_COLOR)
                 elif field == 'category':
                     if record is None:
                         self._fields[i].fitid = None
@@ -190,7 +141,7 @@ class RecordView(DbRecordView):
                             self.set_color(self.EXPENSE_COLOR)
                         else:
                             self.set_color(self.NONEXPENSE_COLOR)
-                if field != 'exclude' and field != 'category':
+                if field != 'category':
                     self._fields[i].set_text(str(value))
 
     def process_event(self, event: pygame.event.Event) -> bool:
@@ -199,10 +150,6 @@ class RecordView(DbRecordView):
             if event.type == TOGGLE_BUTTON:
                 fitid = event.user_data["fitid"]
                 if self._record['fitid'] == fitid:
-                    if self._record['exclude']:
-                        self.set_color(self.NONEXPENSE_COLOR)
-                    else:
-                        self.set_color(self.EXPENSE_COLOR)
                     return False
             elif event.type == budgy.gui.events.CATEGORY_CHANGED:
                 if event.fitid == self._record['fitid']:

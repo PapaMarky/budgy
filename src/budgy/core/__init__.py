@@ -30,8 +30,7 @@ def load_ofx_file(ofxfile:Path):
                 'amount': float(txn.trnamt),
                 'name': txn.name,
                 'memo': txn.memo,
-                'checknum': checknum,
-                'exclude': 0
+                'checknum': checknum
             }
             records.append(record)
     return records

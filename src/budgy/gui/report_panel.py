@@ -242,9 +242,6 @@ class BudgyReportPanel(BudgyFunctionSubPanel):
         if not event_consumed:
             if event.type == EXPENSE_DETAILS_REQUEST:
                 self.create_detail_report(event.year, event.month)
-            elif event.type == TOGGLE_BUTTON:
-                fitid = event.user_data["fitid"]
-                self.database.exclude_fitid(fitid, event.state)
-                # event_consumed = True
-                self.update_summary_table()
+            if event.type == budgy.gui.events.CATEGORY_CHANGED:
+                self.rebuild_report()
         return event_consumed

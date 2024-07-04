@@ -34,7 +34,6 @@ class BudgyDatabase(object):
                   f'memo TEXT, ' \
                   f'category INT DEFAULT 1, ' \
                   f'checknum TEXT, ' \
-                  f'exclude BOOL DEFAULT 0' \
                   f');'
             result = self.execute(sql)
             logging.debug(f'Create Table Result: {result}')
@@ -61,7 +60,6 @@ class BudgyDatabase(object):
             # load default values
             default_categories = [
                 (self.DEFAULT_CATEGORY, self.EMPTY_SUBCATEGORY, False),
-                # Expense categories
                 ('Expense', self.EMPTY_SUBCATEGORY, True),
                 ('Auto', self.EMPTY_SUBCATEGORY, True),
                 ('Auto', 'Gas', True),
@@ -114,7 +112,6 @@ class BudgyDatabase(object):
                 ('Utilities', 'Internet', True),
                 ('Utilities', 'Phone', True),
                 ('Utilities', 'Water', True),
-                # Non-Expense Categories
                 ('Income', self.EMPTY_SUBCATEGORY, False),
                 ('Income', 'Dividends', False),
                 ('Income', 'Interest', False),
@@ -124,7 +121,8 @@ class BudgyDatabase(object):
                 ('Savings', 'College fund', False),
                 ('Savings', 'Investment', False),
                 ('Savings', 'Retirement', False),
-                ('Transfer', self.EMPTY_SUBCATEGORY, False)
+                ('Transfer', self.EMPTY_SUBCATEGORY, False),
+                ('Auto', 'DMV', True)
             ]
 
             print(f'Loading default categories')
@@ -168,15 +166,14 @@ class BudgyDatabase(object):
             'amount': row[4],
             'name': row[5],
             'memo': row[6],
-            'checknum': checknum,
-            'exclude': row[8] != 0
+            'checknum': checknum
         }
 
     def insert_record(self, record):
         checknum = "" if record['checknum'] is None else record['checknum']
-        sql = f'INSERT INTO {self.TXN_TABLE_NAME} (fitid, account, type, posted, amount, name, memo, checknum, exclude) ' \
+        sql = f'INSERT INTO {self.TXN_TABLE_NAME} (fitid, account, type, posted, amount, name, memo, checknum) ' \
               f'VALUEs ({record["fitid"]}, "{record["account"]}", "{record["type"]}", "{record["posted"]}", ' \
-              f'{record["amount"]}, "{record["name"]}", "{record["memo"]}", "{checknum}", "{record["exclude"]}" );'
+              f'{record["amount"]}, "{record["name"]}", "{record["memo"]}", "{checknum}" );'
         result = self.execute(sql)
         self.connection.commit()
 
@@ -227,8 +224,14 @@ class BudgyDatabase(object):
         return 0
 
     def get_report(self):
-        sql = ('SELECT STRFTIME("%Y", posted) AS year, STRFTIME("%m", posted) AS month, SUM(amount) AS expences FROM transactions '
-               'WHERE amount < 0 AND NOT exclude GROUP BY year, month ORDER BY year, month DESC;')
+        sql_old = ('SELECT STRFTIME("%Y", posted) AS year, STRFTIME("%m", posted) AS month, SUM(amount) AS expences '
+                   'FROM transactions '
+                   'WHERE amount < 0 AND NOT exclude '
+                   'GROUP BY year, month ORDER BY year, month DESC;')
+        sql = ('SELECT STRFTIME("%Y", posted) AS year, STRFTIME("%m", posted) AS month, SUM(ABS(amount)) AS expences '
+               'FROM transactions AS txn '
+               'WHERE amount < 0 '
+               'GROUP BY year, month ORDER BY year, month DESC;')
         print(sql)
         result = self.execute(sql)
         data = {}
@@ -244,6 +247,19 @@ class BudgyDatabase(object):
                     }
                 data[year]['months'][expense_month] = expense
 
+            sql = ('SELECT STRFTIME("%Y", posted) AS year, STRFTIME("%m", posted) AS month, SUM(ABS(amount)) AS expences '
+                   'FROM transactions AS txn, categories AS cat '
+                   'WHERE amount < 0 AND txn.category = cat.id AND NOT cat.is_expense ' 
+                   'GROUP BY year, month ORDER BY year, month DESC;')
+
+            result = self.execute(sql)
+            if result is not None:
+                for row in result:
+                    year = row[0]
+                    expense_month = int(row[1]) - 1
+                    amount = row[2]
+                    data[year]['months'][expense_month] -= amount
+
             for year in data:
                 sum = 0
                 n = 0
@@ -256,13 +272,13 @@ class BudgyDatabase(object):
                         if data[year]['minimum'] is None:
                             data[year]['minimum'] = monthly_expense
                         else:
-                            if monthly_expense > data[year]['minimum']:
+                            if monthly_expense < data[year]['minimum']:
                                 data[year]['minimum'] = monthly_expense
 
                         if data[year]['maximum'] is None:
                             data[year]['maximum'] = monthly_expense
                         else:
-                            if monthly_expense < data[year]['maximum']:
+                            if monthly_expense > data[year]['maximum']:
                                 data[year]['maximum'] = monthly_expense
 
                         sum += float(monthly_expense)
@@ -282,7 +298,7 @@ class BudgyDatabase(object):
                 and_clause = ' AND '
             if month is not None:
                 where_clause += and_clause + f'STRFTIME("%m", posted) = "{month}" '
-        sql = (f'SELECT fitid, account, type, posted, amount, name, memo, checknum, exclude, category '
+        sql = (f'SELECT fitid, account, type, posted, amount, name, memo, checknum, category '
                f'FROM {self.TXN_TABLE_NAME} '
                f'{where_clause}'
                f'ORDER BY posted')
@@ -300,8 +316,7 @@ class BudgyDatabase(object):
                     'name': record[5],
                     'memo': record[6],
                     'checknum': record[7],
-                    'exclude': record[8] != 0,
-                    'category': record[9] if record[9] != '' else 1
+                    'category': record[8] if record[8] != '' else self.DEFAULT_CATEGORY
                 })
         return records
 
@@ -316,11 +331,6 @@ class BudgyDatabase(object):
         for record in newrecords:
             self.merge_record(record)
 
-    def exclude_fitid(self, fitid:str, exclude:bool):
-        exclude_value = 'True' if exclude else 'False'
-        sql = f'UPDATE {self.TXN_TABLE_NAME} SET exclude = {exclude_value} WHERE fitid = "{fitid}"'
-        self.execute(sql)
-        self.connection.commit()
 
     def get_catetory_dict(self):
         sql = f'SELECT name, subcategory, is_expense, id FROM {self.CATEGORY_TABLE_NAME} ORDER BY name'

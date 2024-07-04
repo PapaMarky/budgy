@@ -61,15 +61,7 @@ class CategoryView(DbRecordView):
         self._fields:List[UILabel] = []
         layer = 1
         x = 0
-        def toggle_callback(state):
-            if self.visible:
-                self._record['exclude'] = state
-                # TODO self._record and self._outer_records should always be in sync. Figure out a way to replace _record
-                # with _outer_record so we only have one copy
-                if self._outer_record is not None:
-                    self._outer_record['exclude'] = state
 
-        self._exclude_button:ToggleButton = None
         for f in self.field_defs:
             w = self.field_defs[f]['width']
             oid = self.field_defs[f]['oid']

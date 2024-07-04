@@ -46,7 +46,7 @@ class CategoryButton(UIButton):
             self.dialog = CategoryDialog(
                 self.fitid,
                 self.database,
-                pygame.Rect(20, 20, 800, 600),
+                pygame.Rect(20, 20, 800, 800),
                 self.ui_manager,
                 f'Choose Category for "{self.txn_name}"'
             )

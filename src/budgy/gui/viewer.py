@@ -181,12 +181,6 @@ class BudgyViewerApp(GuiApp):
             self._database.delete_all_records()
             self.update_database_status()
             return True
-        elif event.type == budgy.gui.events.TOGGLE_BUTTON:
-            print('viewer got TOGGLE_BUTTON')
-            fitid = event.user_data["fitid"]
-            print(f'Toggling excluded for {fitid} to {event.state}')
-            self._database.exclude_fitid(fitid, event.state)
-            return True
         elif event.type == budgy.gui.events.CATEGORY_CHANGED:
             self.update_database_status()
             return False
