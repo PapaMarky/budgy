@@ -7,6 +7,7 @@ from typing import List, Dict
 class BudgyDatabase(object):
     TXN_TABLE_NAME = 'transactions'
     CATEGORY_TABLE_NAME = 'categoriesX'
+    CATEGORY_RULES_TABLE_NAME = 'cat_rules'
     DEFAULT_CATEGORY = 'No Category'
     EMPTY_SUBCATEGORY = ''
     connection = None
@@ -24,6 +25,7 @@ class BudgyDatabase(object):
     def _create_txn_table_if_missing(self):
         table_name = self.TXN_TABLE_NAME
         if not self.table_exists(table_name):
+            print(f'Creating table: {table_name}')
             sql = f'CREATE TABLE IF NOT EXISTS {table_name} (' \
                   f'fitid INT, ' \
                   f'account TEXT, ' \
@@ -35,11 +37,27 @@ class BudgyDatabase(object):
                   f'category INT DEFAULT 1, ' \
                   f'checknum TEXT, ' \
                   f');'
+            print(sql)
             result = self.execute(sql)
             logging.debug(f'Create Table Result: {result}')
             sql = f'CREATE UNIQUE INDEX acct_fitid ON {table_name} (fitid, account);'
             result = self.execute(sql)
             logging.debug(f'Create Unique Index: {result}')
+
+    def _create_rules_table_if_missing(self):
+        table_name = self.CATEGORY_RULES_TABLE_NAME
+        if not self.table_exists(table_name):
+            print(f'Creating table: {table_name}')
+            sql = f'CREATE TABLE IF NOT EXISTS {table_name} (' \
+                   f'id INTEGER PRIMARY KEY AUTOINCREMENT, ' \
+                   f'pattern TEXT, ' \
+                   f'category TEXT, ' \
+                   f'subcategory TEXT ' \
+                   f');'
+            print(sql)
+            result = self.execute(sql)
+            logging.debug(f'Create Table Result: {result}')
+            print(f'Create Table Result: {result}')
 
     def _create_category_table_if_missing(self):
         table_name = self.CATEGORY_TABLE_NAME
@@ -61,11 +79,13 @@ class BudgyDatabase(object):
             default_categories = [
                 (self.DEFAULT_CATEGORY, self.EMPTY_SUBCATEGORY, False),
                 ('Expense', self.EMPTY_SUBCATEGORY, True),
+                ('Expense', 'Check', True),
                 ('Auto', self.EMPTY_SUBCATEGORY, True),
                 ('Auto', 'Gas', True),
                 ('Auto', 'Purchase', True),
                 ('Auto', 'Repairs', True),
                 ('Auto', 'Service', True),
+                ('Auto', 'DMV', True),
                 ('Cash Withdrawal', self.EMPTY_SUBCATEGORY, True),
                 ('Clothing', self.EMPTY_SUBCATEGORY, True),
                 ('Dry Cleaning', self.EMPTY_SUBCATEGORY, True),
@@ -98,6 +118,7 @@ class BudgyDatabase(object):
                 ('Recreation', self.EMPTY_SUBCATEGORY, True),
                 ('Recreation', 'Golf', True),
                 ('Recreation', 'Camping', True),
+                ('Recreation', 'Hobbies', True),
                 ('Rideshare', self.EMPTY_SUBCATEGORY, True),
                 ('Taxes', self.EMPTY_SUBCATEGORY, True),
                 ('Taxes', 'Federal', True),
@@ -121,8 +142,10 @@ class BudgyDatabase(object):
                 ('Savings', 'College fund', False),
                 ('Savings', 'Investment', False),
                 ('Savings', 'Retirement', False),
+                ('Shopping', self.EMPTY_SUBCATEGORY, True),
+                ('Shopping', 'Online', True),
+                ('Shopping', 'Amazon', True),
                 ('Transfer', self.EMPTY_SUBCATEGORY, False),
-                ('Auto', 'DMV', True)
             ]
 
             print(f'Loading default categories')
@@ -145,6 +168,7 @@ class BudgyDatabase(object):
             self.connection = sqlite3.connect(self.db_path)
         self._create_txn_table_if_missing()
         self._create_category_table_if_missing()
+        self._create_rules_table_if_missing()
 
     def get_record_by_fitid(self, fitid, account):
         sql = f'SELECT * from {self.TXN_TABLE_NAME} WHERE fitid = {fitid} AND account = "{account}";'
@@ -377,4 +401,14 @@ class BudgyDatabase(object):
         category_id = self.get_category_id(category, subcategory)
         sql = f'UPDATE {self.TXN_TABLE_NAME} SET category = {category_id} WHERE fitid = {fitid}'
         self.execute(sql)
+        self.connection.commit()
+
+    def bulk_categorize(self, txn_pattern, category, subcategory=EMPTY_SUBCATEGORY, include_categorized=False):
+        category_id = self.get_category_id(category, subcategory)
+        sql = f'UPDATE {self.TXN_TABLE_NAME} SET category = {category_id} WHERE name LIKE {txn_pattern}'
+        if not include_categorized:
+            sql += f' AND category = {self.DEFAULT_CATEGORY}'
+        result = self.execute(sql)
+        if not result:
+            raise Exception(f'Bulk Categorize Failed for {txn_pattern} to "{category}" "{subcategory}"')
         self.connection.commit()
