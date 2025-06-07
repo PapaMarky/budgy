@@ -1,6 +1,6 @@
 # Budgy Release Notes
 
-## Version 3.0.0 (December 2024)
+## Version 3.0.0 (June 2025)
 
 **Major Release: Enhanced Database Architecture & Cross-Platform Compatibility**
 
