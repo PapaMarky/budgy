@@ -45,6 +45,7 @@ jobs:
     if: always()
     steps:
       - name: Set summary status
+        id: set-summary-status
         run: |
           echo "## CI Pipeline Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY

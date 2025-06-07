@@ -98,15 +98,21 @@ jobs:
         run: |
           pip install -e .
 
+      - name: Set Python version for tox
+        id: python-version
+        run: |
+          PY_VERSION=$(echo "${{ matrix.python-version }}" | sed 's/\.//g')
+          echo "tox-env=py${PY_VERSION}" >> $GITHUB_OUTPUT
+
       - name: Run tox tests (Linux with xvfb)
         if: matrix.os == 'ubuntu-latest'
         run: |
-          xvfb-run -a -s "-screen 0 1024x768x24" tox -e py${{ matrix.python-version | replace('.', '') }}
+          xvfb-run -a -s "-screen 0 1024x768x24" tox -e ${{ steps.python-version.outputs.tox-env }}
 
       - name: Run tox tests (macOS/Windows)
         if: matrix.os != 'ubuntu-latest'
         run: |
-          tox -e py${{ matrix.python-version | replace('.', '') }}
+          tox -e ${{ steps.python-version.outputs.tox-env }}
 
       - name: Run custom primary key fix tests
         if: inputs.run-custom-tests
