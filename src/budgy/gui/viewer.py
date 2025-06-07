@@ -168,10 +168,13 @@ class BudgyViewerApp(GuiApp):
                         print(f'FILE: {file}')
             else:
                 files.append(event.path)
+                print(f'FILE: {event.path}')
             for file in files:
-                post_show_message(f'Loading OFX data from {file}')
+                msg = f'Loading OFX data from {file}'
+                post_show_message(msg)
+                print(msg)
                 records = load_ofx_file(file)
-                post_show_message(f'Merging imported records')
+                post_show_message(f'Merging {len(records)} imported records')
                 self._database.merge_records(records)
                 self.update_database_status()
                 post_clear_messages()

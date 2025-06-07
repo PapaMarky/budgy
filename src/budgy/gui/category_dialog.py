@@ -217,7 +217,7 @@ class CategoryDialog(UIWindow):
                 'category': category,
                 'subcategory': subcategory,
                 'category_id': self.categories[category][subcategory]['id'],
-                'is_expense': self.categories[category][subcategory]['is_expense'],
+                'expense_type': self.categories[category][subcategory]['expense_type'],
             }
             pygame.event.post(pygame.event.Event(CATEGORY_CHANGED, event_data))
             self.kill()

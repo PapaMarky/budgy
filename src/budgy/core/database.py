@@ -6,10 +6,15 @@ from typing import List, Dict
 
 class BudgyDatabase(object):
     TXN_TABLE_NAME = 'transactions'
-    CATEGORY_TABLE_NAME = 'categoriesX'
+    CATEGORY_TABLE_NAME = 'categories'
     CATEGORY_RULES_TABLE_NAME = 'cat_rules'
     DEFAULT_CATEGORY = 'No Category'
     EMPTY_SUBCATEGORY = ''
+
+    NON_EXPENSE_TYPE = 0
+    ONE_TIME_EXPENSE_TYPE = 1
+    RECURRING_EXPENSE_TYPE = 2
+
     connection = None
 
     def __init__(self, path):
@@ -35,11 +40,12 @@ class BudgyDatabase(object):
                   f'name TEXT, ' \
                   f'memo TEXT, ' \
                   f'category INT DEFAULT 1, ' \
-                  f'checknum TEXT, ' \
+                  f'checknum TEXT' \
                   f');'
             print(sql)
             result = self.execute(sql)
             logging.debug(f'Create Table Result: {result}')
+            # TODO The unique transaction key needs to include "posted"
             sql = f'CREATE UNIQUE INDEX acct_fitid ON {table_name} (fitid, account);'
             result = self.execute(sql)
             logging.debug(f'Create Unique Index: {result}')
@@ -67,7 +73,7 @@ class BudgyDatabase(object):
                   f'id INTEGER PRIMARY KEY AUTOINCREMENT, ' \
                   f'name TEXT, ' \
                   f'subcategory TEXT, ' \
-                  f'is_expense BOOL DEFAULT 0' \
+                  f'expense_type INTEGER DEFAULT 0' \
                   f');'
             result = self.execute(sql)
             logging.debug(f'Create Table Result: {result}')
@@ -76,81 +82,96 @@ class BudgyDatabase(object):
             result = self.execute(sql)
             logging.debug(f'Create Unique Index: {result}')
             # load default values
+            ### expense_type:
+            # 0: not an expense
+            # 1: one-time expense (like a car purchase)
+            # 2: recurring expense (expenses that will continue in retirement)
             default_categories = [
-                (self.DEFAULT_CATEGORY, self.EMPTY_SUBCATEGORY, False),
-                ('Expense', self.EMPTY_SUBCATEGORY, True),
-                ('Expense', 'Check', True),
-                ('Auto', self.EMPTY_SUBCATEGORY, True),
-                ('Auto', 'Gas', True),
-                ('Auto', 'Purchase', True),
-                ('Auto', 'Repairs', True),
-                ('Auto', 'Service', True),
-                ('Auto', 'DMV', True),
-                ('Cash Withdrawal', self.EMPTY_SUBCATEGORY, True),
-                ('Clothing', self.EMPTY_SUBCATEGORY, True),
-                ('Dry Cleaning', self.EMPTY_SUBCATEGORY, True),
-                ('Education', self.EMPTY_SUBCATEGORY, True),
-                ('Education', 'Books', True),
-                ('Education', 'College', True),
-                ('Education', 'Professional', True),
-                ('Education', 'Tuition', True),
-                ('Entertainment', self.EMPTY_SUBCATEGORY, True),
-                ('Entertainment', 'Drinks', True),
-                ('Entertainment', 'Coffee', True),
-                ('Entertainment', 'Dining', True),
-                ('Entertainment', 'Movies', True),
-                ('Entertainment', 'Video Streaming', True),
-                ('Groceries / Food', self.EMPTY_SUBCATEGORY, True),
-                ('Household', self.EMPTY_SUBCATEGORY, True),
-                ('Household', 'Cleaning', True),
-                ('Household', 'Furniture', True),
-                ('Household', 'Gardener', True),
-                ('Household', 'Pool Maintenance', True),
-                ('Household', 'Remodel', True),
-                ('Household', 'Rent', True),
-                ('Household', 'Repairs', True),
-                ('Insurance', self.EMPTY_SUBCATEGORY, True),
-                ('Insurance', 'Auto', True),
-                ('Insurance', 'Home', True),
-                ('Insurance', 'Life', True),
-                ('Insurance', 'Medical', True),
-                ('Postage / Shipping', self.EMPTY_SUBCATEGORY, True),
-                ('Recreation', self.EMPTY_SUBCATEGORY, True),
-                ('Recreation', 'Golf', True),
-                ('Recreation', 'Camping', True),
-                ('Recreation', 'Hobbies', True),
-                ('Rideshare', self.EMPTY_SUBCATEGORY, True),
-                ('Taxes', self.EMPTY_SUBCATEGORY, True),
-                ('Taxes', 'Federal', True),
-                ('Taxes', 'State', True),
-                ('Travel', self.EMPTY_SUBCATEGORY, True),
-                ('Travel', 'Hotel', True),
-                ('Travel', 'Tours', True),
-                ('Travel', 'Transportation (air, sea, rail)', True),
-                ('Utilities', self.EMPTY_SUBCATEGORY, True),
-                ('Utilities', 'Cable', True),
-                ('Utilities', 'Gas / Electric', True),
-                ('Utilities', 'Internet', True),
-                ('Utilities', 'Phone', True),
-                ('Utilities', 'Water', True),
-                ('Income', self.EMPTY_SUBCATEGORY, False),
-                ('Income', 'Dividends', False),
-                ('Income', 'Interest', False),
-                ('Income', 'Salary / Wages', False),
-                ('Income', 'Unemployment', False),
-                ('Savings', self.EMPTY_SUBCATEGORY, False),
-                ('Savings', 'College fund', False),
-                ('Savings', 'Investment', False),
-                ('Savings', 'Retirement', False),
-                ('Shopping', self.EMPTY_SUBCATEGORY, True),
-                ('Shopping', 'Online', True),
-                ('Shopping', 'Amazon', True),
-                ('Transfer', self.EMPTY_SUBCATEGORY, False),
+                (self.DEFAULT_CATEGORY, self.EMPTY_SUBCATEGORY, 0),
+                ('Expense', self.EMPTY_SUBCATEGORY, 2),
+                ('Expense', 'Check', 2),
+                ('Auto', self.EMPTY_SUBCATEGORY, 2),
+                ('Auto', 'Gas', 2),
+                ('Auto', 'Purchase', 1),
+                ('Auto', 'Repairs', 2),
+                ('Auto', 'Service', 2),
+                ('Auto', 'DMV', 2),
+                ('Cash Withdrawal', self.EMPTY_SUBCATEGORY, 2),
+                ('Clothing', self.EMPTY_SUBCATEGORY, 2),
+                ('Dry Cleaning', self.EMPTY_SUBCATEGORY, 2),
+                ('Education', self.EMPTY_SUBCATEGORY, 2),
+                ('Education', 'Books', 2),
+                ('Education', 'College', 1),
+                ('Education', 'Professional', 1),
+                ('Education', 'Tuition', 1),
+                ('Education', 'Post Secondary', 1),
+                ('Entertainment', self.EMPTY_SUBCATEGORY, 2),
+                ('Entertainment', 'Drinks', 2),
+                ('Entertainment', 'Coffee', 2),
+                ('Entertainment', 'Dining', 2),
+                ('Entertainment', 'Movies', 2),
+                ('Entertainment', 'Video Streaming', 2),
+                ('Groceries / Food', self.EMPTY_SUBCATEGORY, 2),
+                ('Household', self.EMPTY_SUBCATEGORY, 2),
+                ('Household', 'Cleaning', 2),
+                ('Household', 'Furniture', 2),
+                ('Household', 'Gardener', 2),
+                ('Household', 'Pool Maintenance', 2),
+                ('Household', 'Remodel', 1),
+                ('Household', 'Rent', 2),
+                ('Household', 'Repairs', 2),
+                ('Insurance', self.EMPTY_SUBCATEGORY, 2),
+                ('Insurance', 'Auto', 2),
+                ('Insurance', 'Home', 2),
+                ('Insurance', 'Life', 2),
+                ('Insurance', 'Medical', 2),
+                ('Postage / Shipping', self.EMPTY_SUBCATEGORY, 2),
+                ('Recreation', self.EMPTY_SUBCATEGORY, 2),
+                ('Recreation', 'Golf', 2),
+                ('Recreation', 'Camping', 2),
+                ('Recreation', 'Hobbies', 2),
+                ('Rideshare', self.EMPTY_SUBCATEGORY, 2),
+                ('Taxes', self.EMPTY_SUBCATEGORY, 1),
+                ('Taxes', 'Federal', 1),
+                ('Taxes', 'State', 1),
+                ('Travel', self.EMPTY_SUBCATEGORY, 2),
+                ('Travel', 'Hotel', 2),
+                ('Travel', 'Tours', 2),
+                ('Travel', 'Transportation (air, sea, rail)', 2),
+                ('Utilities', self.EMPTY_SUBCATEGORY, 2),
+                ('Utilities', 'Cable', 2),
+                ('Utilities', 'Gas / Electric', 2),
+                ('Utilities', 'Internet', 2),
+                ('Utilities', 'Phone', 2),
+                ('Utilities', 'Water', 2),
+                ('Income', self.EMPTY_SUBCATEGORY, 0),
+                ('Income', 'Dividends', 0),
+                ('Income', 'Interest', 0),
+                ('Income', 'Salary / Wages', 0),
+                ('Income', 'Unemployment', 0),
+                ('Savings', self.EMPTY_SUBCATEGORY, 0),
+                ('Savings', 'College fund', 0),
+                ('Savings', 'Investment', 0),
+                ('Savings', 'Retirement', 0),
+                ('Shopping', self.EMPTY_SUBCATEGORY, 2),
+                ('Shopping', 'Online', 2),
+                ('Shopping', 'Amazon', 2),
+                ('Transfer', self.EMPTY_SUBCATEGORY, 0),
+                ('Medical', self.EMPTY_SUBCATEGORY, 2),
+                ('Medical', 'Medicine', 2),
+                ('Morgage', self.EMPTY_SUBCATEGORY, 2),
+                ('Entertainment', 'Hobbies', 2),
+                ('Entertainment', 'Music', 2),
+                ('Entertainment', 'Concert', 2),
+                ('Tax Preparation', self.EMPTY_SUBCATEGORY, 2),
+                ('Work Expense', self.EMPTY_SUBCATEGORY, 2),
+                ('Work Expense', 'License', 2),
+                ('Auto', 'Rental', 1)
             ]
 
             print(f'Loading default categories')
             result = result.executemany(
-                f'INSERT OR REPLACE INTO {self.CATEGORY_TABLE_NAME} (name, subcategory, is_expense) VALUES (?, ?, ?)',
+                f'INSERT OR REPLACE INTO {self.CATEGORY_TABLE_NAME} (name, subcategory, expense_type) VALUES (?, ?, ?)',
                 default_categories
             )
             print(f'COMMIT default categories')
@@ -207,11 +228,13 @@ class BudgyDatabase(object):
             n = len(result)
             # if n > 1:
             #     raise Exception('Multiple records with same fitid')
+            print(f'{record["fitid"]}|{record["account"]} matched {n} records')
             if n == 0:
                 logging.debug(f'New Record, inserting')
                 self.insert_record(record)
                 return
             old_record = self.record_from_row(result[0])
+            print(f'Old Record: {old_record}')
             logging.info(f'------------------')
             logging.info(f'|{"key":10}|{"NEW":30}|{"OLD":30}|')
             for k in record:
@@ -220,7 +243,10 @@ class BudgyDatabase(object):
                 match_text = 'MATCH'
                 if v1 != v2:
                     match_text = 'NO MATCH'
-                logging.info(f'|{k:10}|{v1:30}|{v2:30}|{match_text}|')
+                # logging.info(f'|{k:10}|{v1:30}|{v2:30}|{match_text}|')
+                print(f'|{k:10}|{v1:30}|{v2:30}|{match_text}|')
+        else:
+            print(f'Matched no records')
 
 
     def get_date_range(self):
@@ -273,7 +299,7 @@ class BudgyDatabase(object):
 
             sql = ('SELECT STRFTIME("%Y", posted) AS year, STRFTIME("%m", posted) AS month, SUM(ABS(amount)) AS expences '
                    'FROM transactions AS txn, categories AS cat '
-                   'WHERE amount < 0 AND txn.category = cat.id AND NOT cat.is_expense ' 
+                   'WHERE amount < 0 AND txn.category = cat.id AND NOT cat.expense_type ' 
                    'GROUP BY year, month ORDER BY year, month DESC;')
 
             result = self.execute(sql)
@@ -352,18 +378,19 @@ class BudgyDatabase(object):
         result = {
             'merged': 0
         }
+        print(f'Merging {len(newrecords)}')
         for record in newrecords:
             self.merge_record(record)
 
 
     def get_catetory_dict(self):
-        sql = f'SELECT name, subcategory, is_expense, id FROM {self.CATEGORY_TABLE_NAME} ORDER BY name'
+        sql = f'SELECT name, subcategory, expense_type, id FROM {self.CATEGORY_TABLE_NAME} ORDER BY name'
         result = self.execute(sql)
         category_dict = {}
         for row in result:
             if not row[0] in category_dict:
                 category_dict[row[0]] = {}
-            category_dict[row[0]][row[1]] = {'is_expense': row[2] != 0, 'id': row[3]}
+            category_dict[row[0]][row[1]] = {'expense_type': row[2], 'id': row[3]}
         return category_dict
 
     def get_category_list(self):
@@ -382,7 +409,7 @@ class BudgyDatabase(object):
     def get_category_for_fitid(self, fitid):
         if fitid is None:
             return [self.DEFAULT_CATEGORY, '', 0]
-        sql = f'SELECT c.name, c.subcategory, c.is_expense FROM {self.TXN_TABLE_NAME} AS t, {self.CATEGORY_TABLE_NAME} AS c WHERE t.fitid = {fitid} AND t.category = c.id'
+        sql = f'SELECT c.name, c.subcategory, c.expense_type FROM {self.TXN_TABLE_NAME} AS t, {self.CATEGORY_TABLE_NAME} AS c WHERE t.fitid = {fitid} AND t.category = c.id'
         result = self.execute(sql)
         if not result:
             return [self.DEFAULT_CATEGORY, '', 0]

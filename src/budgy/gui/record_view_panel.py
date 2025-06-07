@@ -18,8 +18,9 @@ from budgy.gui.events import post_show_message, CATEGORY_CHANGED
 
 
 class RecordView(DbRecordView):
-    EXPENSE_COLOR = 'ivory'
-    NONEXPENSE_COLOR = 'lightsteelblue'
+    RECURRING_EXPENSE_COLOR = 'mediumseagreen'
+    ONE_TIME_EXPENSE_COLOR = 'seagreen'
+    NON_EXPENSE_COLOR = 'slategrey'
     # TODO: this level of abstraction just makes it impossible to follow what is going on. SIMPLIFY THIS
     #       Make it a functional Interface?
     my_field_names = (
@@ -109,7 +110,7 @@ class RecordView(DbRecordView):
         if record is None:
             self._category_button.disable()
             self._category_button.hide()
-            self.set_color(self.NONEXPENSE_COLOR)
+            self.set_color(self.NON_EXPENSE_COLOR)
         else:
             self._category_button.enable()
             if self.visible:
@@ -137,10 +138,12 @@ class RecordView(DbRecordView):
                     else:
                         self._fields[i].fitid = self._record['fitid']
                     if self.visible:
-                        if self._fields[i].is_expense:
-                            self.set_color(self.EXPENSE_COLOR)
+                        if self._fields[i].expense_type == BudgyDatabase.RECURRING_EXPENSE_TYPE:
+                            self.set_color(self.RECURRING_EXPENSE_COLOR)
+                        elif self._fields[i].expense_type == BudgyDatabase.ONE_TIME_EXPENSE_TYPE:
+                            self.set_color(self.ONE_TIME_EXPENSE_COLOR)
                         else:
-                            self.set_color(self.NONEXPENSE_COLOR)
+                            self.set_color(self.NON_EXPENSE_COLOR)
                 if field != 'category':
                     self._fields[i].set_text(str(value))
 
@@ -153,10 +156,12 @@ class RecordView(DbRecordView):
                     return False
             elif event.type == budgy.gui.events.CATEGORY_CHANGED:
                 if event.fitid == self._record['fitid']:
-                    if event.is_expense:
-                        self.set_color(self.EXPENSE_COLOR)
+                    if event.expense_type == BudgyDatabase.RECURRING_EXPENSE_TYPE:
+                        self.set_color(self.RECURRING_EXPENSE_COLOR)
+                    elif event.expense_type == BudgyDatabase.ONE_TIME_EXPENSE_TYPE:
+                        self.set_color(self.ONE_TIME_EXPENSE_COLOR)
                     else:
-                        self.set_color(self.NONEXPENSE_COLOR)
+                        self.set_color(self.NON_EXPENSE_COLOR)
                     return False
         return event_consumed
 

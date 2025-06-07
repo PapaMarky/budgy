@@ -75,6 +75,7 @@ class MessagePanel(UIPanel):
         event_consumed = super().process_event(event)
         if not event_consumed:
             if event.type == SHOW_MESSAGE:
+                print(f'SHOW_MESSAGE ({event.level}) {event.message}')
                 if event.level in self.level_map:
                     self.level_map[event.level](event.message)
                 else:

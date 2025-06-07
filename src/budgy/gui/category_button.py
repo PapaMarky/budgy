@@ -5,7 +5,6 @@ from pygame_gui.elements import UIButton
 from budgy.core.database import BudgyDatabase
 from budgy.gui.category_dialog import CategoryDialog
 
-
 class CategoryButton(UIButton):
     def __init__(self,
                  database:BudgyDatabase,
@@ -18,7 +17,7 @@ class CategoryButton(UIButton):
         self.database = database
         self._fitid = fitid
         self._txn_name = 'None'
-        self.is_expense = False
+        self.expense_type = BudgyDatabase.NON_EXPENSE_TYPE
         super().__init__(*args, **kwargs)
 
     @property
@@ -54,7 +53,7 @@ class CategoryButton(UIButton):
 
     def set_category_text(self):
         category = self.database.get_category_for_fitid(self.fitid)
-        self.is_expense = category[2] != 0
-        expense_marker = '*' if self.is_expense else ''
-        category_str = f'{expense_marker}{category[0]}' if category[1] == '' else f'{expense_marker}{category[0]} | {category[1]}'
+        self.expense_type = category[2]
+        expense_marker = '*' if self.expense_type != BudgyDatabase.NON_EXPENSE_TYPE else ''
+        category_str = f'({category[2]}) {category[0]}' if category[1] == '' else f'({category[2]}) {category[0]} | {category[1]}'
         self.set_text(category_str)

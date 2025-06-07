@@ -15,6 +15,7 @@ def load_ofx_file(ofxfile:Path):
     parser.parse(ofxfile)
     ofx = parser.convert()
     records = []
+    print(f'{len(ofx.statements)} statements')
     for statement in ofx.statements:
         is_checking = isinstance(statement, ofxtools.models.bank.stmt.STMTRS)
         account = statement.bankacctfrom.acctid if is_checking else statement.ccacctfrom.acctid
@@ -32,5 +33,8 @@ def load_ofx_file(ofxfile:Path):
                 'memo': txn.memo,
                 'checknum': checknum
             }
+            print(f'{record["posted"]}|{record["account"]}|{record["name"]}|{record["amount"]}')
+
             records.append(record)
+        print(f'')
     return records

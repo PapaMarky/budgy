@@ -19,8 +19,9 @@ from budgy.gui.events import post_show_message, CATEGORY_SELECTION_CHANGED
 
 class CategoryView(DbRecordView):
     CATEGORY_VIEW_HEIGHT = BUTTON_HEIGHT
-    SELECTED_COLOR = 'ivory'
-    UNSELECTED_COLOR = 'lightsteelblue'
+    RECURRING_EXPENSE_COLOR = 'mediumseagreen'
+    ONE_TIME_EXPENSE_COLOR = ''
+    NOT_EXPENSE_COLOR = 'slategrey'
     EMPTY_COLOR = 'black'
     my_field_names = (
         'name',
@@ -52,7 +53,7 @@ class CategoryView(DbRecordView):
         elif value is None:
             self.set_color(self.EMPTY_COLOR)
         else:
-            self.set_color(self.SELECTED_COLOR if value else self.UNSELECTED_COLOR)
+            self.set_color(self.RECURRING_EXPENSE_COLOR if value else self.NOT_EXPENSE_COLOR)
 
 
     def build_items(self):
