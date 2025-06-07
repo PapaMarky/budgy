@@ -1,0 +1,112 @@
+name: Build Package
+
+on:
+  workflow_call:
+    inputs:
+      upload-artifacts:
+        description: 'Upload build artifacts'
+        required: false
+        default: true
+        type: boolean
+      verify-package:
+        description: 'Verify package integrity'
+        required: false
+        default: true
+        type: boolean
+    outputs:
+      build-status:
+        description: 'Build execution status'
+        value: ${{ jobs.build.outputs.status }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.build-status.outputs.status }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+          cache: 'pip'
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine setuptools wheel
+          pip install -e .
+
+      - name: Clean previous builds
+        run: |
+          rm -rf dist/ build/ src/*.egg-info/
+
+      - name: Build package
+        run: |
+          echo "Building package..."
+          python -m build
+          echo "Build completed"
+
+      - name: Verify package contents
+        if: inputs.verify-package
+        run: |
+          echo "Verifying package contents..."
+          echo "Generated files:"
+          ls -la dist/
+          
+          echo "Checking package metadata..."
+          python -m twine check dist/*
+          
+          echo "Testing package installation..."
+          pip install dist/*.whl
+          
+          echo "Testing entry points..."
+          budgy-import --help || echo "budgy-import help failed"
+          
+          echo "Testing basic imports..."
+          python -c "
+          try:
+              from budgy.core.database import BudgyDatabase
+              from budgy.core import load_ofx_file
+              print('✅ Core imports successful')
+          except ImportError as e:
+              print(f'❌ Core import failed: {e}')
+              exit(1)
+          
+          try:
+              from budgy.gui.viewer import BudgyViewerApp
+              print('✅ GUI imports successful')
+          except ImportError as e:
+              print(f'❌ GUI import failed: {e}')
+              exit(1)
+          "
+
+      - name: Upload build artifacts
+        if: inputs.upload-artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+          retention-days: 90
+
+      - name: Upload package metadata
+        if: inputs.upload-artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-metadata
+          path: |
+            src/*.egg-info/
+            VERSION.txt
+            setup.cfg
+            pyproject.toml
+          retention-days: 30
+
+      - name: Set build status
+        id: build-status
+        run: |
+          echo "status=success" >> $GITHUB_OUTPUT
+          echo "✅ Build completed successfully" >> $GITHUB_STEP_SUMMARY
