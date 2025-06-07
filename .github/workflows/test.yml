@@ -128,10 +128,15 @@ jobs:
 
       - name: Collect coverage data
         if: inputs.upload-coverage
+        shell: bash
         run: |
+          # Change to src directory where coverage files are generated
+          cd src
           coverage combine || true
-          coverage xml -o coverage-${{ matrix.os }}-py${{ matrix.python-version }}.xml || true
-          coverage html -d htmlcov-${{ matrix.os }}-py${{ matrix.python-version }} || true
+          coverage xml -o ../coverage-${{ matrix.os }}-py${{ matrix.python-version }}.xml || true
+          coverage html -d ../htmlcov-${{ matrix.os }}-py${{ matrix.python-version }} || true
+          # Copy .coverage files to root for artifact upload
+          cp .coverage* .. 2>/dev/null || true
 
       - name: Upload coverage reports
         if: inputs.upload-coverage
@@ -143,7 +148,7 @@ jobs:
             htmlcov-*
             .coverage*
           retention-days: 30
-          if-no-files-found: warn
+          if-no-files-found: ignore
 
       - name: Upload test logs
         if: always()
@@ -246,6 +251,7 @@ jobs:
         with:
           pattern: coverage-*
           merge-multiple: true
+        continue-on-error: true
 
       - name: Generate test summary
         id: summary
@@ -295,3 +301,4 @@ jobs:
             coverage-*.xml
             htmlcov-*
           retention-days: 30
+          if-no-files-found: ignore
