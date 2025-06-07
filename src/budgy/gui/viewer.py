@@ -1,5 +1,7 @@
 import argparse
+import glob
 import logging
+import os.path
 from pathlib import Path
 
 import pygame
@@ -109,6 +111,8 @@ class BudgyViewerApp(GuiApp):
         self.top_panel.set_record_count(len(records))
         start, end = self._database.get_date_range()
         self.top_panel.set_data_range(start, end)
+
+        # TODO: BudgyFunctionalPanel should have a "update_database_status"
         self.function_panel.data_panel.set_data(records)
         self.function_panel.report_panel.rebuild_report()
 
@@ -154,24 +158,35 @@ class BudgyViewerApp(GuiApp):
             print(f'load database: {event.db_path}')
             #self.open_database(event.db_path)
         elif event.type == budgy.gui.events.DATA_SOURCE_CONFIRMED:
-            post_show_message(f'Loading OFX data from {event.path}')
-            records = load_ofx_file(event.path)
-            post_show_message(f'Merging imported records')
-            self._database.merge_records(records)
-            self.update_database_status()
-            post_clear_messages()
+            files = []
+            if os.path.isdir(event.path):
+                all_files = glob.glob(event.path + '/*')
+                print(f'ALL FILES: {all_files}')
+                for file in all_files:
+                    if file.endswith('.ofx') or file.endswith('.qfx'):
+                        files.append(file)
+                        print(f'FILE: {file}')
+            else:
+                files.append(event.path)
+                print(f'FILE: {event.path}')
+            for file in files:
+                msg = f'Loading OFX data from {file}'
+                post_show_message(msg)
+                print(msg)
+                records = load_ofx_file(file)
+                post_show_message(f'Merging {len(records)} imported records')
+                self._database.merge_records(records)
+                self.update_database_status()
+                post_clear_messages()
             return True
         elif event.type == budgy.gui.events.DELETE_ALL_DATA_CONFIRMED:
             print(f'DELETING ALL DATA FROM DATABASE')
             self._database.delete_all_records()
             self.update_database_status()
             return True
-        elif event.type == budgy.gui.events.TOGGLE_BUTTON:
-            print('viewer got TOGGLE_BUTTON')
-            fitid = event.user_data["fitid"]
-            print(f'Toggling excluded for {fitid} to {event.state}')
-            self._database.exclude_fitid(fitid, event.state)
-            return True
+        elif event.type == budgy.gui.events.CATEGORY_CHANGED:
+            self.update_database_status()
+            return False
 
     def _parse_args(self):
         parser = argparse.ArgumentParser(self._title)

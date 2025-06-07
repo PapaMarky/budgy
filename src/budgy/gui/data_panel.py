@@ -14,7 +14,7 @@ from budgy.gui.dialogs import show_confirmation_dialog, show_file_dialog, is_con
 import budgy.gui.events
 from budgy.gui.function_subpanel import BudgyFunctionSubPanel
 from budgy.gui.record_view_panel import RecordViewPanel
-
+from budgy.gui.configdata import BudgyConfig
 
 CONFIRM_IMPORT_TITLE = 'Confirm Import'
 CONFIRM_DELETE_ALL_TITLE = 'Confirm Delete All Data'
@@ -29,19 +29,21 @@ def show_confirm_delete_all_dialog():
 def is_confirm_import_dialog(element):
     return is_confirmation_dialog(element, CONFIRM_IMPORT_TITLE)
 
-def show_confirm_import_dialog():
-    long_desc = 'Selecting OK will import the data from the file into the database'
+def show_confirm_import_dialog(import_directory=False):
+    long_desc = 'Selecting OK will import data from all files in the direcory' if import_directory else \
+        'Selecting OK will import the data from the file into the database'
     show_confirmation_dialog(CONFIRM_IMPORT_TITLE, long_desc)
 def is_import_file_dialog(element):
     return is_file_dialog(element, IMPORT_FILE_DIALOG_TITLE)
 def show_import_data_file_dialog(initial_path):
     show_file_dialog(IMPORT_FILE_DIALOG_TITLE,
                      initial_path,
-                     allowed_suffixes=['.ofx', '.qfx'])
+                     allowed_suffixes=['.ofx', '.qfx'],
+                     allow_picking_directories=True)
 
 
 class BudgyDataPanel(BudgyFunctionSubPanel):
-    def __init__(self, config_in, function_panel, *args, **kwargs):
+    def __init__(self, config_in:BudgyConfig, function_panel, *args, **kwargs):
         super().__init__(config_in, function_panel, *args, **kwargs)
         self._import_data_button = UIButton(
             pygame.Rect(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT),
@@ -76,7 +78,9 @@ class BudgyDataPanel(BudgyFunctionSubPanel):
         h -= 6 * MARGIN + y
         rr = pygame.Rect(x, y, w, h)
         # rr.bottomright = (-MARGIN, -MARGIN)
+        # need to pass data base to RecordViewPanel ... CategoryButton
         self._records_view_panel = RecordViewPanel(
+            Path(config_in.database_path),
             rr,
             manager=self.ui_manager,
             container=self,
@@ -153,7 +157,8 @@ class BudgyDataPanel(BudgyFunctionSubPanel):
                     self.import_path = None
                 else:
                     # import the data
-                    show_confirm_import_dialog()
+                    is_directory = os.path.isdir(self.import_path)
+                    show_confirm_import_dialog(import_directory=is_directory)
                 event_consumed = True
             if event.type == budgy.gui.events.DELETE_ALL_DATA:
                 print('CLEAR DATA (data panel)')

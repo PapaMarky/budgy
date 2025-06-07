@@ -5,11 +5,20 @@ import sqlite3
 from typing import List, Dict
 
 class BudgyDatabase(object):
-    TABLE_NAME = 'transactions'
+    TXN_TABLE_NAME = 'transactions'
+    CATEGORY_TABLE_NAME = 'categories'
+    CATEGORY_RULES_TABLE_NAME = 'cat_rules'
+    DEFAULT_CATEGORY = 'No Category'
+    EMPTY_SUBCATEGORY = ''
+
+    NON_EXPENSE_TYPE = 0
+    ONE_TIME_EXPENSE_TYPE = 1
+    RECURRING_EXPENSE_TYPE = 2
+
+    connection = None
 
     def __init__(self, path):
         self.db_path = path
-        self.connection = None
         self._open_database()
 
     def table_exists(self, table_name):
@@ -18,8 +27,16 @@ class BudgyDatabase(object):
         rows = result.fetchall()
         return len(rows) > 0
 
-    def _create_table_if_missing(self, table_name):
+    def index_exists(self, index_name):
+        sql = f"SELECT name FROM sqlite_master WHERE type='index' AND name='{index_name}';"
+        result = self.execute(sql)
+        rows = result.fetchall()
+        return len(rows) > 0
+
+    def _create_txn_table_if_missing(self):
+        table_name = self.TXN_TABLE_NAME
         if not self.table_exists(table_name):
+            print(f'Creating table: {table_name}')
             sql = f'CREATE TABLE IF NOT EXISTS {table_name} (' \
                   f'fitid INT, ' \
                   f'account TEXT, ' \
@@ -28,14 +45,143 @@ class BudgyDatabase(object):
                   f'amount FLOAT, ' \
                   f'name TEXT, ' \
                   f'memo TEXT, ' \
-                  f'checknum TEXT, ' \
-                  f'exclude BOOL DEFAULT 0' \
+                  f'category INT DEFAULT 1, ' \
+                  f'checknum TEXT' \
+                  f');'
+            print(sql)
+            result = self.execute(sql)
+            logging.debug(f'Create Table Result: {result}')
+            sql = f'CREATE UNIQUE INDEX acct_fitid_posted ON {table_name} (fitid, account, posted);'
+            result = self.execute(sql)
+            logging.debug(f'Create Unique Index: {result}')
+
+    def _create_rules_table_if_missing(self):
+        table_name = self.CATEGORY_RULES_TABLE_NAME
+        if not self.table_exists(table_name):
+            print(f'Creating table: {table_name}')
+            sql = f'CREATE TABLE IF NOT EXISTS {table_name} (' \
+                   f'id INTEGER PRIMARY KEY AUTOINCREMENT, ' \
+                   f'pattern TEXT, ' \
+                   f'category TEXT, ' \
+                   f'subcategory TEXT ' \
+                   f');'
+            print(sql)
+            result = self.execute(sql)
+            logging.debug(f'Create Table Result: {result}')
+            print(f'Create Table Result: {result}')
+
+    def _create_category_table_if_missing(self):
+        table_name = self.CATEGORY_TABLE_NAME
+        if not self.table_exists(table_name):
+            print(f'Creating table: {self.CATEGORY_TABLE_NAME}')
+            sql = f'CREATE TABLE IF NOT EXISTS {table_name} (' \
+                  f'id INTEGER PRIMARY KEY AUTOINCREMENT, ' \
+                  f'name TEXT, ' \
+                  f'subcategory TEXT, ' \
+                  f'expense_type INTEGER DEFAULT 0' \
                   f');'
             result = self.execute(sql)
             logging.debug(f'Create Table Result: {result}')
-            sql = f'CREATE UNIQUE INDEX acct_fitid ON {table_name} (fitid, account);'
+            print(f'Create Table Result: {result}')
+            sql = f'CREATE UNIQUE INDEX category_full ON {table_name} (name, subcategory);'
             result = self.execute(sql)
             logging.debug(f'Create Unique Index: {result}')
+            # load default values
+            ### expense_type:
+            # 0: not an expense
+            # 1: one-time expense (like a car purchase)
+            # 2: recurring expense (expenses that will continue in retirement)
+            default_categories = [
+                (self.DEFAULT_CATEGORY, self.EMPTY_SUBCATEGORY, 0),
+                ('Expense', self.EMPTY_SUBCATEGORY, 2),
+                ('Expense', 'Check', 2),
+                ('Auto', self.EMPTY_SUBCATEGORY, 2),
+                ('Auto', 'Gas', 2),
+                ('Auto', 'Purchase', 1),
+                ('Auto', 'Repairs', 2),
+                ('Auto', 'Service', 2),
+                ('Auto', 'DMV', 2),
+                ('Cash Withdrawal', self.EMPTY_SUBCATEGORY, 2),
+                ('Clothing', self.EMPTY_SUBCATEGORY, 2),
+                ('Dry Cleaning', self.EMPTY_SUBCATEGORY, 2),
+                ('Education', self.EMPTY_SUBCATEGORY, 2),
+                ('Education', 'Books', 2),
+                ('Education', 'College', 1),
+                ('Education', 'Professional', 1),
+                ('Education', 'Tuition', 1),
+                ('Education', 'Post Secondary', 1),
+                ('Entertainment', self.EMPTY_SUBCATEGORY, 2),
+                ('Entertainment', 'Drinks', 2),
+                ('Entertainment', 'Coffee', 2),
+                ('Entertainment', 'Dining', 2),
+                ('Entertainment', 'Movies', 2),
+                ('Entertainment', 'Video Streaming', 2),
+                ('Groceries / Food', self.EMPTY_SUBCATEGORY, 2),
+                ('Household', self.EMPTY_SUBCATEGORY, 2),
+                ('Household', 'Cleaning', 2),
+                ('Household', 'Furniture', 2),
+                ('Household', 'Gardener', 2),
+                ('Household', 'Pool Maintenance', 2),
+                ('Household', 'Remodel', 1),
+                ('Household', 'Rent', 2),
+                ('Household', 'Repairs', 2),
+                ('Insurance', self.EMPTY_SUBCATEGORY, 2),
+                ('Insurance', 'Auto', 2),
+                ('Insurance', 'Home', 2),
+                ('Insurance', 'Life', 2),
+                ('Insurance', 'Medical', 2),
+                ('Postage / Shipping', self.EMPTY_SUBCATEGORY, 2),
+                ('Recreation', self.EMPTY_SUBCATEGORY, 2),
+                ('Recreation', 'Golf', 2),
+                ('Recreation', 'Camping', 2),
+                ('Recreation', 'Hobbies', 2),
+                ('Rideshare', self.EMPTY_SUBCATEGORY, 2),
+                ('Taxes', self.EMPTY_SUBCATEGORY, 1),
+                ('Taxes', 'Federal', 1),
+                ('Taxes', 'State', 1),
+                ('Travel', self.EMPTY_SUBCATEGORY, 2),
+                ('Travel', 'Hotel', 2),
+                ('Travel', 'Tours', 2),
+                ('Travel', 'Transportation (air, sea, rail)', 2),
+                ('Utilities', self.EMPTY_SUBCATEGORY, 2),
+                ('Utilities', 'Cable', 2),
+                ('Utilities', 'Gas / Electric', 2),
+                ('Utilities', 'Internet', 2),
+                ('Utilities', 'Phone', 2),
+                ('Utilities', 'Water', 2),
+                ('Income', self.EMPTY_SUBCATEGORY, 0),
+                ('Income', 'Dividends', 0),
+                ('Income', 'Interest', 0),
+                ('Income', 'Salary / Wages', 0),
+                ('Income', 'Unemployment', 0),
+                ('Savings', self.EMPTY_SUBCATEGORY, 0),
+                ('Savings', 'College fund', 0),
+                ('Savings', 'Investment', 0),
+                ('Savings', 'Retirement', 0),
+                ('Shopping', self.EMPTY_SUBCATEGORY, 2),
+                ('Shopping', 'Online', 2),
+                ('Shopping', 'Amazon', 2),
+                ('Transfer', self.EMPTY_SUBCATEGORY, 0),
+                ('Medical', self.EMPTY_SUBCATEGORY, 2),
+                ('Medical', 'Medicine', 2),
+                ('Morgage', self.EMPTY_SUBCATEGORY, 2),
+                ('Entertainment', 'Hobbies', 2),
+                ('Entertainment', 'Music', 2),
+                ('Entertainment', 'Concert', 2),
+                ('Tax Preparation', self.EMPTY_SUBCATEGORY, 2),
+                ('Work Expense', self.EMPTY_SUBCATEGORY, 2),
+                ('Work Expense', 'License', 2),
+                ('Auto', 'Rental', 1)
+            ]
+
+            print(f'Loading default categories')
+            result = result.executemany(
+                f'INSERT OR REPLACE INTO {self.CATEGORY_TABLE_NAME} (name, subcategory, expense_type) VALUES (?, ?, ?)',
+                default_categories
+            )
+            print(f'COMMIT default categories')
+            self.connection.commit()
+            print(f'RESULT: {result}')
 
     def execute(self, sql):
         cursor = self.connection.cursor()
@@ -44,18 +190,33 @@ class BudgyDatabase(object):
 
     def _open_database(self):
         logging.debug(f'Opening {self.db_path}')
-        self.connection = sqlite3.connect(self.db_path)
-        self._create_table_if_missing(self.TABLE_NAME)
+        if self.connection is None:
+            self.connection = sqlite3.connect(self.db_path)
+        self._create_txn_table_if_missing()
+        self._create_category_table_if_missing()
+        self._create_rules_table_if_missing()
+        self.migrate_unique_constraint()
 
-    def get_record_by_fitid(self, fitid, account):
-        sql = f'SELECT * from {self.TABLE_NAME} WHERE fitid = {fitid} AND account = "{account}";'
+    def get_record_by_fitid(self, fitid, account, posted=None):
+        if posted:
+            sql = f'SELECT * from {self.TXN_TABLE_NAME} WHERE fitid = {fitid} AND account = "{account}" AND posted = "{posted}";'
+        else:
+            sql = f'SELECT * from {self.TXN_TABLE_NAME} WHERE fitid = {fitid} AND account = "{account}";'
         result = self.execute(sql)
         rows = result.fetchall()
         output = []
         for row in rows:
             output.append(row)
-            logging.debug(f'Posted: {row[2]} ({type(row[2])})')
+            logging.debug(f'Posted: {row[3]} ({type(row[3])})')
         return output
+
+    def get_record_by_unique_key(self, fitid, account, posted):
+        sql = f'SELECT * from {self.TXN_TABLE_NAME} WHERE fitid = {fitid} AND account = "{account}" AND posted = "{posted}";'
+        result = self.execute(sql)
+        rows = result.fetchall()
+        if len(rows) > 1:
+            raise Exception(f'Multiple records found for unique key: fitid={fitid}, account={account}, posted={posted}')
+        return rows[0] if len(rows) == 1 else None
 
     def record_from_row(self, row):
         checknum = "" if row[7] is None else row[7]
@@ -67,38 +228,39 @@ class BudgyDatabase(object):
             'amount': row[4],
             'name': row[5],
             'memo': row[6],
-            'checknum': checknum,
-            'exclude': row[8] != 0
+            'checknum': checknum
         }
 
     def insert_record(self, record):
         checknum = "" if record['checknum'] is None else record['checknum']
-        sql = f'INSERT INTO {self.TABLE_NAME} (fitid, account, type, posted, amount, name, memo, checknum, exclude) ' \
+        sql = f'INSERT INTO {self.TXN_TABLE_NAME} (fitid, account, type, posted, amount, name, memo, checknum) ' \
               f'VALUEs ({record["fitid"]}, "{record["account"]}", "{record["type"]}", "{record["posted"]}", ' \
-              f'{record["amount"]}, "{record["name"]}", "{record["memo"]}", "{checknum}", "{record["exclude"]}" );'
+              f'{record["amount"]}, "{record["name"]}", "{record["memo"]}", "{checknum}" );'
         result = self.execute(sql)
         self.connection.commit()
 
     def merge_record(self, record):
-        result = self.get_record_by_fitid(record['fitid'], record['account'])
-        if result is not None:
-            n = len(result)
-            # if n > 1:
-            #     raise Exception('Multiple records with same fitid')
-            if n == 0:
-                logging.debug(f'New Record, inserting')
-                self.insert_record(record)
-                return
-            old_record = self.record_from_row(result[0])
+        existing_record = self.get_record_by_unique_key(record['fitid'], record['account'], record['posted'])
+        if existing_record is not None:
+            old_record = self.record_from_row(existing_record)
+            print(f'Record exists: {record["fitid"]}|{record["account"]}|{record["posted"]}')
+            print(f'Old Record: {old_record}')
             logging.info(f'------------------')
             logging.info(f'|{"key":10}|{"NEW":30}|{"OLD":30}|')
             for k in record:
+                # Skip fields that were removed from the schema (like 'exclude')
+                if k not in old_record:
+                    continue
                 v1 = record[k] if record[k] is not None else '<NONE>'
                 v2 = old_record[k] if old_record[k] is not None else '<NONE>'
                 match_text = 'MATCH'
                 if v1 != v2:
                     match_text = 'NO MATCH'
-                logging.info(f'|{k:10}|{v1:30}|{v2:30}|{match_text}|')
+                print(f'|{k:10}|{v1:30}|{v2:30}|{match_text}|')
+        else:
+            print(f'New record, inserting: {record["fitid"]}|{record["account"]}|{record["posted"]}')
+            logging.debug(f'New Record, inserting')
+            self.insert_record(record)
 
 
     def get_date_range(self):
@@ -116,7 +278,7 @@ class BudgyDatabase(object):
         return (None, None)
 
     def count_records(self):
-        sql = f'SELECT COUNT(*) FROM {self.TABLE_NAME}'
+        sql = f'SELECT COUNT(*) FROM {self.TXN_TABLE_NAME}'
         result = self.execute(sql)
         count = 0
         if result is not None:
@@ -126,8 +288,14 @@ class BudgyDatabase(object):
         return 0
 
     def get_report(self):
-        sql = ('SELECT STRFTIME("%Y", posted) AS year, STRFTIME("%m", posted) AS month, SUM(amount) AS expences FROM transactions '
-               'WHERE amount < 0 AND NOT exclude GROUP BY year, month ORDER BY year, month DESC;')
+        sql_old = ('SELECT STRFTIME("%Y", posted) AS year, STRFTIME("%m", posted) AS month, SUM(amount) AS expences '
+                   'FROM transactions '
+                   'WHERE amount < 0 AND NOT exclude '
+                   'GROUP BY year, month ORDER BY year, month DESC;')
+        sql = ('SELECT STRFTIME("%Y", posted) AS year, STRFTIME("%m", posted) AS month, SUM(ABS(amount)) AS expences '
+               'FROM transactions AS txn '
+               'WHERE amount < 0 '
+               'GROUP BY year, month ORDER BY year, month DESC;')
         print(sql)
         result = self.execute(sql)
         data = {}
@@ -143,6 +311,19 @@ class BudgyDatabase(object):
                     }
                 data[year]['months'][expense_month] = expense
 
+            sql = ('SELECT STRFTIME("%Y", posted) AS year, STRFTIME("%m", posted) AS month, SUM(ABS(amount)) AS expences '
+                   'FROM transactions AS txn, categories AS cat '
+                   'WHERE amount < 0 AND txn.category = cat.id AND NOT cat.expense_type '
+                   'GROUP BY year, month ORDER BY year, month DESC;')
+
+            result = self.execute(sql)
+            if result is not None:
+                for row in result:
+                    year = row[0]
+                    expense_month = int(row[1]) - 1
+                    amount = row[2]
+                    data[year]['months'][expense_month] -= amount
+
             for year in data:
                 sum = 0
                 n = 0
@@ -155,13 +336,13 @@ class BudgyDatabase(object):
                         if data[year]['minimum'] is None:
                             data[year]['minimum'] = monthly_expense
                         else:
-                            if monthly_expense > data[year]['minimum']:
+                            if monthly_expense < data[year]['minimum']:
                                 data[year]['minimum'] = monthly_expense
 
                         if data[year]['maximum'] is None:
                             data[year]['maximum'] = monthly_expense
                         else:
-                            if monthly_expense < data[year]['maximum']:
+                            if monthly_expense > data[year]['maximum']:
                                 data[year]['maximum'] = monthly_expense
 
                         sum += float(monthly_expense)
@@ -181,8 +362,8 @@ class BudgyDatabase(object):
                 and_clause = ' AND '
             if month is not None:
                 where_clause += and_clause + f'STRFTIME("%m", posted) = "{month}" '
-        sql = (f'SELECT fitid, account, type, posted, amount, name, memo, checknum, exclude '
-               f'FROM {self.TABLE_NAME} '
+        sql = (f'SELECT fitid, account, type, posted, amount, name, memo, checknum, category '
+               f'FROM {self.TXN_TABLE_NAME} '
                f'{where_clause}'
                f'ORDER BY posted')
         print(sql)
@@ -199,23 +380,122 @@ class BudgyDatabase(object):
                     'name': record[5],
                     'memo': record[6],
                     'checknum': record[7],
-                    'exclude': record[8] != 0
+                    'category': record[8] if record[8] != '' else self.DEFAULT_CATEGORY
                 })
         return records
 
     def delete_all_records(self):
-        sql = f'DELETE FROM {self.TABLE_NAME}'
+        sql = f'DELETE FROM {self.TXN_TABLE_NAME}'
         result = self.execute(sql)
 
     def merge_records(self, newrecords):
         result = {
             'merged': 0
         }
+        print(f'Merging {len(newrecords)}')
         for record in newrecords:
             self.merge_record(record)
 
-    def exclude_fitid(self, fitid:str, exclude:bool):
-        exclude_value = 'True' if exclude else 'False'
-        sql = f'UPDATE {self.TABLE_NAME} SET exclude = {exclude_value} WHERE fitid = "{fitid}"'
-        self.execute(sql)
+
+    def get_catetory_dict(self):
+        sql = f'SELECT name, subcategory, expense_type, id FROM {self.CATEGORY_TABLE_NAME} ORDER BY name'
+        result = self.execute(sql)
+        category_dict = {}
+        for row in result:
+            if not row[0] in category_dict:
+                category_dict[row[0]] = {}
+            category_dict[row[0]][row[1]] = {'expense_type': row[2], 'id': row[3]}
+        return category_dict
+
+    def get_category_list(self):
+        sql = f'SELECT DISTINCT name FROM {self.CATEGORY_TABLE_NAME} ORDER BY name'
+        result = self.execute(sql)
+        category_list = []
+        for record in result:
+            if record[0] == self.DEFAULT_CATEGORY:
+                category_list.insert(0, {'name': record[0]})
+            else:
+                category_list.append({
+                    'name': record[0]
+                })
+        return category_list
+
+    def get_category_for_fitid(self, fitid):
+        if fitid is None:
+            return [self.DEFAULT_CATEGORY, '', 0]
+        sql = f'SELECT c.name, c.subcategory, c.expense_type FROM {self.TXN_TABLE_NAME} AS t, {self.CATEGORY_TABLE_NAME} AS c WHERE t.fitid = {fitid} AND t.category = c.id'
+        result = self.execute(sql)
+        if not result:
+            return [self.DEFAULT_CATEGORY, '', 0]
+        for row in result:
+            return row
+
+    def get_category_id(self, category, subcategory):
+        sql = f'SELECT id FROM {self.CATEGORY_TABLE_NAME} WHERE name = "{category}" AND subcategory = "{subcategory}"'
+        result = self.execute(sql)
+        if not result:
+            raise Exception(f'Category not in database: "{category}" / "{subcategory}"')
+        for row in result:
+            return row[0]
+
+    def set_txn_category(self, fitid, account, posted, category, subcategory):
+        category_id = self.get_category_id(category, subcategory)
+        sql = f'UPDATE {self.TXN_TABLE_NAME} SET category = {category_id} WHERE fitid = {fitid} AND account = "{account}" AND posted = "{posted}"'
+        result = self.execute(sql)
+        rows_affected = result.rowcount
+        if rows_affected == 0:
+            raise Exception(f'No transaction found for fitid={fitid}, account={account}, posted={posted}')
+        elif rows_affected > 1:
+            raise Exception(f'Multiple transactions updated for fitid={fitid}, account={account}, posted={posted}')
         self.connection.commit()
+
+    def bulk_categorize(self, txn_pattern, category, subcategory=EMPTY_SUBCATEGORY, include_categorized=False):
+        category_id = self.get_category_id(category, subcategory)
+        sql = f'UPDATE {self.TXN_TABLE_NAME} SET category = {category_id} WHERE name LIKE {txn_pattern}'
+        if not include_categorized:
+            sql += f' AND category = {self.DEFAULT_CATEGORY}'
+        result = self.execute(sql)
+        if not result:
+            raise Exception(f'Bulk Categorize Failed for {txn_pattern} to "{category}" "{subcategory}"')
+        self.connection.commit()
+
+    def migrate_unique_constraint(self):
+        """Migrate existing databases to use new unique constraint"""
+        old_index_name = 'acct_fitid'
+        new_index_name = 'acct_fitid_posted'
+
+        # Check if old index exists and new index doesn't
+        if self.index_exists(old_index_name) and not self.index_exists(new_index_name):
+            print(f"Migrating database: updating unique constraint to include posted date")
+
+            # Check for existing duplicate records that would violate new constraint
+            sql = f'''
+                SELECT fitid, account, COUNT(*) as count
+                FROM {self.TXN_TABLE_NAME}
+                GROUP BY fitid, account
+                HAVING count > 1
+            '''
+            result = self.execute(sql)
+            duplicates = result.fetchall()
+
+            if len(duplicates) > 0:
+                print(f"Warning: Found {len(duplicates)} fitid/account combinations with multiple records")
+                for dup in duplicates:
+                    print(f"  fitid={dup[0]}, account={dup[1]}, count={dup[2]}")
+                print("These will be allowed under the new constraint (different posted dates)")
+
+            # Drop old index
+            print(f"Dropping old index: {old_index_name}")
+            self.execute(f'DROP INDEX IF EXISTS {old_index_name}')
+
+            # Create new index
+            print(f"Creating new index: {new_index_name}")
+            sql = f'CREATE UNIQUE INDEX {new_index_name} ON {self.TXN_TABLE_NAME} (fitid, account, posted);'
+            self.execute(sql)
+
+            self.connection.commit()
+            print("Migration completed successfully")
+        elif self.index_exists(new_index_name):
+            print("Database already migrated - new unique constraint exists")
+        else:
+            print("No migration needed - database appears to be new")

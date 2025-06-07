@@ -1,6 +1,7 @@
 import datetime
 import math
 import re
+from pathlib import Path
 from typing import List
 import pygame
 
@@ -8,14 +9,21 @@ from pygame_gui.core import ObjectID
 from pygame_gui.elements import UIPanel, UIVerticalScrollBar, UILabel
 
 import budgy.gui.constants
+from budgy.core.database import BudgyDatabase
+from budgy.gui.category_button import CategoryButton
+from budgy.gui.db_record_view_panel import DbRecordView
 from budgy.gui.toggle_button import ToggleButton, TOGGLE_BUTTON
 
-from budgy.gui.constants import BUTTON_HEIGHT
-from budgy.gui.events import post_show_message
+from budgy.gui.events import post_show_message, CATEGORY_CHANGED
 
-class RecordView(UIPanel):
-    RECORD_VIEW_HEIGHT = BUTTON_HEIGHT
-    field_names = (
+
+class RecordView(DbRecordView):
+    RECURRING_EXPENSE_COLOR = 'mediumseagreen'
+    ONE_TIME_EXPENSE_COLOR = 'seagreen'
+    NON_EXPENSE_COLOR = 'slategrey'
+    # TODO: this level of abstraction just makes it impossible to follow what is going on. SIMPLIFY THIS
+    #       Make it a functional Interface?
+    my_field_names = (
         'fitid',
         'account',
         'type',
@@ -24,9 +32,9 @@ class RecordView(UIPanel):
         'name',
         'memo',
         'checknum',
-        'exclude'
+        'category'
     )
-    field_defs = {
+    my_field_defs = {
         'posted': {
             'position': 0,
             'width': 100,
@@ -47,66 +55,42 @@ class RecordView(UIPanel):
             'width': 400,
             'oid': ObjectID(class_id='@record-field', object_id='#field-left')
         },
-        'exclude': {
+        'category': {
             'position': 4,
-            'width': 100,
+            'width': 300,
             'oid': ObjectID(class_id='@record-button', object_id='#field-button')
         }
     }
 
-    def __init__(self,*args, **kwargs):
+    def __init__(self, database:BudgyDatabase, *args, **kwargs):
         kwargs.__setitem__('object_id',
                            ObjectID(class_id='@record-view-panel'))
-        super().__init__(*args, **kwargs)
-        self._record:dict = {}
         self._outer_record = None
-        self._fields:List[UILabel] = []
-        layer = 1
-        self._highlight = UIPanel(
-            pygame.Rect(0,0, self.relative_rect.width, self.relative_rect.height),
-            starting_height=layer,
-            container=self,
-            parent_element=self,
-            object_id=ObjectID(class_id='@record-highlight'),
-            anchors=kwargs.get('anchors')
-        )
-        layer += 1
-        x = 0
-        def toggle_callback(state):
-            if self.visible:
-                self._record['exclude'] = state
-                # TODO self._record and self._outer_records should always be in sync. Figure out a way to replace _record
-                # with _outer_record so we only have one copy
-                if self._outer_record is not None:
-                    self._outer_record['exclude'] = state
 
-        self._exclude_button:ToggleButton = None
+        self._category_button:CategoryButton = None
+        super().__init__(database, self.my_field_names, self.my_field_defs, *args, **kwargs)
+
+    def build_items(self):
+        layer = 1
+        x = 0
         for f in self.field_defs:
             w = self.field_defs[f]['width']
             oid = self.field_defs[f]['oid']
             item = None
-            if f == 'exclude':
-                item = ToggleButton(
-                    False,
-                    'Excluded',
-                    'Included',
+            if f == 'category':
+                item = CategoryButton(
+                    self._database,
                     pygame.Rect(x, 0, w, self.RECORD_VIEW_HEIGHT),
-                    'NOT SET',
-                    user_data={
-
-                    },
-                    callback=toggle_callback,
+                    'category',
                     container=self, parent_element=self,
                     object_id=oid,
-                    starting_height=layer,
                     anchors={
                         'top': 'top', 'left': 'left',
                         'bottom': 'bottom', 'right': 'left'
                     }
                 )
-                item.state = False
                 item.disable()
-                self._exclude_button = item
+                self._category_button = item
             else:
                 item = UILabel(
                     pygame.Rect(x, 0, w, self.RECORD_VIEW_HEIGHT),
@@ -120,19 +104,19 @@ class RecordView(UIPanel):
                 )
             x += w + 1
             self._fields.append(item)
-        self.set_record(None)
 
     def set_record(self, record):
         self._outer_record = record
         if record is None:
-            self._exclude_button.disable()
-            self._exclude_button.hide()
-            self._exclude_button.user_data = None
-            self._highlight.visible = False
+            self._category_button.disable()
+            self._category_button.hide()
+            self.set_color(self.NON_EXPENSE_COLOR)
         else:
-            self._exclude_button.enable()
+            self._category_button.enable()
             if self.visible:
-                self._exclude_button.show()
+                self._category_button.show()
+                self._category_button.set_category_text()
+                self._category_button.txn_name = record['name']
 
         for field in self.field_names:
             if record is None:
@@ -143,20 +127,28 @@ class RecordView(UIPanel):
                 self._record[field] = record[field]
             if field in self.field_defs:
                 i = self.field_defs[field]['position']
-                value = str(self._record[field]) if field != 'exclude' else self._record[field]
+                value = str(self._record[field])
                 if field == 'amount' and isinstance(value, float):
                     value = f'{float(value):8.02f}'
                 elif field == 'posted':
                     value = value[:10]
-                elif field == 'exclude' and value != '':
-                    self._fields[i].state = value
-                    self._fields[i].user_data = self._record
+                elif field == 'category':
+                    if record is None:
+                        self._fields[i].fitid = None
+                        self._fields[i].account = None
+                        self._fields[i].posted = None
+                    else:
+                        self._fields[i].fitid = self._record['fitid']
+                        self._fields[i].account = self._record['account']
+                        self._fields[i].posted = self._record['posted']
                     if self.visible:
-                        if value:
-                            self._highlight.hide()
+                        if self._fields[i].expense_type == BudgyDatabase.RECURRING_EXPENSE_TYPE:
+                            self.set_color(self.RECURRING_EXPENSE_COLOR)
+                        elif self._fields[i].expense_type == BudgyDatabase.ONE_TIME_EXPENSE_TYPE:
+                            self.set_color(self.ONE_TIME_EXPENSE_COLOR)
                         else:
-                            self._highlight.show()
-                if field != 'exclude':
+                            self.set_color(self.NON_EXPENSE_COLOR)
+                if field != 'category':
                     self._fields[i].set_text(str(value))
 
     def process_event(self, event: pygame.event.Event) -> bool:
@@ -165,14 +157,29 @@ class RecordView(UIPanel):
             if event.type == TOGGLE_BUTTON:
                 fitid = event.user_data["fitid"]
                 if self._record['fitid'] == fitid:
-                    if self._record['exclude']:
-                        self._highlight.hide()
+                    return False
+            elif event.type == budgy.gui.events.CATEGORY_CHANGED:
+                if (event.fitid == self._record['fitid'] and
+                    event.account == self._record['account'] and
+                    event.posted == self._record['posted']):
+                    if event.expense_type == BudgyDatabase.RECURRING_EXPENSE_TYPE:
+                        self.set_color(self.RECURRING_EXPENSE_COLOR)
+                    elif event.expense_type == BudgyDatabase.ONE_TIME_EXPENSE_TYPE:
+                        self.set_color(self.ONE_TIME_EXPENSE_COLOR)
                     else:
-                        self._highlight.show()
+                        self.set_color(self.NON_EXPENSE_COLOR)
+                    return False
         return event_consumed
 
 class RecordViewPanel(UIPanel):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, database_path:Path, *args, **kwargs):
+        if isinstance(database_path, str):
+            database_path = Path(database_path)
+        if isinstance(database_path, Path):
+            database_path = database_path.expanduser()
+            self.database = BudgyDatabase(database_path)
+        else:
+            self.database = database_path
         super().__init__(*args, **kwargs)
         self.record_views = []
 
@@ -209,6 +216,7 @@ class RecordViewPanel(UIPanel):
         h = RecordView.RECORD_VIEW_HEIGHT
         for i in range(n):
             rv = RecordView(
+                self.database,
                 pygame.Rect(x, y, w, h),
                 container=self,
                 parent_element=self,
@@ -260,4 +268,5 @@ class RecordViewPanel(UIPanel):
                     last = min(self.starting_row + self.visible_records, len(self._data))
                     post_show_message(f'Showing Records {self.starting_row} to {last} out of {len(self._data)}')
                 event_consumed = True
+
         return event_consumed
