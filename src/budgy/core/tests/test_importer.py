@@ -50,7 +50,7 @@ class ImporterTestCase(unittest.TestCase):
         with patch.object(sys, 'argv', testargs):
             importer.main()
             self.assertTrue(os.path.exists(self.DB_PATH))
-            os.remove(self.DB_PATH)
+            self._safe_remove_db(self.DB_PATH)
 
 
 if __name__ == '__main__':
