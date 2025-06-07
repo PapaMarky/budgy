@@ -1,4 +1,7 @@
 # budgy
+
+[![CI Pipeline](https://github.com/PapaMarky/budgy/actions/workflows/ci.yml/badge.svg)](https://github.com/PapaMarky/budgy/actions/workflows/ci.yml)
+
 Ingest ofx files. Output spending reports. 
 
 ## Goal
