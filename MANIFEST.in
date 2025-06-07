@@ -1,0 +1,29 @@
+# Include documentation files
+include README.md
+include USER_GUIDE.md
+include RELEASE_NOTES.md
+include VERSION.txt
+include LICENSE
+
+# Include design documentation
+recursive-include docs *.md *.svg *.png
+
+# Include configuration and build files
+include setup.cfg
+include pyproject.toml
+include tox.ini
+
+# Include test data
+recursive-include src/budgy/core/tests/testdata *
+recursive-include src/budgy/gui/tests *
+
+# Include GUI assets
+recursive-include src/budgy/gui/data *
+
+# Exclude unnecessary files
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude __pycache__
+global-exclude .DS_Store
+global-exclude *.db
+global-exclude .coverage*
