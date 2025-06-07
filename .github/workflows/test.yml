@@ -100,6 +100,7 @@ jobs:
 
       - name: Set Python version for tox
         id: python-version
+        shell: bash
         run: |
           PY_VERSION=$(echo "${{ matrix.python-version }}" | sed 's/\.//g')
           echo "tox-env=py${PY_VERSION}" >> $GITHUB_OUTPUT
@@ -116,6 +117,7 @@ jobs:
 
       - name: Run custom primary key fix tests
         if: inputs.run-custom-tests
+        shell: bash
         run: |
           echo "Running custom primary key fix tests..."
           if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
@@ -247,6 +249,7 @@ jobs:
 
       - name: Generate test summary
         id: summary
+        shell: bash
         run: |
           echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
