@@ -13,7 +13,22 @@
 
 ## Getting Started
 
-Budgy is a personal finance tool designed to help you analyze your spending patterns for retirement planning. It imports OFX files from your bank and credit card accounts, categorizes transactions, and provides insights into your spending habits.
+Budgy is a retirement planning tool specifically designed to help you understand your monthly expenses and estimate how much money you'll need in retirement. Unlike general budgeting tools, Budgy focuses on differentiating between expenses that will continue after retirement versus those that won't.
+
+### Retirement Planning Focus
+
+**The Goal**: Analyze your current spending to project your post-retirement budget needs.
+
+**Key Insight**: Not all current expenses will continue in retirement. Budgy helps you categorize expenses to identify:
+- **Ongoing Expenses**: Rent, utilities, insurance, groceries → Will continue in retirement
+- **One-Time Expenses**: Car purchases, home repairs → May or may not be relevant post-retirement  
+- **Pre-Retirement Only**: College tuition, work clothes, commuting costs → Won't continue in retirement
+
+**How Budgy Helps**:
+1. **Import** your bank and credit card transactions
+2. **Categorize** expenses by type (recurring vs. one-time) and retirement relevance
+3. **Analyze** patterns to understand your true ongoing monthly needs
+4. **Project** realistic retirement income requirements based on actual spending data
 
 ### What You'll Need
 - OFX files from your bank or credit card company
@@ -38,7 +53,7 @@ pip install budgy
 After installation, you should be able to run:
 ```bash
 budgy-viewer --help
-budgy-import --help
+budgy-help
 ```
 
 ## First Time Setup
@@ -75,23 +90,33 @@ Most banks and credit card companies provide OFX file downloads:
 
 1. **Launch Budgy**: `budgy-viewer`
 2. **Click "Import Data"** button in the Data Panel
-3. **Select your OFX file** in the file dialog
+3. **Select your OFX file(s)** in the file dialog
+   - **Multiple files**: You can select multiple OFX files at once
+   - **Folder imports**: Select all files in a download folder without worry
 4. **Wait for import to complete** - progress will be shown in the Message Panel
 5. **Review imported transactions** in the data view
 
-### Importing with Command Line
+### Smart Import Features
 
-For batch processing or automation:
-```bash
-budgy-import --db /path/to/your/database.db your-file.ofx
-```
+**Safe Re-importing**: Budgy's intelligent import system means you can:
+- **Import the same file multiple times** without creating duplicates
+- **Select entire folders** of OFX files without tracking which ones you've already imported
+- **Download new statements** and reimport everything - only new transactions are added
+- **Modify transaction categories** without losing changes on reimport
+
+**How it Works**:
+- Budgy uses unique transaction identifiers (FITID + account + date) to detect duplicates
+- Previously imported transactions are skipped, preserving any category changes you've made
+- Only genuinely new transactions are added to your database
+- Your manual categorization work is always preserved
 
 ### Import Tips
 
-- **Start small**: Import 1-3 months initially to get familiar
-- **Multiple accounts**: Import each account separately for clarity
-- **Regular imports**: Monthly imports work well for ongoing analysis
-- **Duplicate handling**: Budgy automatically handles duplicate transactions
+- **Don't worry about duplicates**: Import all your OFX files whenever you want updates
+- **Bulk importing**: Download several months of statements and import them all at once
+- **Regular updates**: Monthly imports work well - just grab all your latest statements
+- **Multiple accounts**: Import files from different banks/cards in any order
+- **Start comprehensive**: Import 6-12 months of data to get meaningful spending analysis
 
 ## Managing Categories
 
@@ -112,14 +137,21 @@ Budgy uses a hierarchical category system with main categories and subcategories
 
 ### Adding New Categories
 
+When creating categories, think about retirement planning:
+
 1. **Open Category Dialog**: Click "Edit" next to category dropdown
 2. **Enter Category Details**:
    - **Main Category**: e.g., "Medical"
    - **Subcategory**: e.g., "Prescriptions"
-   - **Expense Type**: 
-     - Non-expense (income, transfers)
-     - One-time expense (travel, purchases)
-     - Recurring expense (rent, utilities)
+   - **Expense Type** (crucial for retirement planning):
+     - **Non-expense**: Income, transfers → Not part of spending analysis
+     - **One-time expense**: Car purchase, vacation → Evaluate retirement relevance case-by-case
+     - **Recurring expense**: Rent, utilities, groceries → Will likely continue in retirement
+
+**Retirement Planning Tips**:
+- **Recurring expenses** form the core of your retirement budget estimate
+- **One-time expenses** need individual evaluation (will you still take vacations? buy cars?)
+- Consider creating subcategories for **pre-retirement only** items (commuting, work clothes, child expenses)
 
 ### Auto-Categorization Rules
 
@@ -168,13 +200,31 @@ Budgy automatically handles most duplicates, but you may occasionally see:
 2. **Choose categories** to include/exclude
 3. **Generate report** to see spending patterns
 
-### Budget Planning
+### Retirement Budget Analysis
 
-Use the category breakdown to:
-- **Identify major expense areas**
-- **Track recurring vs. one-time expenses**
-- **Plan retirement budget needs**
-- **Find potential savings opportunities**
+Use Budgy's categorized data to build your retirement budget:
+
+**Step 1: Analyze Recurring Expenses**
+- Focus on `expense_type=2` (recurring) categories
+- These form your baseline monthly retirement needs
+- Examples: housing, utilities, insurance, food, medical
+
+**Step 2: Evaluate One-Time Expenses**
+- Review `expense_type=1` (one-time) categories  
+- Decide which will continue in retirement (travel, car purchases)
+- Exclude pre-retirement only items (college tuition, work expenses)
+
+**Step 3: Calculate Monthly Retirement Income Need**
+- Sum recurring expenses that will continue
+- Add average monthly amount for relevant one-time expenses
+- Factor in new retirement expenses (healthcare, leisure)
+- This gives your target monthly retirement income
+
+**Key Questions to Ask**:
+- Will I still have housing payments in retirement?
+- How will medical expenses change?
+- What new expenses will I have (travel, hobbies)?
+- Which current expenses will disappear (commuting, work clothes, child expenses)?
 
 ### Export Options
 
@@ -237,7 +287,7 @@ Configure your retirement target date:
 ### Getting Help
 
 **Log Files**: Check for error messages in:
-- Console output when running from command line
+- Console output when running budgy-viewer from terminal
 - System logs for application errors
 
 **Database Issues**: If database becomes corrupted:
@@ -252,16 +302,11 @@ Configure your retirement target date:
 
 ### Advanced Usage
 
-**Command-Line Batch Processing**:
-```bash
-# Import multiple files
-for file in *.ofx; do
-    budgy-import --db mydata.db "$file"
-done
-
-# Specify custom database location
-budgy-import --db /custom/path/mydata.db transactions.ofx
-```
+**Efficient Import Workflows**:
+- **Bulk Folder Import**: Select all OFX files in your downloads folder at once
+- **Periodic Updates**: Download latest statements and reimport everything monthly
+- **Historical Analysis**: Import 12+ months of data for comprehensive spending patterns
+- **Multi-Account Setup**: Import files from all banks/cards into one database
 
 **Custom Configuration**:
 ```json
@@ -278,13 +323,15 @@ budgy-import --db /custom/path/mydata.db transactions.ofx
 }
 ```
 
-## Tips for Effective Use
+## Tips for Effective Retirement Planning
 
-1. **Regular Imports**: Import monthly for best results
-2. **Consistent Categories**: Use the same categories for similar transactions
-3. **Review and Adjust**: Periodically review auto-categorization rules
-4. **Backup Data**: Keep backups of your database file
-5. **Start Simple**: Begin with major categories, add detail over time
+1. **Import Comprehensive Data**: Import 12+ months to identify seasonal patterns and annual expenses
+2. **Think Long-Term Categories**: Create categories that reflect post-retirement reality, not just current spending
+3. **Distinguish Expense Types**: Carefully assign expense types - this is crucial for retirement projections
+4. **Regular Review**: Monthly imports and quarterly category review help refine your retirement estimates
+5. **Document Assumptions**: Note your thinking about which expenses will/won't continue in retirement
+6. **Consider Life Changes**: Factor in how expenses might change with age, health, housing decisions
+7. **Plan for New Expenses**: Remember retirement may bring new costs (healthcare, leisure, travel)
 
 ---
 

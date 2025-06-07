@@ -9,8 +9,8 @@
 
 **Entry Points:**
 
-* `budgy-import` - Command-line tool for importing OFX files.
-* `budgy-viewer` - GUI application for viewing and categorizing transactions
+* `budgy-import` - Developer/automation tool for batch OFX import
+* `budgy-viewer` - Primary GUI application for end users
 
 **Key Technologies:**
 
