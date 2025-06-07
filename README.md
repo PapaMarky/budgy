@@ -1,6 +1,6 @@
-# Budgy
+# Budgy - Retirement Budget Planning Tool
 
-[![CI Pipeline](https://github.com/PapaMarky/budgy/actions/workflows/ci.yml/badge.svg)](https://github.com/PapaMarky/budgy/actions/workflows/ci.yml)
+[![CI Pipeline](https://github.com/PapaMarky/budgy/actions/workflows/test.yml/badge.svg)](https://github.com/PapaMarky/budgy/actions/workflows/test.yml)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -144,16 +144,6 @@ Budgy was created to support retirement planning by providing detailed insights 
 - Identify areas for potential savings
 - Plan realistic retirement budgets
 - Track spending trends over time
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Run tests (`./run-tests.sh`)
-5. Commit your changes (`git commit -m 'Add amazing feature'`)
-6. Push to the branch (`git push origin feature/amazing-feature`)
-7. Open a Pull Request
 
 ## 📄 License
 
