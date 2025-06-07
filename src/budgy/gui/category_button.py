@@ -16,6 +16,8 @@ class CategoryButton(UIButton):
         self.category = category
         self.database = database
         self._fitid = fitid
+        self._account = None
+        self._posted = None
         self._txn_name = 'None'
         self.expense_type = BudgyDatabase.NON_EXPENSE_TYPE
         super().__init__(*args, **kwargs)
@@ -37,6 +39,22 @@ class CategoryButton(UIButton):
         self._fitid = fitid
         self.set_category_text()
 
+    @property
+    def account(self):
+        return self._account
+
+    @account.setter
+    def account(self, account):
+        self._account = account
+
+    @property
+    def posted(self):
+        return self._posted
+
+    @posted.setter
+    def posted(self, posted):
+        self._posted = posted
+
     def process_event(self, event: pygame.event.Event) -> bool:
         if super().process_event(event):
             return True
@@ -44,6 +62,8 @@ class CategoryButton(UIButton):
             print(f'Category Button pressed for {self.fitid}')
             self.dialog = CategoryDialog(
                 self.fitid,
+                self.account,
+                self.posted,
                 self.database,
                 pygame.Rect(20, 20, 800, 800),
                 self.ui_manager,

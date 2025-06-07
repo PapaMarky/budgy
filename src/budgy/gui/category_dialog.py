@@ -10,9 +10,11 @@ from budgy.gui.events import CATEGORY_SELECTION_CHANGED, CATEGORY_CHANGED
 
 class CategoryDialog(UIWindow):
 
-    def __init__(self, fitid, database, *args, **kwargs):
+    def __init__(self, fitid, account, posted, database, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fitid = fitid
+        self.account = account
+        self.posted = posted
         self.database:BudgyDatabase = database
         self.top_panel_height = BUTTON_HEIGHT + 5 * MARGIN
         self.panel_width = self.relative_rect.width - 16 * MARGIN # some of the layout bits still mystify me
@@ -210,10 +212,12 @@ class CategoryDialog(UIWindow):
         category, subcategory = self.get_selection()
         if self.original_category[0] != category or self.original_category[1] != subcategory:
             # TODO: Confirmation Dialog?
-            print(f'NEW CATEGORY for {self.fitid}: {category} / {subcategory}')
-            self.database.set_txn_category(self.fitid, category, subcategory)
+            print(f'NEW CATEGORY for {self.fitid}|{self.account}|{self.posted}: {category} / {subcategory}')
+            self.database.set_txn_category(self.fitid, self.account, self.posted, category, subcategory)
             event_data = {
                 'fitid': self.fitid,
+                'account': self.account,
+                'posted': self.posted,
                 'category': category,
                 'subcategory': subcategory,
                 'category_id': self.categories[category][subcategory]['id'],

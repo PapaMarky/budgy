@@ -27,6 +27,12 @@ class BudgyDatabase(object):
         rows = result.fetchall()
         return len(rows) > 0
 
+    def index_exists(self, index_name):
+        sql = f"SELECT name FROM sqlite_master WHERE type='index' AND name='{index_name}';"
+        result = self.execute(sql)
+        rows = result.fetchall()
+        return len(rows) > 0
+
     def _create_txn_table_if_missing(self):
         table_name = self.TXN_TABLE_NAME
         if not self.table_exists(table_name):
@@ -45,8 +51,7 @@ class BudgyDatabase(object):
             print(sql)
             result = self.execute(sql)
             logging.debug(f'Create Table Result: {result}')
-            # TODO The unique transaction key needs to include "posted"
-            sql = f'CREATE UNIQUE INDEX acct_fitid ON {table_name} (fitid, account);'
+            sql = f'CREATE UNIQUE INDEX acct_fitid_posted ON {table_name} (fitid, account, posted);'
             result = self.execute(sql)
             logging.debug(f'Create Unique Index: {result}')
 
@@ -190,16 +195,28 @@ class BudgyDatabase(object):
         self._create_txn_table_if_missing()
         self._create_category_table_if_missing()
         self._create_rules_table_if_missing()
+        self.migrate_unique_constraint()
 
-    def get_record_by_fitid(self, fitid, account):
-        sql = f'SELECT * from {self.TXN_TABLE_NAME} WHERE fitid = {fitid} AND account = "{account}";'
+    def get_record_by_fitid(self, fitid, account, posted=None):
+        if posted:
+            sql = f'SELECT * from {self.TXN_TABLE_NAME} WHERE fitid = {fitid} AND account = "{account}" AND posted = "{posted}";'
+        else:
+            sql = f'SELECT * from {self.TXN_TABLE_NAME} WHERE fitid = {fitid} AND account = "{account}";'
         result = self.execute(sql)
         rows = result.fetchall()
         output = []
         for row in rows:
             output.append(row)
-            logging.debug(f'Posted: {row[2]} ({type(row[2])})')
+            logging.debug(f'Posted: {row[3]} ({type(row[3])})')
         return output
+
+    def get_record_by_unique_key(self, fitid, account, posted):
+        sql = f'SELECT * from {self.TXN_TABLE_NAME} WHERE fitid = {fitid} AND account = "{account}" AND posted = "{posted}";'
+        result = self.execute(sql)
+        rows = result.fetchall()
+        if len(rows) > 1:
+            raise Exception(f'Multiple records found for unique key: fitid={fitid}, account={account}, posted={posted}')
+        return rows[0] if len(rows) == 1 else None
 
     def record_from_row(self, row):
         checknum = "" if row[7] is None else row[7]
@@ -223,30 +240,27 @@ class BudgyDatabase(object):
         self.connection.commit()
 
     def merge_record(self, record):
-        result = self.get_record_by_fitid(record['fitid'], record['account'])
-        if result is not None:
-            n = len(result)
-            # if n > 1:
-            #     raise Exception('Multiple records with same fitid')
-            print(f'{record["fitid"]}|{record["account"]} matched {n} records')
-            if n == 0:
-                logging.debug(f'New Record, inserting')
-                self.insert_record(record)
-                return
-            old_record = self.record_from_row(result[0])
+        existing_record = self.get_record_by_unique_key(record['fitid'], record['account'], record['posted'])
+        if existing_record is not None:
+            old_record = self.record_from_row(existing_record)
+            print(f'Record exists: {record["fitid"]}|{record["account"]}|{record["posted"]}')
             print(f'Old Record: {old_record}')
             logging.info(f'------------------')
             logging.info(f'|{"key":10}|{"NEW":30}|{"OLD":30}|')
             for k in record:
+                # Skip fields that were removed from the schema (like 'exclude')
+                if k not in old_record:
+                    continue
                 v1 = record[k] if record[k] is not None else '<NONE>'
                 v2 = old_record[k] if old_record[k] is not None else '<NONE>'
                 match_text = 'MATCH'
                 if v1 != v2:
                     match_text = 'NO MATCH'
-                # logging.info(f'|{k:10}|{v1:30}|{v2:30}|{match_text}|')
                 print(f'|{k:10}|{v1:30}|{v2:30}|{match_text}|')
         else:
-            print(f'Matched no records')
+            print(f'New record, inserting: {record["fitid"]}|{record["account"]}|{record["posted"]}')
+            logging.debug(f'New Record, inserting')
+            self.insert_record(record)
 
 
     def get_date_range(self):
@@ -299,7 +313,7 @@ class BudgyDatabase(object):
 
             sql = ('SELECT STRFTIME("%Y", posted) AS year, STRFTIME("%m", posted) AS month, SUM(ABS(amount)) AS expences '
                    'FROM transactions AS txn, categories AS cat '
-                   'WHERE amount < 0 AND txn.category = cat.id AND NOT cat.expense_type ' 
+                   'WHERE amount < 0 AND txn.category = cat.id AND NOT cat.expense_type '
                    'GROUP BY year, month ORDER BY year, month DESC;')
 
             result = self.execute(sql)
@@ -424,10 +438,15 @@ class BudgyDatabase(object):
         for row in result:
             return row[0]
 
-    def set_txn_category(self, fitid, category, subcategory):
+    def set_txn_category(self, fitid, account, posted, category, subcategory):
         category_id = self.get_category_id(category, subcategory)
-        sql = f'UPDATE {self.TXN_TABLE_NAME} SET category = {category_id} WHERE fitid = {fitid}'
-        self.execute(sql)
+        sql = f'UPDATE {self.TXN_TABLE_NAME} SET category = {category_id} WHERE fitid = {fitid} AND account = "{account}" AND posted = "{posted}"'
+        result = self.execute(sql)
+        rows_affected = result.rowcount
+        if rows_affected == 0:
+            raise Exception(f'No transaction found for fitid={fitid}, account={account}, posted={posted}')
+        elif rows_affected > 1:
+            raise Exception(f'Multiple transactions updated for fitid={fitid}, account={account}, posted={posted}')
         self.connection.commit()
 
     def bulk_categorize(self, txn_pattern, category, subcategory=EMPTY_SUBCATEGORY, include_categorized=False):
@@ -439,3 +458,44 @@ class BudgyDatabase(object):
         if not result:
             raise Exception(f'Bulk Categorize Failed for {txn_pattern} to "{category}" "{subcategory}"')
         self.connection.commit()
+
+    def migrate_unique_constraint(self):
+        """Migrate existing databases to use new unique constraint"""
+        old_index_name = 'acct_fitid'
+        new_index_name = 'acct_fitid_posted'
+
+        # Check if old index exists and new index doesn't
+        if self.index_exists(old_index_name) and not self.index_exists(new_index_name):
+            print(f"Migrating database: updating unique constraint to include posted date")
+
+            # Check for existing duplicate records that would violate new constraint
+            sql = f'''
+                SELECT fitid, account, COUNT(*) as count
+                FROM {self.TXN_TABLE_NAME}
+                GROUP BY fitid, account
+                HAVING count > 1
+            '''
+            result = self.execute(sql)
+            duplicates = result.fetchall()
+
+            if len(duplicates) > 0:
+                print(f"Warning: Found {len(duplicates)} fitid/account combinations with multiple records")
+                for dup in duplicates:
+                    print(f"  fitid={dup[0]}, account={dup[1]}, count={dup[2]}")
+                print("These will be allowed under the new constraint (different posted dates)")
+
+            # Drop old index
+            print(f"Dropping old index: {old_index_name}")
+            self.execute(f'DROP INDEX IF EXISTS {old_index_name}')
+
+            # Create new index
+            print(f"Creating new index: {new_index_name}")
+            sql = f'CREATE UNIQUE INDEX {new_index_name} ON {self.TXN_TABLE_NAME} (fitid, account, posted);'
+            self.execute(sql)
+
+            self.connection.commit()
+            print("Migration completed successfully")
+        elif self.index_exists(new_index_name):
+            print("Database already migrated - new unique constraint exists")
+        else:
+            print("No migration needed - database appears to be new")

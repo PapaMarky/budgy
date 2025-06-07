@@ -135,8 +135,12 @@ class RecordView(DbRecordView):
                 elif field == 'category':
                     if record is None:
                         self._fields[i].fitid = None
+                        self._fields[i].account = None
+                        self._fields[i].posted = None
                     else:
                         self._fields[i].fitid = self._record['fitid']
+                        self._fields[i].account = self._record['account']
+                        self._fields[i].posted = self._record['posted']
                     if self.visible:
                         if self._fields[i].expense_type == BudgyDatabase.RECURRING_EXPENSE_TYPE:
                             self.set_color(self.RECURRING_EXPENSE_COLOR)
@@ -155,7 +159,9 @@ class RecordView(DbRecordView):
                 if self._record['fitid'] == fitid:
                     return False
             elif event.type == budgy.gui.events.CATEGORY_CHANGED:
-                if event.fitid == self._record['fitid']:
+                if (event.fitid == self._record['fitid'] and
+                    event.account == self._record['account'] and
+                    event.posted == self._record['posted']):
                     if event.expense_type == BudgyDatabase.RECURRING_EXPENSE_TYPE:
                         self.set_color(self.RECURRING_EXPENSE_COLOR)
                     elif event.expense_type == BudgyDatabase.ONE_TIME_EXPENSE_TYPE:
