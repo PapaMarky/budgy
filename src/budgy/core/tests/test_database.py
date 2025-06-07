@@ -1,6 +1,8 @@
 import datetime
 import json
 import os.path
+import sys
+import tempfile
 import unittest
 from budgy.core.database import BudgyDatabase
 class TestDatabase(unittest.TestCase):
@@ -16,7 +18,21 @@ class TestDatabase(unittest.TestCase):
         self.assertTrue(os.path.isfile(self.TEST_DB))
 
         self.assertFalse(db.table_exists('nonexistent-table'))
-        os.remove(self.TEST_DB)
+        
+        # Safe file removal for all platforms
+        try:
+            os.remove(self.TEST_DB)
+        except (OSError, PermissionError) as e:
+            # On Windows, sometimes file is still locked
+            if sys.platform == 'win32':
+                import time
+                time.sleep(0.1)
+                try:
+                    os.remove(self.TEST_DB)
+                except:
+                    pass  # Best effort cleanup on Windows
+            else:
+                raise e
 
     def test_import(self):
         db = BudgyDatabase(self.TEST_DB)
