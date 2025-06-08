@@ -365,20 +365,23 @@ class BudgyDatabase(object):
 
     def all_records(self, year=None, month=None) -> List[Dict]:
         where_clause = ''
+        params = []
         if year is not None or month is not None:
             where_clause = ' WHERE '
             and_clause = ''
             if year is not None:
-                where_clause += f'STRFTIME("%Y", posted) = "{year}"'
+                where_clause += 'STRFTIME("%Y", posted) = ?'
+                params.append(year)
                 and_clause = ' AND '
             if month is not None:
-                where_clause += and_clause + f'STRFTIME("%m", posted) = "{month}" '
+                where_clause += and_clause + 'STRFTIME("%m", posted) = ?'
+                params.append(month)
         sql = (f'SELECT fitid, account, type, posted, amount, name, memo, checknum, category '
                f'FROM {self.TXN_TABLE_NAME} '
                f'{where_clause}'
                f'ORDER BY posted')
         print(sql)
-        result = self.execute(sql)
+        result = self.execute(sql, tuple(params) if params else None)
         records = []
         if result is not None:
             for record in result:
@@ -438,8 +441,10 @@ class BudgyDatabase(object):
         result = self.execute(sql, (fitid,))
         if not result:
             return [self.DEFAULT_CATEGORY, '', 0]
-        for row in result:
-            return row
+        rows = result.fetchall()
+        if len(rows) == 0:
+            return [self.DEFAULT_CATEGORY, '', 0]
+        return list(rows[0])
 
     def get_category_id(self, category, subcategory):
         sql = f'SELECT id FROM {self.CATEGORY_TABLE_NAME} WHERE name = ? AND subcategory = ?'
