@@ -22,14 +22,14 @@ class BudgyDatabase(object):
         self._open_database()
 
     def table_exists(self, table_name):
-        sql = f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}';"
-        result = self.execute(sql)
+        sql = "SELECT name FROM sqlite_master WHERE type='table' AND name=?;"
+        result = self.execute(sql, (table_name,))
         rows = result.fetchall()
         return len(rows) > 0
 
     def index_exists(self, index_name):
-        sql = f"SELECT name FROM sqlite_master WHERE type='index' AND name='{index_name}';"
-        result = self.execute(sql)
+        sql = "SELECT name FROM sqlite_master WHERE type='index' AND name=?;"
+        result = self.execute(sql, (index_name,))
         rows = result.fetchall()
         return len(rows) > 0
 
@@ -183,10 +183,13 @@ class BudgyDatabase(object):
             self.connection.commit()
             print(f'RESULT: {result}')
 
-    def execute(self, sql):
+    def execute(self, sql, params=None):
         cursor = self.connection.cursor()
         logging.debug(f'EXECUTE: {sql}')
-        return cursor.execute(sql)
+        if params:
+            return cursor.execute(sql, params)
+        else:
+            return cursor.execute(sql)
 
     def _open_database(self):
         logging.debug(f'Opening {self.db_path}')
@@ -199,10 +202,11 @@ class BudgyDatabase(object):
 
     def get_record_by_fitid(self, fitid, account, posted=None):
         if posted:
-            sql = f'SELECT * from {self.TXN_TABLE_NAME} WHERE fitid = {fitid} AND account = "{account}" AND posted = "{posted}";'
+            sql = f'SELECT * from {self.TXN_TABLE_NAME} WHERE fitid = ? AND account = ? AND posted = ?;'
+            result = self.execute(sql, (fitid, account, posted))
         else:
-            sql = f'SELECT * from {self.TXN_TABLE_NAME} WHERE fitid = {fitid} AND account = "{account}";'
-        result = self.execute(sql)
+            sql = f'SELECT * from {self.TXN_TABLE_NAME} WHERE fitid = ? AND account = ?;'
+            result = self.execute(sql, (fitid, account))
         rows = result.fetchall()
         output = []
         for row in rows:
@@ -211,8 +215,8 @@ class BudgyDatabase(object):
         return output
 
     def get_record_by_unique_key(self, fitid, account, posted):
-        sql = f'SELECT * from {self.TXN_TABLE_NAME} WHERE fitid = {fitid} AND account = "{account}" AND posted = "{posted}";'
-        result = self.execute(sql)
+        sql = f'SELECT * from {self.TXN_TABLE_NAME} WHERE fitid = ? AND account = ? AND posted = ?;'
+        result = self.execute(sql, (fitid, account, posted))
         rows = result.fetchall()
         if len(rows) > 1:
             raise Exception(f'Multiple records found for unique key: fitid={fitid}, account={account}, posted={posted}')
@@ -233,10 +237,17 @@ class BudgyDatabase(object):
 
     def insert_record(self, record):
         checknum = "" if record['checknum'] is None else record['checknum']
-        sql = f'INSERT INTO {self.TXN_TABLE_NAME} (fitid, account, type, posted, amount, name, memo, checknum) ' \
-              f'VALUEs ({record["fitid"]}, "{record["account"]}", "{record["type"]}", "{record["posted"]}", ' \
-              f'{record["amount"]}, "{record["name"]}", "{record["memo"]}", "{checknum}" );'
-        result = self.execute(sql)
+        sql = f'INSERT INTO {self.TXN_TABLE_NAME} (fitid, account, type, posted, amount, name, memo, checknum) VALUES (?, ?, ?, ?, ?, ?, ?, ?);'
+        result = self.execute(sql, (
+            record["fitid"],
+            record["account"],
+            record["type"],
+            record["posted"],
+            record["amount"],
+            record["name"],
+            record["memo"],
+            checknum
+        ))
         self.connection.commit()
 
     def merge_record(self, record):
@@ -354,20 +365,23 @@ class BudgyDatabase(object):
 
     def all_records(self, year=None, month=None) -> List[Dict]:
         where_clause = ''
+        params = []
         if year is not None or month is not None:
             where_clause = ' WHERE '
             and_clause = ''
             if year is not None:
-                where_clause += f'STRFTIME("%Y", posted) = "{year}"'
+                where_clause += 'STRFTIME("%Y", posted) = ?'
+                params.append(year)
                 and_clause = ' AND '
             if month is not None:
-                where_clause += and_clause + f'STRFTIME("%m", posted) = "{month}" '
+                where_clause += and_clause + 'STRFTIME("%m", posted) = ?'
+                params.append(month)
         sql = (f'SELECT fitid, account, type, posted, amount, name, memo, checknum, category '
                f'FROM {self.TXN_TABLE_NAME} '
                f'{where_clause}'
                f'ORDER BY posted')
         print(sql)
-        result = self.execute(sql)
+        result = self.execute(sql, tuple(params) if params else None)
         records = []
         if result is not None:
             for record in result:
@@ -423,16 +437,18 @@ class BudgyDatabase(object):
     def get_category_for_fitid(self, fitid):
         if fitid is None:
             return [self.DEFAULT_CATEGORY, '', 0]
-        sql = f'SELECT c.name, c.subcategory, c.expense_type FROM {self.TXN_TABLE_NAME} AS t, {self.CATEGORY_TABLE_NAME} AS c WHERE t.fitid = {fitid} AND t.category = c.id'
-        result = self.execute(sql)
+        sql = f'SELECT c.name, c.subcategory, c.expense_type FROM {self.TXN_TABLE_NAME} AS t, {self.CATEGORY_TABLE_NAME} AS c WHERE t.fitid = ? AND t.category = c.id'
+        result = self.execute(sql, (fitid,))
         if not result:
             return [self.DEFAULT_CATEGORY, '', 0]
-        for row in result:
-            return row
+        rows = result.fetchall()
+        if len(rows) == 0:
+            return [self.DEFAULT_CATEGORY, '', 0]
+        return list(rows[0])
 
     def get_category_id(self, category, subcategory):
-        sql = f'SELECT id FROM {self.CATEGORY_TABLE_NAME} WHERE name = "{category}" AND subcategory = "{subcategory}"'
-        result = self.execute(sql)
+        sql = f'SELECT id FROM {self.CATEGORY_TABLE_NAME} WHERE name = ? AND subcategory = ?'
+        result = self.execute(sql, (category, subcategory))
         if not result:
             raise Exception(f'Category not in database: "{category}" / "{subcategory}"')
         for row in result:
@@ -440,8 +456,8 @@ class BudgyDatabase(object):
 
     def set_txn_category(self, fitid, account, posted, category, subcategory):
         category_id = self.get_category_id(category, subcategory)
-        sql = f'UPDATE {self.TXN_TABLE_NAME} SET category = {category_id} WHERE fitid = {fitid} AND account = "{account}" AND posted = "{posted}"'
-        result = self.execute(sql)
+        sql = f'UPDATE {self.TXN_TABLE_NAME} SET category = ? WHERE fitid = ? AND account = ? AND posted = ?'
+        result = self.execute(sql, (category_id, fitid, account, posted))
         rows_affected = result.rowcount
         if rows_affected == 0:
             raise Exception(f'No transaction found for fitid={fitid}, account={account}, posted={posted}')
@@ -451,10 +467,13 @@ class BudgyDatabase(object):
 
     def bulk_categorize(self, txn_pattern, category, subcategory=EMPTY_SUBCATEGORY, include_categorized=False):
         category_id = self.get_category_id(category, subcategory)
-        sql = f'UPDATE {self.TXN_TABLE_NAME} SET category = {category_id} WHERE name LIKE {txn_pattern}'
         if not include_categorized:
-            sql += f' AND category = {self.DEFAULT_CATEGORY}'
-        result = self.execute(sql)
+            default_category_id = self.get_category_id(self.DEFAULT_CATEGORY, self.EMPTY_SUBCATEGORY)
+            sql = f'UPDATE {self.TXN_TABLE_NAME} SET category = ? WHERE name LIKE ? AND category = ?'
+            result = self.execute(sql, (category_id, txn_pattern, default_category_id))
+        else:
+            sql = f'UPDATE {self.TXN_TABLE_NAME} SET category = ? WHERE name LIKE ?'
+            result = self.execute(sql, (category_id, txn_pattern))
         if not result:
             raise Exception(f'Bulk Categorize Failed for {txn_pattern} to "{category}" "{subcategory}"')
         self.connection.commit()
