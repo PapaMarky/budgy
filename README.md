@@ -96,6 +96,7 @@ src/budgy/
 ### Retirement Planning Methodology
 - **Monthly Expense Analysis**: Focus on recurring expenses to project ongoing retirement needs
 - **Expense Type Classification**:
+
   - `expense_type=2` (recurring): Rent, utilities, insurance → Include in retirement budget
   - `expense_type=1` (one-time): Vacation, car purchase → Evaluate retirement relevance
   - `expense_type=0` (non-expense): Income, transfers → Exclude from expense projections

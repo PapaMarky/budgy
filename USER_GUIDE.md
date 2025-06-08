@@ -25,6 +25,7 @@ Budgy is a retirement planning tool specifically designed to help you understand
 - **Pre-Retirement Only**: College tuition, work clothes, commuting costs → Won't continue in retirement
 
 **How Budgy Helps**:
+
 1. **Import** your bank and credit card transactions
 2. **Categorize** expenses by type (recurring vs. one-time) and retirement relevance
 3. **Analyze** patterns to understand your true ongoing monthly needs
@@ -105,6 +106,7 @@ Most banks and credit card companies provide OFX file downloads:
 - **Modify transaction categories** without losing changes on reimport
 
 **How it Works**:
+
 - Budgy uses unique transaction identifiers (FITID + account + date) to detect duplicates
 - Previously imported transactions are skipped, preserving any category changes you've made
 - Only genuinely new transactions are added to your database
@@ -141,6 +143,7 @@ When creating categories, think about retirement planning:
 
 1. **Open Category Dialog**: Click "Edit" next to category dropdown
 2. **Enter Category Details**:
+
    - **Main Category**: e.g., "Medical"
    - **Subcategory**: e.g., "Prescriptions"
    - **Expense Type** (crucial for retirement planning):
@@ -149,6 +152,7 @@ When creating categories, think about retirement planning:
      - **Recurring expense**: Rent, utilities, groceries → Will likely continue in retirement
 
 **Retirement Planning Tips**:
+
 - **Recurring expenses** form the core of your retirement budget estimate
 - **One-time expenses** need individual evaluation (will you still take vacations? buy cars?)
 - Consider creating subcategories for **pre-retirement only** items (commuting, work clothes, child expenses)
@@ -221,6 +225,7 @@ Use Budgy's categorized data to build your retirement budget:
 - This gives your target monthly retirement income
 
 **Key Questions to Ask**:
+
 - Will I still have housing payments in retirement?
 - How will medical expenses change?
 - What new expenses will I have (travel, hobbies)?
@@ -296,6 +301,7 @@ Configure your retirement target date:
 3. Check file permissions on database directory
 
 **Support**: 
+
 - Check [GitHub Issues](https://github.com/PapaMarky/budgy/issues) for known problems
 - Review [Release Notes](RELEASE_NOTES.md) for recent changes
 - Consult [Design Documentation](docs/BUDGY_UI_Design_Notes.md) for technical details
@@ -303,12 +309,14 @@ Configure your retirement target date:
 ### Advanced Usage
 
 **Efficient Import Workflows**:
+
 - **Bulk Folder Import**: Select all OFX files in your downloads folder at once
 - **Periodic Updates**: Download latest statements and reimport everything monthly
 - **Historical Analysis**: Import 12+ months of data for comprehensive spending patterns
 - **Multi-Account Setup**: Import files from all banks/cards into one database
 
 **Custom Configuration**:
+
 ```json
 {
     "database": {
