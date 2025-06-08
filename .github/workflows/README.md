@@ -10,6 +10,7 @@ This directory contains the CI/CD workflows for the Budgy project.
 - **Purpose**: Single entry point that coordinates all other workflows
 - **Triggers**: Push to main/develop, pull requests, manual dispatch
 - **Features**:
+
   - Calls test and build workflows
   - Provides unified dashboard view
   - Generates workflow summary
@@ -18,6 +19,7 @@ This directory contains the CI/CD workflows for the Budgy project.
 #### 2. `test.yml` - Comprehensive Test Suite
 - **Purpose**: Run tests across multiple environments
 - **Features**:
+
   - Matrix testing: Python 3.9-3.11 on Ubuntu/macOS/Windows
   - GUI testing support with virtual display (xvfb)
   - Custom primary key fix tests
@@ -27,6 +29,7 @@ This directory contains the CI/CD workflows for the Budgy project.
 #### 3. `build.yml` - Package Building
 - **Purpose**: Build distributable packages and verify integrity
 - **Features**:
+
   - Clean build process using `python -m build`
   - Package verification with entry point testing
   - Artifact upload for `dist/` directory
