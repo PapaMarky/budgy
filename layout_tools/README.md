@@ -78,6 +78,24 @@ layout.save_json("my_layout.json")
 - Visual anchor relationship indicators
 - Container drop shadows and outlines
 
+### 🔧 analyze_layout.py
+**Extract pygame_gui layouts from existing Python code**
+
+- AST-based component detection and analysis
+- Handles complex expressions and constants
+- Container hierarchy extraction
+- Support for all pygame_gui component types
+- Automatic layout validation
+
+### ⚙️ generate_code.py
+**Generate clean Python code from JSON layouts**
+
+- Template-based code generation with proper formatting
+- Maintains pygame_gui coding patterns
+- Handles complex anchoring and positioning
+- Generates properties for component access
+- Round-trip compatible with analyzer
+
 ### 📁 examples/
 **Sample layouts demonstrating toolchain capabilities**
 
@@ -175,23 +193,41 @@ Layout transitions and component animations:
 ## Development Status
 
 - ✅ **Phase 1: JSON Schema & SVG Visualizer** - Complete
-- ⏳ **Phase 2: Code Analyzer** - Planned
-- ⏳ **Phase 3: Code Generator** - Planned  
+- ✅ **Phase 2: Code Analyzer** - Complete
+- ✅ **Phase 3: Code Generator** - Complete
 - ⏳ **Phase 4: Visual Designer** - Planned
 
 ## Examples
 
-### Basic Component Layout
+### Complete Workflow Examples
+
+**Extract layout from existing code:**
+```bash
+python3 analyze_layout.py ../src/budgy/gui/top_panel.py --output top_panel.json --svg
+```
+
+**Generate visualization:**
 ```bash
 python3 generate_svg.py examples/sample_layout.json
 ```
-Creates visualization of a simple top panel with record count display and function dropdown.
 
-### Complex Multi-Panel Layout  
+**Generate Python code:**
 ```bash
-python3 generate_svg.py examples/simple_test.json --width 800 --height 600
+python3 generate_code.py top_panel.json --class-name MyTopPanel --output my_panel.py
 ```
-Demonstrates nested panels, various component types, and responsive button positioning.
+
+**Run comprehensive tests:**
+```bash
+python3 test_analyzer.py     # Test analyzer on all GUI files
+python3 test_roundtrip.py    # Test complete round-trip workflow
+```
+
+### Round-Trip Capability
+The toolchain supports complete round-trip workflows:
+- **Code → JSON → SVG** (documentation workflow)
+- **Code → JSON → Code** (refactoring workflow)  
+- **JSON → Code → JSON** (design workflow)
+- All transformations preserve layout structure and maintain validation
 
 ## Validation
 
