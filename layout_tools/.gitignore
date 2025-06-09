@@ -1,0 +1,15 @@
+# Generated test outputs
+test_outputs/
+
+# Generated analysis files from individual runs
+*_extracted.json
+*_extracted.svg
+
+# Temporary files
+*.tmp
+*.temp
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
