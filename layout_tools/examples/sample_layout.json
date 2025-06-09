@@ -1,0 +1,111 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "window_size": [
+      1280,
+      960
+    ],
+    "constants": {
+      "BUTTON_HEIGHT": 25,
+      "MARGIN": 2
+    },
+    "description": "Sample top panel layout"
+  },
+  "components": {
+    "top_panel": {
+      "type": "UIPanel",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 1280,
+        "h": 100
+      },
+      "anchors": {
+        "top": "top",
+        "left": "left",
+        "bottom": "top",
+        "right": "right"
+      },
+      "text": "",
+      "styling": {
+        "show_border": true,
+        "object_id": "#top-panel"
+      },
+      "children": [
+        "record_label",
+        "record_value",
+        "function_dropdown"
+      ],
+      "visible": true
+    },
+    "record_label": {
+      "type": "UILabel",
+      "rect": {
+        "x": 2,
+        "y": 2,
+        "w": 175,
+        "h": 25
+      },
+      "anchors": {
+        "top": "top",
+        "left": "left",
+        "bottom": "top",
+        "right": "left"
+      },
+      "text": "Record Count:",
+      "styling": {
+        "show_border": true,
+        "object_id": "#data-label"
+      },
+      "children": [],
+      "visible": true,
+      "container": "top_panel"
+    },
+    "record_value": {
+      "type": "UILabel",
+      "rect": {
+        "x": 179,
+        "y": 2,
+        "w": 1099,
+        "h": 25
+      },
+      "anchors": {
+        "top": "top",
+        "left": "left",
+        "bottom": "top",
+        "right": "right"
+      },
+      "text": "No Database",
+      "styling": {
+        "show_border": true,
+        "object_id": "#data-text"
+      },
+      "children": [],
+      "visible": true,
+      "container": "top_panel"
+    },
+    "function_dropdown": {
+      "type": "UIDropDownMenu",
+      "rect": {
+        "x": -202,
+        "y": 2,
+        "w": 200,
+        "h": 25
+      },
+      "anchors": {
+        "top": "top",
+        "left": "right",
+        "bottom": "top",
+        "right": "right"
+      },
+      "text": "Report Functions",
+      "styling": {
+        "show_border": true,
+        "object_id": "#dropdown"
+      },
+      "children": [],
+      "visible": true,
+      "container": "top_panel"
+    }
+  }
+}
