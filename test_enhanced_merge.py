@@ -69,16 +69,16 @@ def test_qfx_files(qfx_directory):
         result = db.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='transactions'")
         schema = result.fetchone()
         if schema and 'AUTOINCREMENT' in schema[0]:
-            print(f"✓ Auto-generated fitids enabled")
+            print(f"+ Auto-generated fitids enabled")
         else:
-            print("⚠️  Warning: Auto-generated fitids not detected!")
+            print("! Warning: Auto-generated fitids not detected!")
         # Check for content lookup index
         result = db.execute("SELECT sql FROM sqlite_master WHERE type='index' AND name='content_lookup'")
         index = result.fetchone()
         if index:
-            print(f"✓ Content lookup index exists")
+            print(f"+ Content lookup index exists")
         else:
-            print("⚠️  Content lookup index not found")
+            print("! Content lookup index not found")
         # Monkey patch the merge function to track duplicates
         monkey_patch_merge_for_tracking(db, tracker)
         print(f"\n{'='*80}")
@@ -197,10 +197,10 @@ def test_qfx_files(qfx_directory):
         print(f"Duplicates prevented: {tracker.skipped}")
         print(f"Potential duplicates inserted: {tracker.insertions}")
         if final_count != unique_fitids:
-            print(f"⚠️  WARNING: {final_count - unique_fitids} records have non-unique fitids!")
+            print(f"! WARNING: {final_count - unique_fitids} records have non-unique fitids!")
             print("   This may cause issues with code that expects fitid to be unique.")
         else:
-            print("✓ All fitids are unique")
+            print("+ All fitids are unique")
         if tracker.duplicates:
             prevented_ratio = (tracker.skipped / len(tracker.duplicates)) * 100
             print(f"Duplicate prevention rate: {prevented_ratio:.1f}%")
