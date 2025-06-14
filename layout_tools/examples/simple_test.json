@@ -1,0 +1,119 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "description": "Simple test layout with basic components",
+    "window_size": [800, 600],
+    "constants": {
+      "BUTTON_HEIGHT": 30,
+      "MARGIN": 5
+    }
+  },
+  "components": {
+    "main_window": {
+      "type": "UIPanel",
+      "rect": {"x": 0, "y": 0, "w": 800, "h": 600},
+      "anchors": {"top": "top", "left": "left", "bottom": "bottom", "right": "right"},
+      "container": null,
+      "text": "",
+      "styling": {
+        "object_id": "#main-window",
+        "show_border": true,
+        "background_color": "#F0F0F0"
+      },
+      "children": ["header_panel", "content_panel", "button_panel"],
+      "visible": true
+    },
+    "header_panel": {
+      "type": "UIPanel", 
+      "rect": {"x": 5, "y": 5, "w": 790, "h": 50},
+      "anchors": {"top": "top", "left": "left", "bottom": "top", "right": "right"},
+      "container": "main_window",
+      "text": "",
+      "styling": {
+        "object_id": "#header",
+        "background_color": "#E6F3FF"
+      },
+      "children": ["title_label"],
+      "visible": true
+    },
+    "title_label": {
+      "type": "UILabel",
+      "rect": {"x": 10, "y": 10, "w": 770, "h": 30},
+      "anchors": {"top": "top", "left": "left", "bottom": "bottom", "right": "right"},
+      "container": "header_panel",
+      "text": "Sample Application Title",
+      "styling": {
+        "object_id": "#title",
+        "font_size": 18
+      },
+      "children": [],
+      "visible": true
+    },
+    "content_panel": {
+      "type": "UIPanel",
+      "rect": {"x": 5, "y": 60, "w": 790, "h": 480},
+      "anchors": {"top": "top", "left": "left", "bottom": "bottom", "right": "right"},
+      "container": "main_window",
+      "text": "",
+      "styling": {
+        "object_id": "#content",
+        "background_color": "#FFFFFF"
+      },
+      "children": ["info_label", "dropdown_menu"],
+      "visible": true
+    },
+    "info_label": {
+      "type": "UILabel",
+      "rect": {"x": 20, "y": 20, "w": 750, "h": 25},
+      "anchors": {"top": "top", "left": "left", "bottom": "top", "right": "right"},
+      "container": "content_panel",
+      "text": "This is a sample layout with various component types",
+      "styling": {"object_id": "#info"},
+      "children": [],
+      "visible": true
+    },
+    "dropdown_menu": {
+      "type": "UIDropDownMenu",
+      "rect": {"x": 20, "y": 60, "w": 200, "h": 30},
+      "anchors": {"top": "top", "left": "left", "bottom": "top", "right": "left"},
+      "container": "content_panel",
+      "text": "Select Option",
+      "styling": {"object_id": "#dropdown"},
+      "children": [],
+      "visible": true
+    },
+    "button_panel": {
+      "type": "UIPanel",
+      "rect": {"x": 5, "y": 545, "w": 790, "h": 50},
+      "anchors": {"top": "bottom", "left": "left", "bottom": "bottom", "right": "right"},
+      "container": "main_window",
+      "text": "",
+      "styling": {
+        "object_id": "#button-panel",
+        "background_color": "#F5F5F5"
+      },
+      "children": ["ok_button", "cancel_button"],
+      "visible": true
+    },
+    "ok_button": {
+      "type": "UIButton",
+      "rect": {"x": -170, "y": 10, "w": 75, "h": 30},
+      "anchors": {"top": "top", "left": "right", "bottom": "bottom", "right": "right"},
+      "container": "button_panel",
+      "text": "OK",
+      "styling": {"object_id": "#ok-button"},
+      "children": [],
+      "visible": true
+    },
+    "cancel_button": {
+      "type": "UIButton",
+      "rect": {"x": -85, "y": 10, "w": 75, "h": 30},
+      "anchors": {"top": "top", "left": "right", "bottom": "bottom", "right": "right"},
+      "container": "button_panel", 
+      "text": "Cancel",
+      "styling": {"object_id": "#cancel-button"},
+      "children": [],
+      "visible": true
+    }
+  }
+}
