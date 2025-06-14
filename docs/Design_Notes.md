@@ -72,7 +72,7 @@ Budgy components should share a config object.
 
 | Field | Type | Description |
 | :---- | :---- | :---- |
-| fitid | int | Financial Transaction ID from OFX |
+| fitid | text | Financial Transaction ID from OFX (string format) |
 | account | string | Account identifier |
 | type | string | Transaction type (DEBIT, CREDIT, etc.) |
 | posted | string | ISO format timestamp when transaction posted |
@@ -156,6 +156,7 @@ Budgy components should share a config object.
 * **Expense** (id=2) - Generic expense category
 
 **Notes:** 
+
 * The hierarchical system allows for better organization and reporting
 * expense_type enables filtering for different report types
 * Auto-categorization rules can target specific name/subcategory combinations
