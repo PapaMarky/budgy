@@ -1,0 +1,110 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "window_size": [
+      800,
+      600
+    ],
+    "constants": {
+      "TEXT_WIDTH": 175,
+      "event_consumed": true
+    },
+    "source_file": "../src/budgy/gui/message_panel.py",
+    "description": "Layout extracted from message_panel.py"
+  },
+  "components": {
+    "MessagePanel": {
+      "type": "UIPanel",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 100,
+        "h": 100
+      },
+      "anchors": {
+        "top": "top",
+        "left": "left",
+        "bottom": "bottom",
+        "right": "right"
+      },
+      "text": "",
+      "styling": {
+        "show_border": true
+      },
+      "children": [
+        "MessagePanel_progress_bar",
+        "MessagePanel_message_element",
+        "MessagePanel_message_error"
+      ],
+      "visible": true
+    },
+    "MessagePanel_progress_bar": {
+      "type": "UIProgressBar",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "anchors": {
+        "top": "top",
+        "left": "left",
+        "bottom": "top",
+        "right": "right"
+      },
+      "text": "",
+      "styling": {
+        "show_border": true
+      },
+      "children": [],
+      "visible": true,
+      "container": "MessagePanel"
+    },
+    "MessagePanel_message_element": {
+      "type": "UILabel",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "anchors": {
+        "top": "top",
+        "left": "left",
+        "bottom": "top",
+        "right": "right"
+      },
+      "text": "Message Element",
+      "styling": {
+        "show_border": true,
+        "object_id": "#message-info @bold-16"
+      },
+      "children": [],
+      "visible": true,
+      "container": "MessagePanel"
+    },
+    "MessagePanel_message_error": {
+      "type": "UILabel",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "anchors": {
+        "top": "top",
+        "left": "left",
+        "bottom": "top",
+        "right": "right"
+      },
+      "text": "Message Element",
+      "styling": {
+        "show_border": true,
+        "object_id": "#message-error @bold-16"
+      },
+      "children": [],
+      "visible": true,
+      "container": "MessagePanel"
+    }
+  }
+}

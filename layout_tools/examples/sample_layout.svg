@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg width="1280" height="960" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 960">
+  <style>
+            .component-rect { stroke-width: 2; opacity: 0.9; }
+            .component-text { font-family: 'Arial', sans-serif; font-size: 12px; fill: #333; }
+            .component-id { font-family: 'Courier New', monospace; font-size: 10px; fill: #666; }
+            .component-type { font-family: 'Arial', sans-serif; font-size: 11px; fill: #444; font-weight: bold; }
+            .anchor-point { stroke-width: 1; opacity: 0.8; }
+            .container-outline { stroke: #000; stroke-width: 1; stroke-dasharray: 3,3; fill: none; opacity: 0.3; }
+            .legend-text { font-family: 'Arial', sans-serif; font-size: 12px; fill: #333; }
+            .legend-title { font-family: 'Arial', sans-serif; font-size: 14px; fill: #000; font-weight: bold; }
+            .title-text { font-family: 'Arial', sans-serif; font-size: 18px; fill: #000; font-weight: bold; }
+            .description-text { font-family: 'Arial', sans-serif; font-size: 12px; fill: #666; }
+            .hover-info { opacity: 0; transition: opacity 0.3s; }
+            .component-group:hover .hover-info { opacity: 1; }
+        </style>
+  <defs>
+    <filter id="drop-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.3" />
+    </filter>
+  </defs>
+  <title>pygame_gui Layout: Unknown</title>
+  <g id="header">
+    <text x="10" y="25" class="title-text">Layout Visualization: Untitled</text>
+    <text x="10" y="45" class="description-text">Sample top panel layout</text>
+    <text x="10" y="65" class="description-text">Window Size: 1280×960 | Components: 4</text>
+  </g>
+  <g id="layout-content">
+    <g id="comp-top_panel" class="component-group">
+      <rect x="0" y="0" width="1280" height="100" fill="#E6F3FF" stroke="#4A90E2" class="component-rect" filter="url(#drop-shadow)" />
+      <text x="5" y="16" class="component-type">UIPanel</text>
+      <text x="5" y="95" class="component-id">top_panel</text>
+      <circle cx="640" cy="0" r="4" fill="#FF4444" stroke="#AA0000" class="anchor-point" />
+      <circle cx="640" cy="0" r="4" fill="#4444FF" stroke="#0000AA" class="anchor-point" />
+      <circle cx="0" cy="50" r="4" fill="#44FF44" stroke="#00AA00" class="anchor-point" />
+      <circle cx="1280" cy="50" r="4" fill="#FF44FF" stroke="#AA00AA" class="anchor-point" />
+      <g class="hover-info">
+        <rect x="1285" y="0" width="200" height="120" fill="#FFFFCC" stroke="#CCCC99" stroke-width="1" opacity="0.95" />
+        <text x="1290" y="15" class="component-text">ID: top_panel</text>
+        <text x="1290" y="30" class="component-text">Type: UIPanel</text>
+        <text x="1290" y="45" class="component-text">Size: 1280×100</text>
+        <text x="1290" y="60" class="component-text">Pos: (0, 0)</text>
+        <text x="1290" y="75" class="component-text">Children: 3</text>
+      </g>
+      <rect x="0" y="0" width="1280" height="100" class="container-outline" />
+    </g>
+    <g id="comp-record_value" class="component-group">
+      <rect x="179" y="2" width="1099" height="25" fill="#FFE6E6" stroke="#E24A4A" class="component-rect" />
+      <text x="184" y="18" class="component-type">UILabel</text>
+      <circle cx="728" cy="2" r="4" fill="#FF4444" stroke="#AA0000" class="anchor-point" />
+      <circle cx="728" cy="2" r="4" fill="#4444FF" stroke="#0000AA" class="anchor-point" />
+      <circle cx="179" cy="14" r="4" fill="#44FF44" stroke="#00AA00" class="anchor-point" />
+      <circle cx="1278" cy="14" r="4" fill="#FF44FF" stroke="#AA00AA" class="anchor-point" />
+      <g class="hover-info">
+        <rect x="1283" y="2" width="200" height="120" fill="#FFFFCC" stroke="#CCCC99" stroke-width="1" opacity="0.95" />
+        <text x="1288" y="17" class="component-text">ID: record_value</text>
+        <text x="1288" y="32" class="component-text">Type: UILabel</text>
+        <text x="1288" y="47" class="component-text">Size: 1099×25</text>
+        <text x="1288" y="62" class="component-text">Pos: (179, 2)</text>
+        <text x="1288" y="77" class="component-text">Container: top_panel</text>
+      </g>
+    </g>
+    <g id="comp-function_dropdown" class="component-group">
+      <rect x="1078" y="2" width="200" height="25" fill="#FFFFE6" stroke="#E2E24A" class="component-rect" />
+      <text x="1083" y="18" class="component-type">UIDropDownMenu</text>
+      <circle cx="1178" cy="2" r="4" fill="#FF4444" stroke="#AA0000" class="anchor-point" />
+      <circle cx="1178" cy="2" r="4" fill="#4444FF" stroke="#0000AA" class="anchor-point" />
+      <circle cx="1278" cy="14" r="4" fill="#44FF44" stroke="#00AA00" class="anchor-point" />
+      <circle cx="1278" cy="14" r="4" fill="#FF44FF" stroke="#AA00AA" class="anchor-point" />
+      <g class="hover-info">
+        <rect x="1283" y="2" width="200" height="120" fill="#FFFFCC" stroke="#CCCC99" stroke-width="1" opacity="0.95" />
+        <text x="1288" y="17" class="component-text">ID: function_dropdown</text>
+        <text x="1288" y="32" class="component-text">Type: UIDropDownMenu</text>
+        <text x="1288" y="47" class="component-text">Size: 200×25</text>
+        <text x="1288" y="62" class="component-text">Pos: (-202, 2)</text>
+        <text x="1288" y="77" class="component-text">Container: top_panel</text>
+      </g>
+    </g>
+    <g id="comp-record_label" class="component-group">
+      <rect x="2" y="2" width="175" height="25" fill="#FFE6E6" stroke="#E24A4A" class="component-rect" />
+      <text x="7" y="18" class="component-type">UILabel</text>
+      <circle cx="89" cy="2" r="4" fill="#FF4444" stroke="#AA0000" class="anchor-point" />
+      <circle cx="89" cy="2" r="4" fill="#4444FF" stroke="#0000AA" class="anchor-point" />
+      <circle cx="2" cy="14" r="4" fill="#44FF44" stroke="#00AA00" class="anchor-point" />
+      <circle cx="2" cy="14" r="4" fill="#FF44FF" stroke="#AA00AA" class="anchor-point" />
+      <g class="hover-info">
+        <rect x="182" y="2" width="200" height="120" fill="#FFFFCC" stroke="#CCCC99" stroke-width="1" opacity="0.95" />
+        <text x="187" y="17" class="component-text">ID: record_label</text>
+        <text x="187" y="32" class="component-text">Type: UILabel</text>
+        <text x="187" y="47" class="component-text">Size: 175×25</text>
+        <text x="187" y="62" class="component-text">Pos: (2, 2)</text>
+        <text x="187" y="77" class="component-text">Container: top_panel</text>
+      </g>
+    </g>
+  </g>
+  <g id="legend">
+    <rect x="1030" y="100" width="240" height="165" fill="#F9F9F9" stroke="#CCCCCC" stroke-width="1" />
+    <text x="1040" y="120" class="legend-title">Component Types</text>
+    <rect x="1040" y="128" width="15" height="15" fill="#FFFFE6" stroke="#E2E24A" stroke-width="1" />
+    <text x="1060" y="140" class="legend-text">UIDropDownMenu</text>
+    <rect x="1040" y="153" width="15" height="15" fill="#FFE6E6" stroke="#E24A4A" stroke-width="1" />
+    <text x="1060" y="165" class="legend-text">UILabel</text>
+    <rect x="1040" y="178" width="15" height="15" fill="#E6F3FF" stroke="#4A90E2" stroke-width="1" />
+    <text x="1060" y="190" class="legend-text">UIPanel</text>
+    <text x="1040" y="225" class="legend-title">Anchor Points</text>
+    <circle cx="1047" cy="240" r="4" fill="#FF4444" stroke="#FF44AA" />
+    <text x="1060" y="245" class="legend-text">Top</text>
+    <circle cx="1047" cy="255" r="4" fill="#4444FF" stroke="#4444AA" />
+    <text x="1060" y="260" class="legend-text">Bottom</text>
+    <circle cx="1047" cy="270" r="4" fill="#44FF44" stroke="#44FFAA" />
+    <text x="1060" y="275" class="legend-text">Left</text>
+    <circle cx="1047" cy="285" r="4" fill="#FF44FF" stroke="#FF44AA" />
+    <text x="1060" y="290" class="legend-text">Right</text>
+  </g>
+</svg>

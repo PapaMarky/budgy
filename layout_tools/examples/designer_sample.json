@@ -1,0 +1,81 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "window_size": [
+      800,
+      600
+    ],
+    "constants": {},
+    "description": "Sample GUI design created with visual designer"
+  },
+  "components": {
+    "main_window": {
+      "type": "UIPanel",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 800,
+        "h": 600
+      },
+      "anchors": {
+        "top": "top",
+        "left": "left",
+        "bottom": "bottom",
+        "right": "right"
+      },
+      "text": "",
+      "styling": {
+        "show_border": true,
+        "object_id": "#main-window"
+      },
+      "children": [],
+      "visible": true
+    },
+    "title_label": {
+      "type": "UILabel",
+      "rect": {
+        "x": 20,
+        "y": 20,
+        "w": 760,
+        "h": 30
+      },
+      "anchors": {
+        "top": "top",
+        "left": "left",
+        "bottom": "top",
+        "right": "right"
+      },
+      "text": "Sample Application",
+      "styling": {
+        "show_border": true,
+        "object_id": "#title"
+      },
+      "children": [],
+      "visible": true,
+      "container": "main_window"
+    },
+    "action_button": {
+      "type": "UIButton",
+      "rect": {
+        "x": 350,
+        "y": 280,
+        "w": 100,
+        "h": 40
+      },
+      "anchors": {
+        "top": "top",
+        "left": "left",
+        "bottom": "top",
+        "right": "left"
+      },
+      "text": "Click Me",
+      "styling": {
+        "show_border": true,
+        "object_id": "#action-btn"
+      },
+      "children": [],
+      "visible": true,
+      "container": "main_window"
+    }
+  }
+}
