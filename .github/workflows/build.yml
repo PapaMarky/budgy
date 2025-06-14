@@ -72,16 +72,16 @@ jobs:
           try:
               from budgy.core.database import BudgyDatabase
               from budgy.core import load_ofx_file
-              print('✅ Core imports successful')
+              print('[PASS] Core imports successful')
           except ImportError as e:
-              print(f'❌ Core import failed: {e}')
+              print(f'[FAIL] Core import failed: {e}')
               exit(1)
           
           try:
               from budgy.gui.viewer import BudgyViewerApp
-              print('✅ GUI imports successful')
+              print('[PASS] GUI imports successful')
           except ImportError as e:
-              print(f'❌ GUI import failed: {e}')
+              print(f'[FAIL] GUI import failed: {e}')
               exit(1)
           "
 
@@ -109,4 +109,4 @@ jobs:
         id: build-status
         run: |
           echo "status=success" >> $GITHUB_OUTPUT
-          echo "✅ Build completed successfully" >> $GITHUB_STEP_SUMMARY
+          echo "[PASS] Build completed successfully" >> $GITHUB_STEP_SUMMARY
