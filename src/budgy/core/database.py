@@ -237,13 +237,13 @@ class BudgyDatabase(object):
         duplicate_record = self.find_duplicate_by_content(record)
         if duplicate_record is not None:
             old_record = self.record_from_row(duplicate_record)
-            print(f'⚠️  Duplicate found:')
+            print('WARNING: Duplicate found:')
             print(f'   New: checknum={record.get("checknum", "None")}')
             print(f'   Old: fitid={old_record["fitid"]}, checknum={old_record.get("checknum", "None")}')
             print(f'   Transaction: {record["posted"]} | {record["amount"]} | {record["name"][:50]}...')
             # Since all major fields match (account, posted, amount, name, memo, type),
             # this is definitely a duplicate
-            print(f'   🚫 SKIPPING: All content fields match, treating as duplicate')
+            print('   SKIPPING: All content fields match, treating as duplicate')
             logging.warning(f'Skipped duplicate: existing_fitid={old_record["fitid"]}')
             return
         # Insert new record (fitid will be auto-generated)
