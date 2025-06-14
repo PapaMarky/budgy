@@ -23,6 +23,7 @@ Existing Code → Analyzer → JSON Schema → SVG Visualizer
 **Output:** Standardized JSON representation
 
 **Key Features:**
+
 - AST parsing for component extraction
 - Constant evaluation (BUTTON_HEIGHT, MARGIN, etc.)
 - Container hierarchy detection
@@ -74,6 +75,7 @@ python analyze_layout.py src/budgy/gui/top_panel.py --output top_panel.json
 ```
 
 **Future Compatibility:**
+
 - Anchor targets: Support for component references in anchors
 - Extended styling: Additional visual properties
 - Animation: Transition and animation properties
@@ -85,6 +87,7 @@ python analyze_layout.py src/budgy/gui/top_panel.py --output top_panel.json
 **Output:** SVG visualization files
 
 **Key Features:**
+
 - Component hierarchy visualization
 - Color-coded component types
 - Anchor point indicators
@@ -93,6 +96,7 @@ python analyze_layout.py src/budgy/gui/top_panel.py --output top_panel.json
 - Responsive preview capabilities
 
 **Component Type Colors:**
+
 - UIPanel: Blue (#E6F3FF)
 - UILabel: Red (#FFE6E6)
 - UIButton: Green (#E6FFE6)
@@ -111,6 +115,7 @@ python generate_svg.py top_panel.json --output top_panel.svg --width 1280 --heig
 **Output:** Modified JSON layout files
 
 **Key Features:**
+
 - Drag-and-drop component placement
 - Property editor panel
 - Real-time SVG preview
@@ -119,6 +124,7 @@ python generate_svg.py top_panel.json --output top_panel.svg --width 1280 --heig
 - Grid snapping
 
 **Interface Components:**
+
 - Canvas area for layout design
 - Component palette (UIPanel, UILabel, etc.)
 - Property inspector
@@ -132,6 +138,7 @@ python generate_svg.py top_panel.json --output top_panel.svg --width 1280 --heig
 **Output:** Python source code
 
 **Key Features:**
+
 - Template-based code generation
 - Proper indentation and formatting
 - Import statement management
@@ -157,6 +164,7 @@ python generate_code.py my_layout.json --output generated_panel.py --class-name 
 4. Generate sample visualizations
 
 **Deliverables:**
+
 - JSON schema specification
 - Working SVG generator
 - Test cases and sample outputs
@@ -173,6 +181,7 @@ python generate_code.py my_layout.json --output generated_panel.py --class-name 
 5. Validate against existing layouts
 
 **Deliverables:**
+
 - Working code analyzer
 - JSON representations of all budgy GUI panels
 - Validation against manual inspection
@@ -189,6 +198,7 @@ python generate_code.py my_layout.json --output generated_panel.py --class-name 
 5. Round-trip testing (code → JSON → code)
 
 **Deliverables:**
+
 - Working code generator
 - Template system
 - Round-trip validation tests
@@ -205,6 +215,7 @@ python generate_code.py my_layout.json --output generated_panel.py --class-name 
 5. Integrate with other tools
 
 **Deliverables:**
+
 - Interactive design application
 - Integration with toolchain
 - User documentation
@@ -212,6 +223,7 @@ python generate_code.py my_layout.json --output generated_panel.py --class-name 
 ## Technical Considerations
 
 ### Python Dependencies
+
 - **ast**: Built-in AST parsing
 - **json**: JSON schema handling
 - **xml.etree.ElementTree**: SVG generation
@@ -220,6 +232,7 @@ python generate_code.py my_layout.json --output generated_panel.py --class-name 
 - **dataclasses**: Type-safe data structures
 
 ### Future Dependencies (Phase 4)
+
 - **tkinter** or **PyQt5/PySide**: GUI framework for designer
 - **pillow**: Image handling for preview
 - **numpy**: Mathematical operations for layout calculations
@@ -254,6 +267,7 @@ layout_tools/
 4. **Schema Validation:** JSON schema compliance checking
 
 **Test Cases:**
+
 - Simple single-component layouts
 - Complex nested hierarchies
 - Edge cases (negative coordinates, zero dimensions)
@@ -293,6 +307,7 @@ Extended styling and theme support:
 
 ### Layout Validation
 Automatic constraint checking:
+
 - Component overlap detection
 - Container boundary validation
 - Anchor consistency verification
@@ -301,21 +316,25 @@ Automatic constraint checking:
 ## Success Criteria
 
 ### Phase 1 Success
+
 - [ ] Generate accurate SVG from JSON for all budgy panels
 - [ ] Visual output matches actual GUI layout
 - [ ] Schema handles all current pygame_gui usage patterns
 
 ### Phase 2 Success  
+
 - [ ] Extract complete layout from all budgy GUI files
 - [ ] Generated JSON validates against schema
 - [ ] No loss of layout information during extraction
 
 ### Phase 3 Success
+
 - [ ] Generated code compiles without errors
 - [ ] Generated code produces equivalent visual layout
 - [ ] Round-trip testing passes (code → JSON → code)
 
 ### Phase 4 Success
+
 - [ ] Visual designer creates valid JSON layouts
 - [ ] Real-time preview matches final output
 - [ ] Designer integrates seamlessly with other tools
@@ -323,12 +342,14 @@ Automatic constraint checking:
 ## Documentation Requirements
 
 ### User Documentation
+
 - Installation and setup instructions
 - Tool usage examples and tutorials
 - JSON schema reference
 - Best practices guide
 
 ### Developer Documentation
+
 - API reference for each tool
 - Extension points for new component types
 - Contributing guidelines
@@ -337,11 +358,13 @@ Automatic constraint checking:
 ## Maintenance Plan
 
 ### Version Control
+
 - Semantic versioning for JSON schema
 - Backward compatibility for existing layouts
 - Migration tools for schema updates
 
 ### Testing Strategy
+
 - Automated testing for all tools
 - Continuous integration setup
 - Visual regression testing for SVG output

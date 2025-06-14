@@ -57,6 +57,7 @@ layout.save_json("my_layout.json")
 - Future-compatible design for anchor targets
 
 **Key Classes:**
+
 - `Layout` - Complete layout specification
 - `Component` - Individual UI component
 - `Rect` - Position and dimensions
@@ -73,6 +74,7 @@ layout.save_json("my_layout.json")
 - Responsive positioning with negative coordinate support
 
 **Features:**
+
 - Component type legend
 - Hover details for each component
 - Visual anchor relationship indicators
@@ -95,6 +97,16 @@ layout.save_json("my_layout.json")
 - Handles complex anchoring and positioning
 - Generates properties for component access
 - Round-trip compatible with analyzer
+
+### 🎨 design_layout.py
+**Interactive visual layout designer**
+
+- Drag-and-drop component creation from palette
+- Real-time property editing with tabbed interface
+- Visual canvas with zoom, pan, and selection
+- Export to JSON, Python code, and SVG
+- Complete integration with toolchain
+- Keyboard shortcuts for efficient workflow
 
 ### 📁 examples/
 **Sample layouts demonstrating toolchain capabilities**
@@ -167,6 +179,7 @@ The toolchain supports pygame_gui's anchoring system for responsive positioning:
 ```
 
 **Positioning Rules:**
+
 - `"top": "top"` - Anchor to top edge of container
 - `"right": "right"` - Anchor to right edge of container
 - Negative coordinates enable right/bottom positioning
@@ -195,7 +208,9 @@ Layout transitions and component animations:
 - ✅ **Phase 1: JSON Schema & SVG Visualizer** - Complete
 - ✅ **Phase 2: Code Analyzer** - Complete
 - ✅ **Phase 3: Code Generator** - Complete
-- ⏳ **Phase 4: Visual Designer** - Planned
+- ✅ **Phase 4: Visual Designer** - Complete
+
+**🎉 Complete Layout Toolchain Available!**
 
 ## Examples
 
@@ -216,14 +231,22 @@ python3 generate_svg.py examples/sample_layout.json
 python3 generate_code.py top_panel.json --class-name MyTopPanel --output my_panel.py
 ```
 
+**Launch visual designer:**
+```bash
+python3 design_layout.py                              # New layout
+python3 design_layout.py --layout examples/sample_layout.json  # Open existing
+```
+
 **Run comprehensive tests:**
 ```bash
 python3 test_analyzer.py     # Test analyzer on all GUI files
 python3 test_roundtrip.py    # Test complete round-trip workflow
+python3 test_designer.py     # Test visual designer components
 ```
 
 ### Round-Trip Capability
 The toolchain supports complete round-trip workflows:
+
 - **Code → JSON → SVG** (documentation workflow)
 - **Code → JSON → Code** (refactoring workflow)  
 - **JSON → Code → JSON** (design workflow)
@@ -242,6 +265,7 @@ if issues:
 ```
 
 **Validation Checks:**
+
 - Circular container references
 - Missing component references
 - Invalid container relationships

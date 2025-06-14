@@ -11,17 +11,20 @@ Python application that processes OFX financial data to categorize expenses by t
 ## Core Features
 
 ### OFX Import Processing ([`src/budgy/core/importer.py`](src/budgy/core/importer.py))
+
 - **Parser**: Uses `ofxtools` library for robust OFX file parsing
 - **Duplicate Detection**: Unique constraint on `(fitid, account, posted)` prevents import collisions
 - **Batch Processing**: Command-line tool for automation and scripting
 
 ### Database Layer ([`src/budgy/core/database.py`](src/budgy/core/database.py))
+
 - **Schema Migration**: Automatic database updates with [`BudgyDatabase.migrate_database()`](src/budgy/core/database.py#L85)
 - **Transaction Storage**: SQLite backend with optimized queries
 - **Retirement-Focused Categorization**: `expense_type` field differentiates ongoing vs. one-time expenses
 - **Post-Retirement Planning**: Categories designed to exclude non-retirement expenses (e.g., college tuition)
 
 ### GUI Application ([`src/budgy/gui/viewer.py`](src/budgy/gui/viewer.py))
+
 - **Framework**: pygame_gui-based cross-platform interface
 - **Panel Architecture**: Modular UI components in [`src/budgy/gui/`](src/budgy/gui/)
 - **Real-time Updates**: Category assignment with immediate database persistence
@@ -29,6 +32,7 @@ Python application that processes OFX financial data to categorize expenses by t
 ## 📦 Installation
 
 ### Requirements
+
 - Python 3.9 or higher
 - SQLite (included with Python)
 
@@ -41,6 +45,7 @@ pip install -e .
 
 ### Dependencies
 Budgy automatically installs required dependencies:
+
 - `ofxtools` - OFX file processing
 - `pygame_gui` - Cross-platform GUI framework
 - `dateutils` - Date/time utilities
@@ -52,6 +57,7 @@ Budgy automatically installs required dependencies:
 budgy-viewer
 ```
 Launch the graphical interface to:
+
 - **Smart Import**: Import multiple OFX files safely - duplicates are automatically handled
 - **Bulk Processing**: Select entire folders of statements without tracking what's imported
 - **Category Management**: Create hierarchical categories with auto-categorization rules
@@ -67,6 +73,7 @@ budgy-import --db /path/to/database.db transactions.ofx
 
 ### Configuration
 Budgy creates configuration files automatically:
+
 - **Linux/macOS**: `~/.config/budgy/budgyconfig.json`
 - **Windows**: `%APPDATA%/budgy/budgyconfig.json`
 
@@ -87,13 +94,16 @@ src/budgy/
 ```
 
 ### Database Design
+
 - **`transactions`**: Core financial data with `(fitid, account, posted)` unique constraint
 - **`categories`**: Hierarchical structure with retirement planning focus:
+
   - `expense_type`: 0=non-expense (income), 1=one-time expense, 2=recurring expense
   - Design goal: Differentiate expenses that will/won't continue in retirement
 - **`cat_rules`**: Pattern-based auto-categorization rules
 
 ### Retirement Planning Methodology
+
 - **Monthly Expense Analysis**: Focus on recurring expenses to project ongoing retirement needs
 - **Expense Type Classification**:
 
@@ -103,6 +113,7 @@ src/budgy/
 - **Future Enhancement**: One-time expenses will include "post-retirement relevance" flag (e.g., college tuition = not relevant post-retirement)
 
 ### Key Design Decisions
+
 - **Unique Constraint Evolution**: Migrated from `(fitid, account)` to `(fitid, account, posted)` to handle OFX FITID collisions ([#primary-key-fix](test_primary_key_fix.py))
 - **GUI Framework Choice**: pygame_gui for cross-platform compatibility without heavy dependencies
 - **Category Schema**: Designed around retirement planning rather than general budgeting
