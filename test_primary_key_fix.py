@@ -27,12 +27,8 @@ def safe_remove_db(db_path):
             raise
 def print_result(success, message):
     """Print result with Windows-compatible characters"""
-    if sys.platform == 'win32':
-        # Use ASCII characters on Windows to avoid encoding issues
-        status = "[PASS]" if success else "[FAIL]"
-    else:
-        # Use emojis on other platforms
-        status = "✅" if success else "❌"
+    # Always use ASCII characters to avoid encoding issues on any platform
+    status = "[PASS]" if success else "[FAIL]"
     print(f'{status} {message}')
 def test_new_database():
     """Test 1: Create new database (should have auto-generated fitids)"""
