@@ -74,16 +74,15 @@ class TestDatabase(unittest.TestCase):
         self.assertTrue(db.table_exists('transactions'))
         self.assertTrue(db.table_exists('categories'))
 
-    def test_sql_injection_protection_get_record_by_unique_key(self):
-        """Test that get_record_by_unique_key protects against SQL injection"""
+    def test_sql_injection_protection_get_record_by_fitid(self):
+        """Test that get_record_by_fitid protects against SQL injection"""
         db = BudgyDatabase(self.TEST_DB)
 
+        # Test with malicious fitid (should be integer but test string injection)
         malicious_fitid = "1'; DELETE FROM transactions; --"
-        malicious_account = "test'; DELETE FROM transactions; --"
-        malicious_posted = "2023-01-01'; DELETE FROM transactions; --"
 
         # Should safely handle malicious input
-        result = db.get_record_by_unique_key(malicious_fitid, malicious_account, malicious_posted)
+        result = db.get_record_by_fitid(malicious_fitid)
         self.assertIsNone(result)  # Should return None for non-existent record
 
         # Verify database integrity

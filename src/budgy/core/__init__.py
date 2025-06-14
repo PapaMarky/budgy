@@ -24,7 +24,6 @@ def load_ofx_file(ofxfile:Path):
             if checknum is None:
                 checknum = ""
             record = {
-                'fitid': str(txn.fitid),
                 'account': account,
                 'type': txn.trntype,
                 'posted': str(txn.dtposted),
