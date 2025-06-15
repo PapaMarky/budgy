@@ -5,6 +5,7 @@ This directory contains implementation documentation for all budgy-viewer UI cla
 ## Implementation Documentation Structure
 
 Each class document includes:
+
 - **Class Purpose:** Role within the budgy-viewer architecture
 - **Inheritance:** Base classes and class hierarchy relationships
 - **Key Methods:** Public interface and important lifecycle methods
@@ -16,22 +17,26 @@ Each class document includes:
 ## Files in this Directory
 
 ### Core Application Classes
+
 - `BudgyViewerApp.md` - Main application window class
 - `TopPanel.md` - Status display and navigation panel
 - `BudgyFunctionPanel.md` - Panel container and switcher
 - `MessagePanel.md` - Status messaging system
 
 ### Functional Sub-Panel Classes  
+
 - `BudgyDataPanel.md` - Transaction management panel
 - `BudgyReportPanel.md` - Expense reporting panel
 - `BudgyFunctionSubPanel.md` - Base class for function panels
 
 ### Data Display Classes
+
 - `RecordViewPanel.md` - Transaction list display
 - `CategoryDialog.md` - Category management dialog
 - `CategoryButton.md` - Category selection button
 
 ### Base and Utility Classes
+
 - `DbRecordView.md` - Base class for database record display
 - `BgColorPanel.md` - Colored background panel base
 - `utility-classes.md` - Supporting utility classes

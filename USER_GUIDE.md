@@ -1,6 +1,7 @@
 # Budgy User Guide
 
 ## Table of Contents
+
 - [Getting Started](#getting-started)
 - [Installation](#installation)
 - [First Time Setup](#first-time-setup)
@@ -20,6 +21,7 @@ Budgy is a retirement planning tool specifically designed to help you understand
 **The Goal**: Analyze your current spending to project your post-retirement budget needs.
 
 **Key Insight**: Not all current expenses will continue in retirement. Budgy helps you categorize expenses to identify:
+
 - **Ongoing Expenses**: Rent, utilities, insurance, groceries → Will continue in retirement
 - **One-Time Expenses**: Car purchases, home repairs → May or may not be relevant post-retirement  
 - **Pre-Retirement Only**: College tuition, work clothes, commuting costs → Won't continue in retirement
@@ -32,6 +34,7 @@ Budgy is a retirement planning tool specifically designed to help you understand
 4. **Project** realistic retirement income requirements based on actual spending data
 
 ### What You'll Need
+
 - OFX files from your bank or credit card company
 - Python 3.9 or higher installed on your computer
 - Basic familiarity with downloading files from financial institutions
@@ -65,12 +68,14 @@ budgy-viewer
 ```
 
 When you first launch Budgy, it will automatically:
+
 - Create a configuration directory in your user folder
 - Set up a default database location
 - Create default spending categories
 
 ### 2. Configuration Locations
 Budgy stores its configuration in platform-appropriate locations:
+
 - **Windows**: `%APPDATA%\budgy\budgyconfig.json`
 - **macOS**: `~/.config/budgy/budgyconfig.json`
 - **Linux**: `~/.config/budgy/budgyconfig.json`
@@ -100,6 +105,7 @@ Most banks and credit card companies provide OFX file downloads:
 ### Smart Import Features
 
 **Safe Re-importing**: Budgy's intelligent import system means you can:
+
 - **Import the same file multiple times** without creating duplicates
 - **Select entire folders** of OFX files without tracking which ones you've already imported
 - **Download new statements** and reimport everything - only new transactions are added
@@ -127,6 +133,7 @@ Budgy uses a hierarchical category system with main categories and subcategories
 ### Default Categories
 
 **Expense Categories:**
+
 - Auto (Gas, Service, Repairs)
 - Entertainment (Coffee, Dining, Movies)
 - Household (Rent, Utilities, Repairs)
@@ -134,6 +141,7 @@ Budgy uses a hierarchical category system with main categories and subcategories
 - Travel (Hotel, Transportation)
 
 **Income Categories:**
+
 - Income (Salary, Interest, Dividends)
 - Transfer (Savings, Investment)
 
@@ -147,6 +155,7 @@ When creating categories, think about retirement planning:
    - **Main Category**: e.g., "Medical"
    - **Subcategory**: e.g., "Prescriptions"
    - **Expense Type** (crucial for retirement planning):
+
      - **Non-expense**: Income, transfers → Not part of spending analysis
      - **One-time expense**: Car purchase, vacation → Evaluate retirement relevance case-by-case
      - **Recurring expense**: Rent, utilities, groceries → Will likely continue in retirement
@@ -167,6 +176,7 @@ Create rules to automatically categorize future transactions:
 4. **Test rules** with new imports
 
 **Example Rules:**
+
 - Pattern: "STARBUCKS" → Category: "Entertainment" / "Coffee"
 - Pattern: "SHELL" → Category: "Auto" / "Gas"
 - Pattern: "RENT" → Category: "Household" / "Rent"
@@ -176,6 +186,7 @@ Create rules to automatically categorize future transactions:
 ### Transaction List
 
 The main data panel shows all imported transactions with:
+
 - **Date**: When the transaction was posted
 - **Amount**: Transaction amount (negative = expense, positive = income)
 - **Name**: Payee or description from bank
@@ -192,6 +203,7 @@ The main data panel shows all imported transactions with:
 ### Handling Duplicate Transactions
 
 Budgy automatically handles most duplicates, but you may occasionally see:
+
 - **Same transaction on different dates**: This is normal for pending vs. posted transactions
 - **Slightly different amounts**: Banks sometimes adjust transactions
 - **Different descriptions**: Same transaction may appear differently in different downloads
@@ -234,6 +246,7 @@ Use Budgy's categorized data to build your retirement budget:
 ### Export Options
 
 Reports can be:
+
 - **Viewed on screen** for quick analysis
 - **Exported to CSV** for spreadsheet analysis
 - **Saved as reports** for historical comparison
@@ -243,6 +256,7 @@ Reports can be:
 ### Database Location
 
 By default, Budgy stores your data in:
+
 - **Windows**: `%APPDATA%\budgy\budgydata.db`
 - **macOS/Linux**: `~/.config/budgy/budgydata.db`
 
@@ -292,6 +306,7 @@ Configure your retirement target date:
 ### Getting Help
 
 **Log Files**: Check for error messages in:
+
 - Console output when running budgy-viewer from terminal
 - System logs for application errors
 
