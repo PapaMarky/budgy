@@ -1,4 +1,5 @@
 import datetime
+import logging
 import math
 import re
 from pathlib import Path
@@ -114,7 +115,7 @@ class CategoryView(DbRecordView):
             if event.type == pygame.MOUSEBUTTONUP and event.button == pygame.BUTTON_LEFT:
                 scaled_mouse_pos = self.ui_manager.calculate_scaled_mouse_position(event.pos)
                 if self.is_enabled and self.drawable_shape.collide_point(scaled_mouse_pos):
-                    print(f'Category clicked: {self._record["name"]}')
+                    logging.debug(f'Category clicked: {self._record["name"]}')
                     event_data = {
                         'category': self._record['name'],
                         'is_subcategory': self.is_subcategory
@@ -165,7 +166,7 @@ class CategoryViewPanel(UIPanel):
         return self._selection
 
     def set_selection(self, category):
-        print(f'Set selection (panel): {category}')
+        logging.debug(f'Set selection (panel): {category}')
         self._selection = category
         self.render_data()
 
@@ -177,7 +178,7 @@ class CategoryViewPanel(UIPanel):
         h = self.relative_rect.height
         n = math.floor(h / CategoryView.CATEGORY_VIEW_HEIGHT)
         self.visible_records = n
-        print(f'We can fit {n} records ({h / CategoryView.CATEGORY_VIEW_HEIGHT})')
+        logging.debug(f'We can fit {n} records ({h / CategoryView.CATEGORY_VIEW_HEIGHT})')
 
         x = 0
         y = 0
@@ -244,7 +245,7 @@ class CategoryViewPanel(UIPanel):
                 event_consumed = True
 
             if False and event.type == CATEGORY_SELECTION_CHANGED:
-                print(f'Category changed to {event.category}')
+                logging.debug(f'Category changed to {event.category}')
                 self.set_selection(event.category)
                 self.render_data()
         return event_consumed
@@ -262,7 +263,7 @@ class SubcategoryViewPanel(CategoryViewPanel):
         if not event_consumed:
 
             if False and event.type == CATEGORY_SELECTION_CHANGED:
-                print(f'Category changed to {event.category}')
+                logging.debug(f'Category changed to {event.category}')
                 self.set_selection(event.category)
                 self.render_data()
         return event_consumed

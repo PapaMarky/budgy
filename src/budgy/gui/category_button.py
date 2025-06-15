@@ -1,3 +1,4 @@
+import logging
 import pygame
 import pygame_gui
 from pygame_gui.elements import UIButton
@@ -59,7 +60,7 @@ class CategoryButton(UIButton):
         if super().process_event(event):
             return True
         if event.type == pygame_gui.UI_BUTTON_PRESSED and event.ui_element == self:
-            print(f'Category Button pressed for {self.fitid}')
+            logging.debug(f'Category Button pressed for {self.fitid}')
             self.dialog = CategoryDialog(
                 self.fitid,
                 self.account,

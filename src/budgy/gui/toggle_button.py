@@ -1,3 +1,4 @@
+import logging
 import pygame
 from pygame import event as pygame_event
 
@@ -56,7 +57,7 @@ class ToggleButton(UIButton):
                     'state': self.state
                 }
                 pygame_event.post(pygame.event.Event(TOGGLE_BUTTON, event_data))
-                print(f'Post TOGGLE_BUTTON ({TOGGLE_BUTTON}')
+                logging.debug(f'Post TOGGLE_BUTTON ({TOGGLE_BUTTON})')
 
         return event_consumed
 

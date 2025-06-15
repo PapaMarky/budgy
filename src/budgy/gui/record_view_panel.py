@@ -1,4 +1,5 @@
 import datetime
+import logging
 import math
 import re
 from pathlib import Path
@@ -208,7 +209,7 @@ class RecordViewPanel(UIPanel):
         h = self.relative_rect.height
         n = math.floor(h / RecordView.RECORD_VIEW_HEIGHT)
         self.visible_records = n
-        print(f'We can fit {n} records ({h / RecordView.RECORD_VIEW_HEIGHT})')
+        logging.debug(f'We can fit {n} records ({h / RecordView.RECORD_VIEW_HEIGHT})')
 
         x = 0
         y = 0

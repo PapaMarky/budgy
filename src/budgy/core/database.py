@@ -28,7 +28,7 @@ class BudgyDatabase(object):
     def _create_txn_table_if_missing(self):
         table_name = self.TXN_TABLE_NAME
         if not self.table_exists(table_name):
-            print(f'Creating table: {table_name}')
+            logging.info(f'Creating table: {table_name}')
             sql = f'CREATE TABLE IF NOT EXISTS {table_name} (' \
                   f'fitid INTEGER PRIMARY KEY AUTOINCREMENT, ' \
                   f'account TEXT, ' \
@@ -40,7 +40,7 @@ class BudgyDatabase(object):
                   f'category INT DEFAULT 1, ' \
                   f'checknum TEXT' \
                   f');'
-            print(sql)
+            logging.debug(f'Executing SQL: {sql}')
             result = self.execute(sql)
             logging.debug(f'Create Table Result: {result}')
             # Create index on content fields for duplicate detection
@@ -50,21 +50,20 @@ class BudgyDatabase(object):
     def _create_rules_table_if_missing(self):
         table_name = self.CATEGORY_RULES_TABLE_NAME
         if not self.table_exists(table_name):
-            print(f'Creating table: {table_name}')
+            logging.info(f'Creating table: {table_name}')
             sql = f'CREATE TABLE IF NOT EXISTS {table_name} (' \
                    f'id INTEGER PRIMARY KEY AUTOINCREMENT, ' \
                    f'pattern TEXT, ' \
                    f'category TEXT, ' \
                    f'subcategory TEXT ' \
                    f');'
-            print(sql)
+            logging.debug(f'Executing SQL: {sql}')
             result = self.execute(sql)
             logging.debug(f'Create Table Result: {result}')
-            print(f'Create Table Result: {result}')
     def _create_category_table_if_missing(self):
         table_name = self.CATEGORY_TABLE_NAME
         if not self.table_exists(table_name):
-            print(f'Creating table: {self.CATEGORY_TABLE_NAME}')
+            logging.info(f'Creating table: {self.CATEGORY_TABLE_NAME}')
             sql = f'CREATE TABLE IF NOT EXISTS {table_name} (' \
                   f'id INTEGER PRIMARY KEY AUTOINCREMENT, ' \
                   f'name TEXT, ' \
@@ -73,7 +72,6 @@ class BudgyDatabase(object):
                   f');'
             result = self.execute(sql)
             logging.debug(f'Create Table Result: {result}')
-            print(f'Create Table Result: {result}')
             sql = f'CREATE UNIQUE INDEX category_full ON {table_name} (name, subcategory);'
             result = self.execute(sql)
             logging.debug(f'Create Unique Index: {result}')
@@ -164,14 +162,14 @@ class BudgyDatabase(object):
                 ('Work Expense', 'License', 2),
                 ('Auto', 'Rental', 1)
             ]
-            print(f'Loading default categories')
+            logging.info(f'Loading default categories')
             result = result.executemany(
                 f'INSERT OR REPLACE INTO {self.CATEGORY_TABLE_NAME} (name, subcategory, expense_type) VALUES (?, ?, ?)',
                 default_categories
             )
-            print(f'COMMIT default categories')
+            logging.debug(f'Committing default categories')
             self.connection.commit()
-            print(f'RESULT: {result}')
+            logging.debug(f'Default categories load result: {result}')
     def execute(self, sql, params=None):
         cursor = self.connection.cursor()
         logging.debug(f'EXECUTE: {sql}')
@@ -237,26 +235,25 @@ class BudgyDatabase(object):
         duplicate_record = self.find_duplicate_by_content(record)
         if duplicate_record is not None:
             old_record = self.record_from_row(duplicate_record)
-            print('WARNING: Duplicate found:')
-            print(f'   New: checknum={record.get("checknum", "None")}')
-            print(f'   Old: fitid={old_record["fitid"]}, checknum={old_record.get("checknum", "None")}')
-            print(f'   Transaction: {record["posted"]} | {record["amount"]} | {record["name"][:50]}...')
+            logging.warning('Duplicate found:')
+            logging.debug(f'   New: checknum={record.get("checknum", "None")}')
+            logging.debug(f'   Old: fitid={old_record["fitid"]}, checknum={old_record.get("checknum", "None")}')
+            logging.info(f'   Transaction: {record["posted"]} | {record["amount"]} | {record["name"][:50]}...')
             # Since all major fields match (account, posted, amount, name, memo, type),
             # this is definitely a duplicate
-            print('   SKIPPING: All content fields match, treating as duplicate')
+            logging.info('   SKIPPING: All content fields match, treating as duplicate')
             logging.warning(f'Skipped duplicate: existing_fitid={old_record["fitid"]}')
             return
         # Insert new record (fitid will be auto-generated)
-        print(f'New record, inserting: {record["account"]}|{record["posted"]}')
-        logging.debug(f'New Record, inserting')
+        logging.debug(f'New record, inserting: {record["account"]}|{record["posted"]}')
         self.insert_record(record)
     def get_date_range(self):
         sql = f'SELECT MIN(posted) AS start, MAX(posted) AS end FROM transactions'
         result = self.execute(sql)
         if result is not None:
-            print(f'date range result: "{result}"')
+            logging.debug(f'date range result: "{result}"')
             for row in result:
-                print(f'date range row: "{row}"')
+                logging.debug(f'date range row: "{row}"')
                 if row[0] is None or row[1] is None:
                     return (None, None)
                 start = datetime.datetime.strptime(row[0], '%Y-%m-%d %H:%M:%S%z')
@@ -281,7 +278,7 @@ class BudgyDatabase(object):
                'FROM transactions AS txn '
                'WHERE amount < 0 '
                'GROUP BY year, month ORDER BY year, month DESC;')
-        print(sql)
+        logging.debug(f'Report SQL: {sql}')
         result = self.execute(sql)
         data = {}
         if result is not None:
@@ -346,7 +343,7 @@ class BudgyDatabase(object):
                f'FROM {self.TXN_TABLE_NAME} '
                f'{where_clause}'
                f'ORDER BY posted')
-        print(sql)
+        logging.debug(f'All records SQL: {sql}')
         result = self.execute(sql, tuple(params) if params else None)
         records = []
         if result is not None:
@@ -370,7 +367,7 @@ class BudgyDatabase(object):
         result = {
             'merged': 0
         }
-        print(f'Merging {len(newrecords)}')
+        logging.info(f'Merging {len(newrecords)} records')
         for record in newrecords:
             self.merge_record(record)
     def get_catetory_dict(self):
@@ -449,7 +446,7 @@ class BudgyDatabase(object):
                 break
         # If fitid exists but is not INTEGER PRIMARY KEY AUTOINCREMENT, we need to migrate
         if fitid_column and (fitid_column[2].upper() != 'INTEGER' or not fitid_column[5]):  # col[5] is pk flag
-            print("Migrating database to use auto-generated fitids...")
+            logging.info("Migrating database to use auto-generated fitids...")
             # Create new table with auto-generated fitids
             new_table_name = f"{self.TXN_TABLE_NAME}_new"
             sql = f'''CREATE TABLE {new_table_name} (
@@ -477,18 +474,18 @@ class BudgyDatabase(object):
             sql = f'CREATE INDEX content_lookup ON {self.TXN_TABLE_NAME} (account, posted, amount, name, memo, type);'
             self.execute(sql)
             self.connection.commit()
-            print("Migration to auto-generated fitids completed successfully")
+            logging.info("Migration to auto-generated fitids completed successfully")
         elif fitid_column and fitid_column[2].upper() == 'INTEGER' and fitid_column[5]:
-            print("Database already uses auto-generated fitids")
+            logging.info("Database already uses auto-generated fitids")
         else:
-            print("No migration needed - database appears to be new")
+            logging.info("No migration needed - database appears to be new")
     def migrate_unique_constraint(self):
         """Migrate existing databases to use new unique constraint"""
         old_index_name = 'acct_fitid'
         new_index_name = 'acct_fitid_posted'
         # Check if old index exists and new index doesn't
         if self.index_exists(old_index_name) and not self.index_exists(new_index_name):
-            print(f"Migrating database: updating unique constraint to include posted date")
+            logging.info(f"Migrating database: updating unique constraint to include posted date")
             # Check for existing duplicate records that would violate new constraint
             sql = f'''
                 SELECT fitid, account, COUNT(*) as count
@@ -499,23 +496,23 @@ class BudgyDatabase(object):
             result = self.execute(sql)
             duplicates = result.fetchall()
             if len(duplicates) > 0:
-                print(f"Warning: Found {len(duplicates)} fitid/account combinations with multiple records")
+                logging.warning(f"Found {len(duplicates)} fitid/account combinations with multiple records")
                 for dup in duplicates:
-                    print(f"  fitid={dup[0]}, account={dup[1]}, count={dup[2]}")
-                print("These will be allowed under the new constraint (different posted dates)")
+                    logging.warning(f"  fitid={dup[0]}, account={dup[1]}, count={dup[2]}")
+                logging.info("These will be allowed under the new constraint (different posted dates)")
             # Drop old index
-            print(f"Dropping old index: {old_index_name}")
+            logging.info(f"Dropping old index: {old_index_name}")
             self.execute(f'DROP INDEX IF EXISTS {old_index_name}')
             # Create new index
-            print(f"Creating new index: {new_index_name}")
+            logging.info(f"Creating new index: {new_index_name}")
             sql = f'CREATE UNIQUE INDEX {new_index_name} ON {self.TXN_TABLE_NAME} (fitid, account, posted);'
             self.execute(sql)
             self.connection.commit()
-            print("Migration completed successfully")
+            logging.info("Migration completed successfully")
         elif self.index_exists(new_index_name):
-            print("Database already migrated - new unique constraint exists")
+            logging.info("Database already migrated - new unique constraint exists")
         else:
-            print("No migration needed - database appears to be new")
+            logging.info("No migration needed - database appears to be new")
     def migrate_fitid_to_text(self):
         """Migrate fitid column from INT to TEXT to handle string fitids from banks"""
         # Check if fitid column is currently INT type
@@ -528,7 +525,7 @@ class BudgyDatabase(object):
                 fitid_column = col
                 break
         if fitid_column and fitid_column[2].upper() == 'INT':  # col[2] is column type
-            print("Migrating fitid column from INT to TEXT")
+            logging.info("Migrating fitid column from INT to TEXT")
             # Create new table with TEXT fitid
             new_table_name = f"{self.TXN_TABLE_NAME}_new"
             sql = f'''CREATE TABLE {new_table_name} (
@@ -556,8 +553,8 @@ class BudgyDatabase(object):
             sql = f'CREATE UNIQUE INDEX acct_fitid_posted ON {self.TXN_TABLE_NAME} (fitid, account, posted);'
             self.execute(sql)
             self.connection.commit()
-            print("fitid migration completed successfully")
+            logging.info("fitid migration completed successfully")
         elif fitid_column and fitid_column[2].upper() == 'TEXT':
-            print("fitid column already migrated to TEXT")
+            logging.info("fitid column already migrated to TEXT")
         else:
-            print("fitid column not found - database may be corrupted")
+            logging.error("fitid column not found - database may be corrupted")

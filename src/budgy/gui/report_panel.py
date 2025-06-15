@@ -1,5 +1,6 @@
 from typing import Dict, Union, List
 
+import logging
 import pygame
 from pygame import event as pygame_event
 import pygame_gui
@@ -25,7 +26,7 @@ class ExpenseDetailButton(UIButton):
         if not event_consumed:
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 if isinstance(event.ui_element, ExpenseDetailButton):
-                    print(f'Expense Button: {event.ui_element.year} - {event.ui_element.month}')
+                    logging.debug(f'Expense Button: {event.ui_element.year} - {event.ui_element.month}')
                     event_data = {
                         'year': event.ui_element.year,
                         'month': event.ui_element.month
@@ -221,7 +222,7 @@ class BudgyReportPanel(BudgyFunctionSubPanel):
             }
         )
         self.detail_rows = self.database.all_records(year=year, month=month)
-        print(f'Got {len(self.detail_rows)} records')
+        logging.debug(f'Got {len(self.detail_rows)} records')
         y += h + MARGIN
         h = self.detail_panel.relative_rect.height - y - 2 * MARGIN
         self.detail_record_view = RecordViewPanel(

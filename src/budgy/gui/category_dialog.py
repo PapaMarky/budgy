@@ -1,3 +1,4 @@
+import logging
 import pygame
 import pygame_gui
 from pygame_gui.elements import UIWindow, UIPanel, UIButton
@@ -194,7 +195,7 @@ class CategoryDialog(UIWindow):
         return subcategory_list
 
     def load_categories(self):
-        print(f'Loading Categories (dialog)')
+        logging.debug('Loading Categories (dialog)')
         self.categories = self.database.get_catetory_dict()
         full_category = self.database.get_category_for_fitid(self.fitid)
         category_list = self.list_categories()
@@ -212,7 +213,7 @@ class CategoryDialog(UIWindow):
         category, subcategory = self.get_selection()
         if self.original_category[0] != category or self.original_category[1] != subcategory:
             # TODO: Confirmation Dialog?
-            print(f'NEW CATEGORY for {self.fitid}|{self.account}|{self.posted}: {category} / {subcategory}')
+            logging.info(f'NEW CATEGORY for {self.fitid}|{self.account}|{self.posted}: {category} / {subcategory}')
             self.database.set_txn_category(self.fitid, self.account, self.posted, category, subcategory)
             event_data = {
                 'fitid': self.fitid,
@@ -226,16 +227,16 @@ class CategoryDialog(UIWindow):
             pygame.event.post(pygame.event.Event(CATEGORY_CHANGED, event_data))
             self.kill()
         else:
-            print(f'CATEGORY UNCHANGED')
+            logging.debug('CATEGORY UNCHANGED')
     def process_event(self, event: pygame.event.Event) -> bool:
         event_consumed = super().process_event(event)
         if not event_consumed:
             if event.type == CATEGORY_SELECTION_CHANGED:
                 if event.is_subcategory:
-                    print(f'Subcategory changed to {event.category} (Dialog)')
+                    logging.debug(f'Subcategory changed to {event.category} (Dialog)')
                     self.subcategory_panel.set_selection(event.category)
                 else:
-                    print(f'Category changed to {event.category} (Dialog, subcategory: {event.is_subcategory})')
+                    logging.debug(f'Category changed to {event.category} (Dialog, subcategory: {event.is_subcategory})')
                     self.subcategory_panel.set_data(self.list_subcategories(event.category))
                     self.set_selection(event.category, "")
                 return True

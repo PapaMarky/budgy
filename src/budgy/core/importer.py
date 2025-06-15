@@ -1,9 +1,5 @@
 import argparse
 import logging
-
-
-logging.basicConfig(handlers=[logging.StreamHandler(), logging.FileHandler('budgy-importer.log')], level=logging.INFO)
-
 from pathlib import Path
 
 from budgy.core.app import BudgyApp
@@ -22,6 +18,8 @@ class ImporterApp(BudgyApp):
         parser.add_argument('datafiles', nargs='+', help='One or more datafiles to import')
 
     def run(self):
+        self.log_app_header()
+        
         nrecords0 = self._db.count_records()
         if nrecords0 > 0:
             logging.info(f'Database already contains {nrecords0} records')

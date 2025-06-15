@@ -1,3 +1,4 @@
+import logging
 import os.path
 from pathlib import Path
 
@@ -103,7 +104,7 @@ class BudgyDataPanel(BudgyFunctionSubPanel):
     def process_confirm_dialog_events(self, event: pygame.event.Event) -> bool:
         if event.type == pygame_gui.UI_CONFIRMATION_DIALOG_CONFIRMED:
             if is_confirm_import_dialog(event.ui_element):
-                print(f'Importing data from {self.import_path}')
+                logging.info(f'Importing data from {self.import_path}')
                 event_data = {
                     'path': self.import_path
                 }
@@ -112,7 +113,7 @@ class BudgyDataPanel(BudgyFunctionSubPanel):
                 self.import_path = None
                 return True
             if is_confirm_delete_all_dialog(event.ui_element):
-                print(f'Deleting all data from database')
+                logging.info('Deleting all data from database')
                 event_data = {}
                 pygame.event.post(pygame.event.Event(budgy.gui.events.DELETE_ALL_DATA_CONFIRMED, event_data))
                 return True
@@ -122,7 +123,7 @@ class BudgyDataPanel(BudgyFunctionSubPanel):
         if not event_consumed:
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == self._import_data_button:
-                    print('IMPORT DATA')
+                    logging.debug('IMPORT DATA')
                     # Create the import data file dialog
                     rect = pygame.Rect(0, 0, 500, 400)
                     show_import_data_file_dialog(self.budgy_config.import_data_path)
@@ -138,7 +139,7 @@ class BudgyDataPanel(BudgyFunctionSubPanel):
                 self._import_data_button.enable()
                 event_consumed = True
             if event.type == pygame_gui.UI_FILE_DIALOG_PATH_PICKED and is_import_file_dialog(event.ui_element):
-                print(f' - PATH PICKED: {event.text}')
+                logging.debug(f' - PATH PICKED: {event.text}')
                 event_data = {
                     'import_path': event.text,
                     'ui_element': self
@@ -147,7 +148,7 @@ class BudgyDataPanel(BudgyFunctionSubPanel):
                 event_consumed = True
             if event.type == budgy.gui.events.DATA_SOURCE_SELECTED:
                 self.import_path = event.import_path
-                print(f'LOAD DATA: {self.import_path}')
+                logging.debug(f'LOAD DATA: {self.import_path}')
                 if not os.path.exists(self.import_path):
                     rect = pygame.Rect(100, 100, 400, 200)
                     UIMessageWindow(rect,
@@ -161,7 +162,7 @@ class BudgyDataPanel(BudgyFunctionSubPanel):
                     show_confirm_import_dialog(import_directory=is_directory)
                 event_consumed = True
             if event.type == budgy.gui.events.DELETE_ALL_DATA:
-                print('CLEAR DATA (data panel)')
+                logging.debug('CLEAR DATA (data panel)')
                 show_confirm_delete_all_dialog()
                 event_consumed = True
             if self.process_confirm_dialog_events(event):

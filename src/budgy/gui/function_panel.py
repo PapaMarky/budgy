@@ -1,3 +1,4 @@
+import logging
 from pygame_gui.elements import UIPanel
 
 from budgy.core.database import BudgyDatabase
@@ -28,7 +29,7 @@ class BudgyFunctionPanel(UIPanel):
         return self._report_panel
 
     def show_subpanel(self, panel_name):
-        print(f'Show function panel: {panel_name}')
+        logging.debug(f'Show function panel: {panel_name}')
         if panel_name == 'data':
             self._data_panel.show()
             self._report_panel.hide()

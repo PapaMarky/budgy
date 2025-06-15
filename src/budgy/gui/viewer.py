@@ -32,11 +32,11 @@ class BudgyViewerApp(GuiApp):
         super().__init__(size, title=self._title)
         self._args = self._parse_args()
         themes_file = budgy.gui.get_themes_file_path('theme.json')
-        print(f'themes file: {themes_file}')
+        logging.info(f'themes file: {themes_file}')
         if themes_file:
             self._ui_manager.get_theme().load_theme(themes_file)
         else:
-            print(f'WARNING: theme file not found')
+            logging.warning('theme file not found')
         self._quit_button:UIButton = None
         self._button_rect:pygame.Rect = pygame.Rect(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT)
         self._database:BudgyDatabase = None
@@ -102,7 +102,7 @@ class BudgyViewerApp(GuiApp):
 
     def open_database(self):
         dbpath = Path(self.database_path).expanduser()
-        print(f'Open database: {dbpath}')
+        logging.info(f'Open database: {dbpath}')
         self._database = BudgyDatabase(dbpath)
         self.update_database_status()
 
@@ -127,7 +127,7 @@ class BudgyViewerApp(GuiApp):
                 return True
         elif event.type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
             if event.ui_element == self.top_panel.drop_down_menu:
-                print(f'New Function: {event.text}')
+                logging.debug(f'New Function: {event.text}')
                 if event.text == 'Report Functions':
                     self.function_panel.show_subpanel('report')
                     self.function_panel.report_panel.render_data()
@@ -145,7 +145,7 @@ class BudgyViewerApp(GuiApp):
                 raise Exception(f'Bad Dropdown Function Item: {event.text}')
 
         elif event.type == SELECT_DATABASE:
-            print(f'select database {event}')
+            logging.debug(f'select database {event}')
             dialog = UIFileDialog(
                 pygame.Rect(0, 0, 800, 600),
                 self.ui_manager,
@@ -155,24 +155,24 @@ class BudgyViewerApp(GuiApp):
                 allow_existing_files_only=False
             )
         elif event.type == OPEN_DATABASE:
-            print(f'load database: {event.db_path}')
+            logging.info(f'load database: {event.db_path}')
             #self.open_database(event.db_path)
         elif event.type == budgy.gui.events.DATA_SOURCE_CONFIRMED:
             files = []
             if os.path.isdir(event.path):
                 all_files = glob.glob(event.path + '/*')
-                print(f'ALL FILES: {all_files}')
+                logging.warning(f'ALL FILES: {all_files}')
                 for file in all_files:
                     if file.endswith('.ofx') or file.endswith('.qfx'):
                         files.append(file)
-                        print(f'FILE: {file}')
+                        logging.debug(f'FILE: {file}')
             else:
                 files.append(event.path)
-                print(f'FILE: {event.path}')
+                logging.debug(f'FILE: {event.path}')
             for file in files:
                 msg = f'Loading OFX data from {file}'
                 post_show_message(msg)
-                print(msg)
+                logging.info(msg)
                 records = load_ofx_file(file)
                 post_show_message(f'Merging {len(records)} imported records')
                 self._database.merge_records(records)
@@ -180,7 +180,7 @@ class BudgyViewerApp(GuiApp):
                 post_clear_messages()
             return True
         elif event.type == budgy.gui.events.DELETE_ALL_DATA_CONFIRMED:
-            print(f'DELETING ALL DATA FROM DATABASE')
+            logging.warn('DELETING ALL DATA FROM DATABASE')
             self._database.delete_all_records()
             self.update_database_status()
             return True

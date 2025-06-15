@@ -1,3 +1,4 @@
+import logging
 import os
 
 from budgy.gui import configdata
@@ -19,15 +20,15 @@ def get_data_file_path(file_name):
 _themes_dir = os.path.join(_data_dir, 'themes')
 
 def get_themes_dir():
-    print(f'        File: {__file__}')
-    print(f'Install Path: {install_path}')
-    print(f'    Data Dir: {_data_dir}')
-    print(f'  Themes Dir: {_themes_dir}')
+    logging.debug(f'        File: {__file__}')
+    logging.debug(f'Install Path: {install_path}')
+    logging.debug(f'    Data Dir: {_data_dir}')
+    logging.debug(f'  Themes Dir: {_themes_dir}')
     return _themes_dir if os.path.exists(_themes_dir) else None
 
 def get_themes_file_path(file_name):
     themes_dir = get_themes_dir()
-    print(f'themes_dir: {themes_dir}')
+    logging.debug(f'themes_dir: {themes_dir}')
     if themes_dir is None:
         return None
     path = os.path.join(themes_dir, file_name)

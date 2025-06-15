@@ -1,3 +1,4 @@
+import logging
 import pygame
 from pygame_gui.elements import UIPanel, UIProgressBar, UILabel
 from pygame_gui.core import ObjectID
@@ -75,7 +76,7 @@ class MessagePanel(UIPanel):
         event_consumed = super().process_event(event)
         if not event_consumed:
             if event.type == SHOW_MESSAGE:
-                print(f'SHOW_MESSAGE ({event.level}) {event.message}')
+                logging.debug(f'SHOW_MESSAGE ({event.level}) {event.message}')
                 if event.level in self.level_map:
                     self.level_map[event.level](event.message)
                 else:

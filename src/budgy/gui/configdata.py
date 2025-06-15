@@ -1,4 +1,5 @@
 import json
+import logging
 import os.path
 from pathlib import Path
 
@@ -31,7 +32,7 @@ class BudgyConfig(object):
 
     @import_data_path.setter
     def import_data_path(self, new_path):
-        print(f'Updating Import Data Path: {new_path}')
+        logging.debug(f'Updating Import Data Path: {new_path}')
         if os.path.isfile(new_path):
             new_path = os.path.dirname(new_path)
         self.config_dict['import_data']['import_dir'] = new_path
