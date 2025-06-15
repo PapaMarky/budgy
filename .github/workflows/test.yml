@@ -226,10 +226,19 @@ jobs:
               db = BudgyDatabase(test_db)
               print('Database created successfully')
               
-              if db.index_exists('acct_fitid_posted'):
-                  print('✅ New unique constraint exists')
+              if db.index_exists('content_lookup'):
+                  print('[PASS] Content lookup index exists')
               else:
-                  print('❌ New unique constraint missing')
+                  print('[FAIL] Content lookup index missing')
+                  exit(1)
+                  
+              # Check for auto-generated fitids
+              result = db.execute(\"SELECT sql FROM sqlite_master WHERE type='table' AND name='transactions'\")
+              schema = result.fetchone()
+              if schema and 'AUTOINCREMENT' in schema[0]:
+                  print('[PASS] Auto-generated fitids enabled')
+              else:
+                  print('[FAIL] Auto-generated fitids not enabled')
                   exit(1)
                   
               print('Migration test completed successfully')
@@ -271,18 +280,18 @@ jobs:
           integration_status="${{ needs.integration-tests.result }}"
           
           if [[ "$matrix_status" == "success" ]]; then
-            echo "| Ubuntu/macOS/Windows | 3.9-3.11 | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+            echo "| Ubuntu/macOS/Windows | 3.9-3.11 | [PASS] Passed |" >> $GITHUB_STEP_SUMMARY
           else
-            echo "| Ubuntu/macOS/Windows | 3.9-3.11 | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+            echo "| Ubuntu/macOS/Windows | 3.9-3.11 | [FAIL] Failed |" >> $GITHUB_STEP_SUMMARY
           fi
           
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Integration Tests" >> $GITHUB_STEP_SUMMARY
           
           if [[ "$integration_status" == "success" ]]; then
-            echo "✅ OFX import and database migration tests passed" >> $GITHUB_STEP_SUMMARY
+            echo "[PASS] OFX import and database migration tests passed" >> $GITHUB_STEP_SUMMARY
           else
-            echo "❌ Integration tests failed" >> $GITHUB_STEP_SUMMARY
+            echo "[FAIL] Integration tests failed" >> $GITHUB_STEP_SUMMARY
           fi
           
           # Set output for other workflows

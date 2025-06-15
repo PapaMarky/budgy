@@ -57,10 +57,10 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           
           if [[ "${{ needs.test.result }}" == "success" && "${{ needs.build.result }}" == "success" ]]; then
-            echo "✅ All workflows completed successfully!" >> $GITHUB_STEP_SUMMARY
+            echo "[PASS] All workflows completed successfully!" >> $GITHUB_STEP_SUMMARY
             echo "status=success" >> $GITHUB_OUTPUT
           else
-            echo "❌ One or more workflows failed" >> $GITHUB_STEP_SUMMARY
+            echo "[FAIL] One or more workflows failed" >> $GITHUB_STEP_SUMMARY
             echo "status=failure" >> $GITHUB_OUTPUT
           fi
 

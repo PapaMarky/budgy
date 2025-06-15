@@ -30,7 +30,7 @@ class BudgyDatabase(object):
         if not self.table_exists(table_name):
             print(f'Creating table: {table_name}')
             sql = f'CREATE TABLE IF NOT EXISTS {table_name} (' \
-                  f'fitid TEXT, ' \
+                  f'fitid INTEGER PRIMARY KEY AUTOINCREMENT, ' \
                   f'account TEXT, ' \
                   f'type TEXT, ' \
                   f'posted TEXT, ' \
@@ -43,7 +43,8 @@ class BudgyDatabase(object):
             print(sql)
             result = self.execute(sql)
             logging.debug(f'Create Table Result: {result}')
-            sql = f'CREATE UNIQUE INDEX acct_fitid_posted ON {table_name} (fitid, account, posted);'
+            # Create index on content fields for duplicate detection
+            sql = f'CREATE INDEX content_lookup ON {table_name} (account, posted, amount, name, memo, type);'
             result = self.execute(sql)
             logging.debug(f'Create Unique Index: {result}')
     def _create_rules_table_if_missing(self):
@@ -185,45 +186,29 @@ class BudgyDatabase(object):
         self._create_txn_table_if_missing()
         self._create_category_table_if_missing()
         self._create_rules_table_if_missing()
-        self.migrate_unique_constraint()
-        self.migrate_fitid_to_text()
-    def get_record_by_fitid(self, fitid, account, posted=None):
-        if posted:
-            sql = f'SELECT * from {self.TXN_TABLE_NAME} WHERE fitid = ? AND account = ? AND posted = ?;'
-            result = self.execute(sql, (fitid, account, posted))
-        else:
-            sql = f'SELECT * from {self.TXN_TABLE_NAME} WHERE fitid = ? AND account = ?;'
-            result = self.execute(sql, (fitid, account))
+        self.migrate_to_auto_fitid()
+    def get_record_by_fitid(self, fitid):
+        """Get record by our internal auto-generated fitid"""
+        sql = f'SELECT * from {self.TXN_TABLE_NAME} WHERE fitid = ?;'
+        result = self.execute(sql, (fitid,))
         rows = result.fetchall()
-        output = []
-        for row in rows:
-            output.append(row)
-            logging.debug(f'Posted: {row[3]} ({type(row[3])})')
-        return output
-    def get_record_by_unique_key(self, fitid, account, posted):
-        sql = f'SELECT * from {self.TXN_TABLE_NAME} WHERE fitid = ? AND account = ? AND posted = ?;'
-        result = self.execute(sql, (fitid, account, posted))
-        rows = result.fetchall()
-        if len(rows) > 1:
-            raise Exception(f'Multiple records found for unique key: fitid={fitid}, account={account}, posted={posted}')
         return rows[0] if len(rows) == 1 else None
     def record_from_row(self, row):
-        checknum = "" if row[7] is None else row[7]
+        checknum = "" if row[8] is None else row[8]
         return {
-            'fitid': row[0],
+            'fitid': row[0],  # Auto-generated unique ID
             'account': row[1],
             'type': row[2],
-            'posted': row[3], # datetime.datetime.strptime(row[2], '%Y-%m-%d %H:%M:%S%z') ,
+            'posted': row[3],
             'amount': row[4],
             'name': row[5],
             'memo': row[6],
             'checknum': checknum
         }
     def insert_record(self, record):
-        checknum = "" if record['checknum'] is None else record['checknum']
-        sql = f'INSERT INTO {self.TXN_TABLE_NAME} (fitid, account, type, posted, amount, name, memo, checknum) VALUES (?, ?, ?, ?, ?, ?, ?, ?);'
+        checknum = "" if record.get('checknum') is None else record['checknum']
+        sql = f'INSERT INTO {self.TXN_TABLE_NAME} (account, type, posted, amount, name, memo, checknum) VALUES (?, ?, ?, ?, ?, ?, ?);'
         result = self.execute(sql, (
-            record["fitid"],
             record["account"],
             record["type"],
             record["posted"],
@@ -233,28 +218,38 @@ class BudgyDatabase(object):
             checknum
         ))
         self.connection.commit()
+    def find_duplicate_by_content(self, record):
+        """Find potential duplicate based on all content fields (ignoring fitid and checknum)"""
+        sql = f'''SELECT * FROM {self.TXN_TABLE_NAME}
+                  WHERE account = ? AND posted = ? AND amount = ? AND name = ? AND memo = ? AND type = ?'''
+        result = self.execute(sql, (
+            record['account'],
+            record['posted'],
+            record['amount'],
+            record['name'],
+            record['memo'],
+            record['type']
+        ))
+        rows = result.fetchall()
+        return rows[0] if len(rows) > 0 else None
     def merge_record(self, record):
-        existing_record = self.get_record_by_unique_key(record['fitid'], record['account'], record['posted'])
-        if existing_record is not None:
-            old_record = self.record_from_row(existing_record)
-            print(f'Record exists: {record["fitid"]}|{record["account"]}|{record["posted"]}')
-            print(f'Old Record: {old_record}')
-            logging.info(f'------------------')
-            logging.info(f'|{"key":10}|{"NEW":30}|{"OLD":30}|')
-            for k in record:
-                # Skip fields that were removed from the schema (like 'exclude')
-                if k not in old_record:
-                    continue
-                v1 = record[k] if record[k] is not None else '<NONE>'
-                v2 = old_record[k] if old_record[k] is not None else '<NONE>'
-                match_text = 'MATCH'
-                if v1 != v2:
-                    match_text = 'NO MATCH'
-                print(f'|{k:10}|{v1:30}|{v2:30}|{match_text}|')
-        else:
-            print(f'New record, inserting: {record["fitid"]}|{record["account"]}|{record["posted"]}')
-            logging.debug(f'New Record, inserting')
-            self.insert_record(record)
+        # Check for duplicate content (ignoring bank fitid and checknum)
+        duplicate_record = self.find_duplicate_by_content(record)
+        if duplicate_record is not None:
+            old_record = self.record_from_row(duplicate_record)
+            print('WARNING: Duplicate found:')
+            print(f'   New: checknum={record.get("checknum", "None")}')
+            print(f'   Old: fitid={old_record["fitid"]}, checknum={old_record.get("checknum", "None")}')
+            print(f'   Transaction: {record["posted"]} | {record["amount"]} | {record["name"][:50]}...')
+            # Since all major fields match (account, posted, amount, name, memo, type),
+            # this is definitely a duplicate
+            print('   SKIPPING: All content fields match, treating as duplicate')
+            logging.warning(f'Skipped duplicate: existing_fitid={old_record["fitid"]}')
+            return
+        # Insert new record (fitid will be auto-generated)
+        print(f'New record, inserting: {record["account"]}|{record["posted"]}')
+        logging.debug(f'New Record, inserting')
+        self.insert_record(record)
     def get_date_range(self):
         sql = f'SELECT MIN(posted) AS start, MAX(posted) AS end FROM transactions'
         result = self.execute(sql)
@@ -417,15 +412,16 @@ class BudgyDatabase(object):
             raise Exception(f'Category not in database: "{category}" / "{subcategory}"')
         for row in result:
             return row[0]
-    def set_txn_category(self, fitid, account, posted, category, subcategory):
+    def set_txn_category(self, fitid, category, subcategory):
+        """Set category for transaction using our internal fitid"""
         category_id = self.get_category_id(category, subcategory)
-        sql = f'UPDATE {self.TXN_TABLE_NAME} SET category = ? WHERE fitid = ? AND account = ? AND posted = ?'
-        result = self.execute(sql, (category_id, fitid, account, posted))
+        sql = f'UPDATE {self.TXN_TABLE_NAME} SET category = ? WHERE fitid = ?'
+        result = self.execute(sql, (category_id, fitid))
         rows_affected = result.rowcount
         if rows_affected == 0:
-            raise Exception(f'No transaction found for fitid={fitid}, account={account}, posted={posted}')
+            raise Exception(f'No transaction found for fitid={fitid}')
         elif rows_affected > 1:
-            raise Exception(f'Multiple transactions updated for fitid={fitid}, account={account}, posted={posted}')
+            raise Exception(f'Multiple transactions updated for fitid={fitid}')
         self.connection.commit()
     def bulk_categorize(self, txn_pattern, category, subcategory=EMPTY_SUBCATEGORY, include_categorized=False):
         category_id = self.get_category_id(category, subcategory)
@@ -439,6 +435,53 @@ class BudgyDatabase(object):
         if not result:
             raise Exception(f'Bulk Categorize Failed for {txn_pattern} to "{category}" "{subcategory}"')
         self.connection.commit()
+    def migrate_to_auto_fitid(self):
+        """Migrate existing database to use auto-generated fitids"""
+        # Check if we need to migrate by looking at the table structure
+        sql = f"PRAGMA table_info({self.TXN_TABLE_NAME})"
+        result = self.execute(sql)
+        columns = result.fetchall()
+        # Check if fitid is already INTEGER PRIMARY KEY AUTOINCREMENT
+        fitid_column = None
+        for col in columns:
+            if col[1] == 'fitid':  # col[1] is column name
+                fitid_column = col
+                break
+        # If fitid exists but is not INTEGER PRIMARY KEY AUTOINCREMENT, we need to migrate
+        if fitid_column and (fitid_column[2].upper() != 'INTEGER' or not fitid_column[5]):  # col[5] is pk flag
+            print("Migrating database to use auto-generated fitids...")
+            # Create new table with auto-generated fitids
+            new_table_name = f"{self.TXN_TABLE_NAME}_new"
+            sql = f'''CREATE TABLE {new_table_name} (
+                fitid INTEGER PRIMARY KEY AUTOINCREMENT,
+                account TEXT,
+                type TEXT,
+                posted TEXT,
+                amount FLOAT,
+                name TEXT,
+                memo TEXT,
+                category INT DEFAULT 1,
+                checknum TEXT
+            );'''
+            self.execute(sql)
+            # Copy data from old table (fitid will be auto-generated)
+            sql = f'''INSERT INTO {new_table_name} (account, type, posted, amount, name, memo, category, checknum)
+                     SELECT account, type, posted, amount, name, memo, category, checknum
+                     FROM {self.TXN_TABLE_NAME};'''
+            self.execute(sql)
+            # Drop old table
+            self.execute(f'DROP TABLE {self.TXN_TABLE_NAME}')
+            # Rename new table
+            self.execute(f'ALTER TABLE {new_table_name} RENAME TO {self.TXN_TABLE_NAME}')
+            # Create index for duplicate detection
+            sql = f'CREATE INDEX content_lookup ON {self.TXN_TABLE_NAME} (account, posted, amount, name, memo, type);'
+            self.execute(sql)
+            self.connection.commit()
+            print("Migration to auto-generated fitids completed successfully")
+        elif fitid_column and fitid_column[2].upper() == 'INTEGER' and fitid_column[5]:
+            print("Database already uses auto-generated fitids")
+        else:
+            print("No migration needed - database appears to be new")
     def migrate_unique_constraint(self):
         """Migrate existing databases to use new unique constraint"""
         old_index_name = 'acct_fitid'
