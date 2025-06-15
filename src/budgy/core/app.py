@@ -87,7 +87,8 @@ class BudgyApp(object):
             root_logger.removeHandler(handler)
         
         # Set up file logging with rotation (3 files, 3KB each)
-        log_file = log_dir / f'{self._app_name.lower().replace(" ", "-")}.log'
+        app_name_safe = os.path.basename(self._app_name).lower().replace(" ", "-")
+        log_file = log_dir / f'{app_name_safe}.log'
         file_handler = logging.handlers.RotatingFileHandler(
             log_file,
             maxBytes=3 * 1024,  # 3KB

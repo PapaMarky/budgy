@@ -214,7 +214,7 @@ class CategoryDialog(UIWindow):
         if self.original_category[0] != category or self.original_category[1] != subcategory:
             # TODO: Confirmation Dialog?
             logging.info(f'NEW CATEGORY for {self.fitid}|{self.account}|{self.posted}: {category} / {subcategory}')
-            self.database.set_txn_category(self.fitid, self.account, self.posted, category, subcategory)
+            self.database.set_txn_category(self.fitid, category, subcategory)
             event_data = {
                 'fitid': self.fitid,
                 'account': self.account,
